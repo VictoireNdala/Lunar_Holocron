@@ -40,8 +40,8 @@ Calendrier : événement les 14 et 15 novembre 2026 ; guide officiel le 13 novem
 | Q-007 | Hauteur de l'œil (ou de l'antenne) par défaut ? | 2 m / hauteur d'atterrisseur / hauteur d'antenne | 2 m (D-008) | Humain |
 | Q-008 | Un site « vitrine » avec MNT à 5 m (PGDA produit 78) ? | oui / non | non | Humain, selon les données disponibles |
 | Q-009 | La période 2026-2030 convient-elle aux données fournies ? | garder / changer | garder | Humain, après réception des données |
-| Q-011 | Site `demo-a` : **au centre** du cratère synthétique (horizon ≈ 20,6° : Soleil et Terre jamais visibles, cas « ombre permanente ») ou **sur le rebord** ou à côté (horizon bas d'un côté) ? | centre / rebord / extérieur | Centre (le terrain est centré sur le site, `dem_synthetic.py`) ; le choix se fait en T-07 via la position du site, sans toucher au MNT | CHAT / humain |
 | Q-010 | Qui est le **titulaire du copyright** de la licence Apache 2.0 (noms des deux membres, nom d'équipe) ? | noms des membres / nom d'équipe | aucune ligne de copyright (état actuel de `LICENSE`) | Humain |
+| Q-011 | Site `demo-a` : **au centre** du cratère synthétique (horizon ≈ 20,6° : Soleil et Terre jamais visibles, cas « ombre permanente ») ou **sur le rebord** ou à côté (horizon bas d'un côté) ? | centre / rebord / extérieur | Centre (le terrain est centré sur le site, `dem_synthetic.py`) ; le choix se fait en T-07 via la position du site, sans toucher au MNT | CHAT / humain |
 
 ## Format d'une nouvelle entrée
 

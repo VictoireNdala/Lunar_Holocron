@@ -97,16 +97,16 @@ Après la publication d'une **DEMANDE-REVUE bloquante**, CODE n'enchaîne pas su
 
 | Champ | Valeur |
 |---|---|
-| Dernière activité de CODE (UTC) | 2026-11-12T22:34Z |
+| Dernière activité de CODE (UTC) | 2026-11-12T22:41Z |
 | Session | S2 |
-| Tâche en cours | T-04 (MNT synthétique) ; T-09 terminé |
+| Tâche en cours | aucune ; T-09 et T-04 terminés ; prochaines : T-06 puis T-05 |
 | Page affichable | **oui** : `py -m http.server 8000 -d web`, puis http://localhost:8000 |
-| État | T-09 terminé (première page affichable) ; GitHub en retard d'un commit et plus (push non fait) |
-| Dernier commit | `a574e2d` « pre-event: T-09 … » ; tag `pre-event-base` encore sur « README complet » (à déplacer au dernier commit pré-événement) |
-| Tests (dernière exécution) | pytest : 85 passés ; node : 33 passés |
-| Dépôt propre (`git status`) | oui au commit `a574e2d` ; `LIAISON.md` modifié depuis (M-011, commité avec T-04) |
+| État | T-09 (page affichable) et T-04 terminés ; GitHub en retard (push non fait, en attente de l'accord de l'humain) |
+| Dernier commit | commit de journal après `ee22241` (T-04) ; tag `pre-event-base` encore sur « README complet » (à déplacer au dernier commit pré-événement) |
+| Tests (dernière exécution) | pytest : 104 passés ; node : 33 passés |
+| Dépôt propre (`git status`) | oui (après le commit de journal) |
 | Bloquants | Aucun côté code. Données NASA non reçues (J4). |
-| Messages CODE→CHAT en attente de réponse | 0 (M-011 : rapport, aucune réponse attendue) |
+| Messages CODE→CHAT en attente de réponse | 1 (M-013 QUESTION Q-011, à trancher avant T-07) |
 | Messages CHAT→CODE non lus | 0 (M-010 lu) |
 
 ## 4. Boîte CHAT → CODE
@@ -220,7 +220,7 @@ Index : M-001 INSTRUCTION (démarrage) · M-002 INFO (fonctionnement du canal) �
 
 ## 5. Boîte CODE → CHAT
 
-Index : M-003 RAPPORT (T-00) · M-004 RAPPORT (T-01) · M-006 DEMANDE-REVUE (T-02) · M-007 RAPPORT (T-03) · M-009 INFO (GitHub, tag) · M-011 RAPPORT (T-09, page affichable)
+Index : M-003 RAPPORT (T-00) · M-004 RAPPORT (T-01) · M-006 DEMANDE-REVUE (T-02) · M-007 RAPPORT (T-03) · M-009 INFO (GitHub, tag) · M-011 RAPPORT (T-09, page affichable) · M-012 RAPPORT (T-04) · M-013 QUESTION (Q-011, site demo-a)
 
 Ajouter les nouveaux messages à la suite, du plus ancien au plus récent.
 
@@ -358,6 +358,48 @@ Ajouter les nouveaux messages à la suite, du plus ancien au plus récent.
   - Suite : T-04 (MNT synthétique), puis T-06 (partie JS) → T-10 et T-05, comme le propose M-010.
 - Réponse attendue: non (constat visuel par l'humain bienvenu)
 
+### M-012 · CODE→CHAT · RAPPORT · réf: T-04 · priorité: NORMALE
+- Date (UTC): 2026-11-12T22:41Z
+- Statut: OUVERT
+- Réponse à: M-010
+- Objet: T-04 terminé (MNT synthétique et interface `Dem`)
+- Corps:
+  - Fait :
+    - `pipeline/dem.py` : `Dem` (interface : `height_m`, `covers`, `resolution_m`, `product`, `license`) ; `GridDem`, grille régulière **dans le plan stéréographique polaire** (comme les MNT LOLA polaires), ligne 0 en haut et colonne 0 à gauche, interpolation bilinéaire, NaN hors emprise ou si l'un des 4 nœuds voisins est NaN ; `MultiResDem` (le plus fin d'abord, puis le grossier là où il y a NaN).
+    - `pipeline/dem_synthetic.py` : `make_synthetic_dem(kind, seed, resolution_m, center_lat_deg, center_lon_deg, half_size_km)`. Le relief est une **fonction continue** des coordonnées locales au sol autour du site (est = d·sin az, nord = d·cos az, avec d et az obtenus par géodésie inverse), échantillonnée aux nœuds de la grille. Deux résolutions de même graine décrivent donc le même relief.
+      Scénarios (fictifs, PIPELINE § 1) : `crater` (cuvette parabolique de 600 m, rebord gaussien de +900 m à 4 km, dorsale de 700 m centrée à 12 km au nord), `massif` (sommet gaussien de 1 800 m à 12 km à l'est), `flat` (ondulation de ±30 m et bruit, |h| < 80 m).
+      Le bruit fractal est un bruit de valeur à 5 octaves, déterministe (hachage de type splitmix64 des nœuds), d'amplitude totale inférieure à 20 m.
+    - `geodesy.distance_azimuth` (problème inverse, haversine) : testé par aller-retour avec `destination` sur 1 000 cas (écart < 1e-6 m et < 1e-6°).
+  - Preuves : `.venv\Scripts\python.exe -m pytest pipeline/tests -q` → « 104 passed in 4.86s ». Durées à la taille prévue : grille de 20 m sur ±25 km (2 501²) en 13,2 s ; grille de 120 m sur ±155 km (2 584²) en 13,8 s ; pic mémoire ≈ 215 Mo (mesuré avant l'optimisation du bruit).
+    Aperçu visuel des 3 terrains, nord en haut, contrôlé à l'œil : cratère centré avec dorsale au nord, massif à l'est. Image hors dépôt.
+  - Critères de PLAN.md :
+    - déterminisme (deux appels donnent des grilles identiques, une autre graine les change) ✔ ;
+    - interpolation bilinéaire exacte sur un plan incliné (5 000 points, erreur < 1e-6 m) ✔ ;
+    - NaN hors couverture ✔ ;
+    - cratère : fond < −400 m, rebord dans ]850, 950[ m sur 8 azimuts ✔ ;
+    - `MultiResDem` qui retombe sur le grossier ✔ ;
+    - en plus : grilles fine et grossière cohérentes (écart < 15 m sur 200 points) ✔.
+  - Écart : l'optimisation du bruit (table des nœuds au lieu d'un hachage par point) donne des valeurs **identiques bit à bit** au hachage point par point, vérifié par `test_value_noise_matches_pointwise_hash`.
+  - Commit : `ee22241` « pre-event: T-04 MNT synthétique et interface Dem ».
+  - Non testé : `RasterDem` (MNT réel, T-22) n'existe pas encore ; la convention de grille de `GridDem` (ligne 0 = y max) devra être confrontée à l'étiquette réelle, comme tu l'as noté dans M-008.
+  - Suite : T-06 (formules partagées, Python et JS) puis T-05 (masque d'horizon). Une DEMANDE-REVUE suivra chacune des deux.
+- Réponse attendue: non
+
+### M-013 · CODE→CHAT · QUESTION · réf: T-07 (Q-011) · priorité: NORMALE
+- Date (UTC): 2026-11-12T22:41Z
+- Statut: OUVERT
+- Réponse à: —
+- Objet: Où placer le site `demo-a` par rapport à son cratère synthétique ?
+- Corps:
+  - Contexte : PIPELINE § 1 décrit `demo-a` comme un « cratère de 8 km de diamètre, rebord à +900 m, dorsale au nord », sans dire où se trouve le site par rapport au cratère. Le terrain synthétique est centré sur le site.
+  - Constat : au centre, le fond est à ≈ −600 m et le rebord à +900 m à 4 km. L'horizon vaut donc ≈ atan(1500/4000) ≈ **20,6°** sur tout le tour.
+    Avec les éphémérides de démonstration (Soleil ≤ 1,54° + rayon, Terre ≤ 6,7° + rayon), **le Soleil et la Terre ne seraient jamais visibles** : tous les indicateurs de `demo-a` vaudraient 0 %.
+    C'est un cas réaliste (zone d'ombre permanente), mais il est peu parlant pour la démonstration, et T-11 attend « l'ombre du rebord du côté opposé au Soleil », ce qui suppose un Soleil au-dessus de l'horizon quelque part sur la grille.
+  - Options : (a) site **au centre** (ombre permanente, cas pédagogique) ; (b) site **sur le rebord**, par exemple à 4 km au sud du centre (horizon bas d'un côté, haut de l'autre) ; (c) site **à l'extérieur**, par exemple à 8 km.
+  - Valeur appliquée en attendant : (a), qui ne demande rien de plus. La position relative se réglera en T-07, dans `config/sites.json`, par un décalage entre le centre du cratère et le site, sans modifier `dem_synthetic.py` au-delà d'un paramètre de centre.
+  - Inscrite dans `DECISIONS.md` sous **Q-011**.
+- Réponse attendue: oui — choix (a), (b) ou (c) avant T-07.
+
 ## 6. Journal d'activité de CODE (ajout uniquement)
 
 Format d'une entrée :
@@ -459,6 +501,15 @@ Entrées spéciales : `DEBUT DE SESSION` (messages lus, tâche reprise) et `FIN 
 - Commit : `a574e2d` « pre-event: T-09 chargement, état, i18n, première page affichable »
 - Écarts / décisions provisoires : dossier par défaut `data/sample/` ; bandeau visible par défaut ; clics non testés (voir M-011).
 - Prochaine étape : T-04 (`dem.py`, `dem_synthetic.py`).
+
+#### 2026-11-12T22:41Z · T-04 · session S2
+- Actions : tests d'abord (`test_dem.py`, `test_dem_synthetic.py`, `distance_azimuth`), puis `dem.py`, `dem_synthetic.py` ; un test trop strict corrigé (tolérance d'azimut sur un point arrondi à 1e-6°, justifiée dans le code) ; profilage, puis bruit optimisé par table de nœuds (20 s → 13 s par grille) ; RAPPORT M-012 ; QUESTION M-013 (Q-011).
+- Fichiers : créés [`pipeline/dem.py`, `pipeline/dem_synthetic.py`, `pipeline/tests/test_dem.py`, `pipeline/tests/test_dem_synthetic.py`] · modifiés [`pipeline/geodesy.py`, `pipeline/tests/test_geodesy.py`, `DECISIONS.md` (Q-011), `STATUS.md`]
+- Commandes : `pytest pipeline/tests -q` → 104 passed · durées de génération 13,2 s et 13,8 s · aperçu visuel des 3 terrains
+- Tests : 104 Python + 33 JS passés / 0 échoué / 0 ignoré
+- Commit : `ee22241` « pre-event: T-04 MNT synthétique et interface Dem »
+- Écarts / décisions provisoires : site `demo-a` au centre du cratère en attendant Q-011 (M-013).
+- Prochaine étape : T-06 (formules partagées Python/JS), puis T-05.
 
 ## 7. Journal de CHAT (ajout uniquement)
 
