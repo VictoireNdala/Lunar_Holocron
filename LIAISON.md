@@ -97,16 +97,16 @@ Après la publication d'une **DEMANDE-REVUE bloquante**, CODE n'enchaîne pas su
 
 | Champ | Valeur |
 |---|---|
-| Dernière activité de CODE (UTC) | 2026-11-12T21:53Z |
+| Dernière activité de CODE (UTC) | 2026-11-12T21:57Z |
 | Session | S1 |
-| Tâche en cours | T-02 (constantes, géodésie, projection) |
-| État | T-00 et T-01 terminés |
-| Dernier commit | `955faab` « pre-event: T-01 schéma de données et validateur » |
-| Tests (dernière exécution) | pytest : 30 passés |
-| Dépôt propre (`git status`) | oui au commit `955faab` ; `LIAISON.md` modifié depuis (rapport M-004, commité avec T-02) |
-| Bloquants | Aucun côté code. Données NASA non reçues (J4). |
-| Messages CODE→CHAT en attente de réponse | 0 (M-003 : rapport, aucune réponse attendue) |
-| Messages CHAT→CODE non lus | 0 (M-001 et M-002 lus) |
+| Tâche en cours | T-03 (jeu d'exemple + constantes JS) |
+| État | T-00, T-01, T-02 terminés ; T-02 en attente de revue |
+| Dernier commit | `be5a9bc` « pre-event: T-02 constantes, géodésie, projection » |
+| Tests (dernière exécution) | pytest : 68 passés |
+| Dépôt propre (`git status`) | oui au commit `be5a9bc` ; `LIAISON.md` modifié depuis (M-006, commité avec T-03) |
+| Bloquants | T-05 et suivantes : attente de la revue M-006. Données NASA non reçues (J4). |
+| Messages CODE→CHAT en attente de réponse | 1 (M-006 DEMANDE-REVUE T-02) |
+| Messages CHAT→CODE non lus | 0 (M-005 lu) |
 
 ## 4. Boîte CHAT → CODE
 
@@ -174,7 +174,7 @@ Index : M-001 INSTRUCTION (démarrage) · M-002 INFO (fonctionnement du canal) �
 
 ## 5. Boîte CODE → CHAT
 
-Index : M-003 RAPPORT (T-00) · M-004 RAPPORT (T-01)
+Index : M-003 RAPPORT (T-00) · M-004 RAPPORT (T-01) · M-006 DEMANDE-REVUE (T-02)
 
 Ajouter les nouveaux messages à la suite, du plus ancien au plus récent.
 
@@ -213,6 +213,34 @@ Ajouter les nouveaux messages à la suite, du plus ancien au plus récent.
     `r_ref_m` imposé à 1 737 400 (`const`) ; `ephemeris.engine` limité à `demo-analytic` | `spice` ; champs inconnus acceptés (règle des versions mineures du § 8).
   - Non testé / non vérifié : `generated_utc` est un horodatage alors que la règle 5 de CLAUDE.md impose des sorties identiques octet pour octet. À régler en T-07/T-08 (date fixe ou tirée de la configuration).
 - Réponse attendue: non (relecture bienvenue des interprétations ci-dessus)
+
+### M-006 · CODE→CHAT · DEMANDE-REVUE · réf: T-02 · priorité: BLOQUANTE (pour T-05 et suivantes seulement)
+- Date (UTC): 2026-11-12T21:57Z
+- Statut: OUVERT
+- Réponse à: M-001, M-005
+- Objet: T-02 terminé — revue de la géodésie, de la projection et de la convention d'azimut
+- Corps:
+  - Fait : `pipeline/config.py`, `pipeline/geodesy.py`, `pipeline/projection.py` ; tests `test_geodesy.py`, `test_projection.py`.
+  - **Recalcul indépendant** des valeurs de `docs/TESTS-VALIDATION.md` §§ 1-3, par des méthodes **autres** que les formules documentées (script versionné : `tests/reference/recompute_docs_values.py`) :
+    - § 1 fraction visible : intégration numérique de l'aire du disque au-dessus de l'horizon (2 000 001 points) → écart max 4,9e-7 avec la doc (tolérance 1e-6) ;
+    - § 2 et § 2 bis élévation : géométrie vectorielle (observateur sur l'axe, point tourné de δ) → écart max 4,4e-7° ; sol lisse au premier pas de 20 m : -0,0003298° ;
+    - § 3 trajets : rotation 3D dans la base ENU → égalité aux 6 décimales (dont le passage par le pôle : -89, 180) ; 1° d'arc = 30 323,3504 m ;
+    - § 3 projection : construction géométrique (projection depuis le pôle Nord sur le plan tangent au pôle Sud) → égalité aux décimales données.
+    **Aucune divergence, donc aucune ALERTE.**
+  - Preuves : `.venv\Scripts\python.exe -m pytest pipeline/tests -q` → « 68 passed in 1.31s ». Durées pour 1e6 points : `destination` 0,163 s ; `point_elevation_deg` 0,045 s ; `lonlat_to_xy` 0,053 s ; `xy_to_lonlat` 0,086 s.
+  - Tests : 68 passés / 0 échoué / 0 ignoré (dont 38 nouveaux).
+  - Commit : `be5a9bc` « pre-event: T-02 constantes, géodésie, projection » (contient aussi tes modifications de documents annoncées dans M-005).
+  - **Points à relire en priorité**
+    1. Convention d'azimut : `az = atan2(v·east, v·north)` ramené dans [0, 360) ; tests N/E/S/O/NE et cas 360 − ε (`test_geodesy.py`). Un azimut qui s'arrondit à 360,0 est ramené à 0 (`wrap_az_deg`).
+    2. `destination` : formule d'ARCHITECTURE § 3, `sin(lat2)` borné à [-1, 1], longitude ramenée dans **[-180, 180)**. Le passage par le pôle renvoie donc -180 au lieu de +180 (test sur `|lon| = 180`).
+       Contrôle croisé sur 1 000 cas aléatoires contre une rotation 3D : écart < 1e-9°.
+    3. `enu_basis` : formules de PIPELINE § geodesy ; testé `east × north = up`, et le nord pointe vers +z, au pôle Sud comme ailleurs.
+    4. `PolarProjection` : `x = k0·ρ·sin(λ−λ0) + FE`, `y = k0·ρ·cos(λ−λ0) + FN`, `ρ = 2R·tan((φ+90°)/2)`. Seul le pôle Sud est traité. Les paramètres `k0`, FE et FN sont **mes ajouts**, pour lire plus tard l'étiquette du MNT réel. Leur sens exact dans les étiquettes LOLA reste **à vérifier** (BRANCHEMENT § 2.3).
+    5. `point_elevation_deg` (formule d'élévation d'ARCHITECTURE § 3) est déjà dans `geodesy.py` et testée avec les valeurs du § 2 et du § 2 bis. Le masque d'horizon (T-05) n'aura qu'à prendre le maximum.
+    6. Constantes : rayon nominal du Soleil 695 700 km (UAI 2015 B3) et rayon moyen de la Terre 6 371,0 km, **écrits de mémoire** et repris de PIPELINE.md, signalés comme tels dans `SOURCES.md`.
+  - Non testé / non vérifié : convention de projection d'un MNT réel (aucune donnée) ; comportement exactement au pôle (exclu par D-012).
+  - Suite : je poursuis **T-03** (indépendant de cette revue). Je ne commence pas T-04/T-05 avant ta réponse.
+- Réponse attendue: oui — relecture (points 1 à 6), accord ou corrections.
 
 ## 6. Journal d'activité de CODE (ajout uniquement)
 
@@ -255,6 +283,15 @@ Entrées spéciales : `DEBUT DE SESSION` (messages lus, tâche reprise) et `FIN 
 - Commit : `955faab` « pre-event: T-01 schéma de données et validateur »
 - Écarts / décisions provisoires : recalcul des KPI reporté à T-07 ; bornes de latitude incluses (voir M-004).
 - Prochaine étape : T-02 (constantes, géodésie, projection), avec recalcul indépendant de TESTS-VALIDATION § 3.
+
+#### 2026-11-12T21:57Z · T-02 · session S1
+- Actions : M-005 lu (statut `LU`), modifications de documents de CHAT relues (`git diff`) ; recalcul indépendant de TESTS-VALIDATION §§ 1-3 (conforme) ; tests puis code de T-02 ; DEMANDE-REVUE M-006.
+- Fichiers : créés [`pipeline/config.py`, `pipeline/geodesy.py`, `pipeline/projection.py`, `pipeline/tests/test_geodesy.py`, `pipeline/tests/test_projection.py`, `tests/reference/recompute_docs_values.py`] · modifiés [`STATUS.md`, `SOURCES.md`, `LIAISON.md`]
+- Commandes : `recompute_docs_values.py` → tous les écarts sous la tolérance · `pytest pipeline/tests -q` → 68 passed · durées 1e6 points : 0,05 à 0,16 s
+- Tests : 68 passés / 0 échoué / 0 ignoré
+- Commit : `be5a9bc` « pre-event: T-02 constantes, géodésie, projection »
+- Écarts / décisions provisoires : `point_elevation_deg` ajouté dès T-02 (prévu pour T-05) ; paramètres k0/FE/FN de `PolarProjection` ajoutés (à vérifier sur l'étiquette réelle).
+- Prochaine étape : T-03 (constantes JS, jeu d'exemple, `tests/golden/visible_fraction.json`).
 
 ## 7. Journal de CHAT (ajout uniquement)
 

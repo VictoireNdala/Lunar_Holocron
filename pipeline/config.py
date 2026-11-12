@@ -31,3 +31,10 @@ LAT_MIN_DEG: float = -89.99
 LAT_MAX_DEG: float = 89.99
 # Hauteur de l'œil par défaut : 2,0 m. DÉCISION PROVISOIRE (D-008, Q-007).
 DEFAULT_OBSERVER_HEIGHT_M: float = 2.0
+
+# --- Seuils de visibilité (ARCHITECTURE § 2, D-004) ---------------------------------------------
+# strict : f >= 0,5 (centre du disque au-dessus de l'horizon) ; any : f > 0 (une partie du disque visible).
+STRICT_MIN_FRACTION: float = 0.5
+THRESHOLD_MODES: tuple[str, ...] = ("strict", "any")
+# Seuil par défaut : strict (D-004, à confirmer Q-006).
+DEFAULT_THRESHOLD: str = "strict"

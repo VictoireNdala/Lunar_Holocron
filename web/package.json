@@ -1,0 +1,6 @@
+{
+  "name": "lunar-holocron-web",
+  "private": true,
+  "type": "module",
+  "description": "Aucune dépendance, aucune étape de compilation. Ce fichier sert seulement à déclarer les modules ES pour node --test."
+}

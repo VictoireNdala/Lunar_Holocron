@@ -1,0 +1,19 @@
+{
+  "description": "Fraction visible d'un disque de rayon angulaire radius_deg au-dessus d'un horizon plat (ARCHITECTURE § 3). Lu par pytest et par node --test.",
+  "source": "docs/TESTS-VALIDATION.md § 1 ; recalculé indépendamment par intégration numérique (tests/reference/recompute_docs_values.py, écart max 4,9e-7).",
+  "radius_deg": 0.27,
+  "tolerance_abs": 1e-6,
+  "cases": [
+    { "el_deg": 0.27,    "horizon_deg": 0.0, "f": 1.000000, "strict": true,  "any": true,  "note": "disque entièrement au-dessus" },
+    { "el_deg": 0.135,   "horizon_deg": 0.0, "f": 0.804499, "strict": true,  "any": true,  "note": "" },
+    { "el_deg": 0.0675,  "horizon_deg": 0.0, "f": 0.657481, "strict": true,  "any": true,  "note": "" },
+    { "el_deg": 0.0,     "horizon_deg": 0.0, "f": 0.500000, "strict": true,  "any": true,  "note": "centre exactement sur l'horizon" },
+    { "el_deg": -0.0675, "horizon_deg": 0.0, "f": 0.342519, "strict": false, "any": true,  "note": "" },
+    { "el_deg": -0.135,  "horizon_deg": 0.0, "f": 0.195501, "strict": false, "any": true,  "note": "" },
+    { "el_deg": -0.27,   "horizon_deg": 0.0, "f": 0.000000, "strict": false, "any": false, "note": "disque tangent, entièrement sous l'horizon" },
+    { "el_deg": 0.5,     "horizon_deg": 0.0, "f": 1.000000, "strict": true,  "any": true,  "note": "saturation" },
+    { "el_deg": -0.5,    "horizon_deg": 0.0, "f": 0.000000, "strict": false, "any": false, "note": "saturation" },
+    { "el_deg": 3.135,   "horizon_deg": 3.0, "f": 0.804499, "strict": true,  "any": true,  "note": "même d = 0,135 avec un horizon non nul" },
+    { "el_deg": -1.135,  "horizon_deg": -1.0, "f": 0.195501, "strict": false, "any": true, "note": "même d = -0,135 avec un horizon négatif" }
+  ]
+}
