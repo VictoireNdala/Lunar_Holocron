@@ -1,0 +1,29 @@
+# Données brutes et caches (jamais versionnés, voir CLAUDE.md § 7)
+data/raw/
+data/cache/
+
+# Gros fichiers de données (MNT, noyaux SPICE)
+*.IMG
+*.img
+*.bsp
+*.bpc
+*.tif
+*.tiff
+
+# Environnements et dépendances
+.venv/
+node_modules/
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Playwright
+test-results/
+playwright-report/
+
+# Éditeurs et système
+.vscode/
+.DS_Store
+Thumbs.db

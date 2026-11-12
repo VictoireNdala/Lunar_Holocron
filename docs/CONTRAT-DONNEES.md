@@ -1,0 +1,186 @@
+# Contrat de données (version 1.0)
+
+C'est la **seule interface** entre le pipeline et l'application. Toute modification passe par le processus décrit à la fin.
+Le schéma exécutable est `pipeline/schema/site.schema.json` (à écrire en T-01 d'après ce document). Ce document fait foi en cas de doute.
+
+## 1. Fichiers produits (dans `web/data/`)
+
+| Fichier | Rôle | Taille visée |
+|---|---|---|
+| `index.json` | Liste des sites disponibles | < 10 Ko |
+| `sites/<id>.json` | Horizon, séries Soleil/Terre, indicateurs d'un site | < 700 Ko compressé (≈ 2 Mo brut) |
+| `terrain/<id>.json` | Métadonnées de la grille de terrain 3D | < 5 Ko |
+| `terrain/<id>.bin` | Hauteurs de la grille, `uint16` | 257² × 2 o ≈ 132 Ko |
+
+`<id>` : minuscules, chiffres et tirets (`demo-a`, `shackleton`). Identique dans les trois fichiers et dans l'index.
+
+## 2. `index.json`
+
+```json
+{
+  "schema_version": "1.0",
+  "generated_utc": "2026-11-12T21:00:00Z",
+  "synthetic": true,
+  "sites": [
+    {
+      "id": "demo-a",
+      "name": { "fr": "Site de démonstration A", "en": "Demo site A" },
+      "lat_deg": -89.0,
+      "lon_deg": 0.0,
+      "synthetic": true,
+      "verified": true,
+      "site_file": "sites/demo-a.json",
+      "terrain_file": "terrain/demo-a.json"
+    }
+  ]
+}
+```
+- `synthetic` (racine) vaut `true` si **au moins un** site est synthétique.
+- `verified` : `false` si les coordonnées ont été écrites de mémoire et pas encore vérifiées dans une source.
+
+## 3. `sites/<id>.json`
+
+```json
+{
+  "schema_version": "1.0",
+  "id": "demo-a",
+  "name": { "fr": "...", "en": "..." },
+  "synthetic": true,
+
+  "location": {
+    "lat_deg": -89.0,
+    "lon_deg": 0.0,
+    "ground_height_m": 0.0,
+    "observer_height_m": 2.0,
+    "frame": "MOON_ME",
+    "r_ref_m": 1737400.0
+  },
+
+  "provenance": {
+    "dem": { "product": "SYNTHETIC", "resolution_m": 20.0, "source": null, "license": "n/a" },
+    "ephemeris": { "engine": "demo-analytic", "kernels": [], "abcorr": null },
+    "pipeline_version": "0.1.0",
+    "generated_utc": "2026-11-12T21:00:00Z"
+  },
+
+  "horizon": {
+    "az_step_deg": 1.0,
+    "elev_deg": [ /* 360 flottants, index i = azimut i degrés */ ],
+    "truncated": [ /* 360 booléens : le rayon a quitté la zone couverte par le MNT avant la distance maximale */ ],
+    "max_distance_km": 150.0
+  },
+
+  "time": { "start_utc": "2026-01-01T00:00:00Z", "step_s": 3600, "count": 43824 },
+
+  "bodies": {
+    "sun":   { "az_mdeg": [ /* count entiers */ ], "el_mdeg": [ ], "radius_mdeg": [ ] },
+    "earth": { "az_mdeg": [ ], "el_mdeg": [ ], "radius_mdeg": [ ] }
+  },
+
+  "kpis": { /* § 4 */ },
+  "monthly": [ /* § 5 */ ]
+}
+```
+
+### Règles
+
+- `time.count` = nombre d'échantillons ; **toutes** les listes de `bodies` ont exactement `count` éléments. Pas de valeur manquante.
+- Période par défaut : `2026-01-01T00:00:00Z` à `2030-12-31T23:00:00Z` inclus, pas de 3600 s, soit **43 824** échantillons (2028 est bissextile).
+- Séries en **millidegrés entiers** : `az_mdeg` dans [0, 360000), `el_mdeg` dans [-90000, 90000], `radius_mdeg` > 0.
+  Le rayon est en millidegrés car 0,01° donnerait une erreur de 3,7 % sur le rayon du Soleil (≈ 0,266°).
+- `horizon.elev_deg` : degrés, arrondis à 0,01. `horizon.truncated[i] = true` signale que le masque à cet azimut est un **minorant**.
+  L'interface affiche un avertissement si ce drapeau est vrai à l'azimut d'un corps.
+- Le tableau `horizon.elev_deg` est **indépendant du temps** (relief fixe).
+- Les noms `name` contiennent au moins `fr` et `en` ; `sw` (swahili) est optionnel.
+
+### Lecture côté application
+
+Pour un instant `t` (ms UTC) : `i = (t - start) / (step_s * 1000)` ; interpolation linéaire entre `floor(i)` et `ceil(i)` ;
+pour l'azimut, interpoler l'angle **déroulé** (ajouter ou retrancher 360000 mdeg si l'écart dépasse 180000). Hors période : ne pas extrapoler,
+borner et signaler « date hors de la période couverte ».
+
+## 4. `kpis`
+
+Calculés par `pipeline/kpi.py` sur **toute la période** à partir des fractions visibles aux 43 824 échantillons.
+
+```json
+"kpis": {
+  "window": { "start_utc": "...", "end_utc": "..." },
+  "sun": {
+    "strict": { "visible_pct": 0.0, "longest_gap_h": 0.0, "n_gaps": 0 },
+    "any":    { "visible_pct": 0.0, "longest_gap_h": 0.0, "n_gaps": 0 }
+  },
+  "earth": {
+    "strict": { "visible_pct": 0.0, "longest_gap_h": 0.0, "n_gaps": 0 },
+    "any":    { "visible_pct": 0.0, "longest_gap_h": 0.0, "n_gaps": 0 }
+  },
+  "both": {
+    "strict": { "visible_pct": 0.0, "longest_gap_h": 0.0, "n_gaps": 0 },
+    "any":    { "visible_pct": 0.0, "longest_gap_h": 0.0, "n_gaps": 0 }
+  },
+  "sun_el_deg":   { "min": 0.0, "max": 0.0 },
+  "earth_el_deg": { "min": 0.0, "max": 0.0 }
+}
+```
+
+Définitions :
+- `visible_pct` = 100 × (nombre d'échantillons visibles) / `count`.
+- « visible » : seuil **strict** ⇒ `f ≥ 0,5` ; seuil **any** (optimiste) ⇒ `f > 0` (formules : `ARCHITECTURE.md` § 3).
+- `both` : Soleil **et** Terre visibles au même échantillon, avec le même seuil.
+- **Intervalle d'absence** (« gap ») : suite maximale d'échantillons consécutifs **non visibles**.
+  `longest_gap_h` = durée du plus long intervalle en heures (nombre d'échantillons × 1 h). `n_gaps` = nombre d'intervalles.
+  Un intervalle qui touche le début ou la fin de la période est compté (il est tronqué : le préciser dans la page méthode).
+- `sun_el_deg` / `earth_el_deg` : min et max de l'élévation du centre sur la période, en degrés.
+
+## 5. `monthly`
+
+Liste triée par mois, une entrée par mois civil UTC couvert (60 entrées pour 2026-2030) :
+
+```json
+{ "ym": "2026-11", "sun_strict_pct": 0.0, "earth_strict_pct": 0.0, "both_strict_pct": 0.0 }
+```
+Pourcentage sur les échantillons du mois. Sert à la carte de chaleur et au conseil « et si on décale ? ».
+
+## 6. `terrain/<id>.json` et `.bin`
+
+```json
+{
+  "schema_version": "1.0",
+  "id": "demo-a",
+  "synthetic": true,
+  "center": { "lat_deg": -89.0, "lon_deg": 0.0 },
+  "grid": { "n": 257, "size_m": 20000.0, "spacing_m": 78.125 },
+  "frame": "local-enu",
+  "z": {
+    "encoding": "uint16-linear",
+    "min_m": -250.0,
+    "max_m": 1800.0,
+    "file": "demo-a.bin",
+    "byte_order": "little",
+    "row_order": "north-to-south",
+    "col_order": "west-to-east"
+  }
+}
+```
+- Grille carrée de `n × n` points, centrée sur le site, côté `size_m`. Ligne 0 = nord, colonne 0 = ouest.
+- `spacing_m = size_m / (n - 1)`.
+- Valeur décodée : `z_m = min_m + (v / 65535) × (max_m - min_m)`.
+- `z_m` est la **hauteur verticale locale** du point par rapport au plan tangent au site, **courbure incluse** :
+  `z = (R_REF + h) · cos(d / R_REF) − (R_REF + h_site)` avec `d` = distance au sol depuis le site et `h` la hauteur du MNT en ce point.
+  (À 10 km du site la courbure vaut ≈ 29 m : indispensable de l'inclure.)
+- Position horizontale du sommet : `(E, N)` de la grille.
+
+## 7. Validations obligatoires (pipeline `validate` et chargement JavaScript)
+
+1. `schema_version` : le **majeur** doit être connu (`1`). Sinon l'interface affiche une erreur claire et ne plante pas.
+2. Longueurs : `horizon.elev_deg` et `horizon.truncated` = 360 ; chaque série de `bodies` = `time.count`.
+3. Plages : azimuts dans [0, 360000), élévations dans [-90000, 90000], rayons > 0, `visible_pct` dans [0, 100].
+4. Cohérence : `index.json` ne référence que des fichiers existants ; `id` identique partout.
+5. `synthetic` : si `provenance.dem.product == "SYNTHETIC"` ou `provenance.ephemeris.engine == "demo-analytic"`, alors `synthetic` **doit** être `true`.
+6. Les indicateurs `kpis` sont **recalculables** à partir des séries : `validate` les recalcule et compare (tolérance 1e-9).
+
+## 8. Évolution du contrat
+
+- Ajouter un champ **optionnel** : version mineure (`1.1`), l'interface ignore les champs inconnus.
+- Modifier ou retirer un champ existant : version majeure (`2.0`).
+- Dans les deux cas, dans le **même commit** : ce document, le schéma, `export.py`, `data.js`, les tests, et une ligne dans `DECISIONS.md`.

@@ -1,0 +1,4 @@
+# Fins de ligne LF partout : les sorties du pipeline doivent rester identiques octet pour octet (CLAUDE.md § 2.5).
+* text=auto eol=lf
+*.bin binary
+*.png binary
