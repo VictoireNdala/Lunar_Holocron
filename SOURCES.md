@@ -43,10 +43,9 @@ On reprend des **idées de fonctionnalité**, pas du code ni des textes. Tout é
 
 Environnement de construction : Python 3.12.8, Node v24.11.1, Git 2.54.0 (Windows 11), relevés le 2026-11-12.
 
-Licence du projet : **Apache 2.0** (`LICENSE`). Le texte de `LICENSE` est la copie **intégrale et non modifiée** des conditions Apache 2.0
-(« TERMS AND CONDITIONS … END OF TERMS AND CONDITIONS », sans l'annexe facultative), reprise du fichier `pip/_vendor/packaging/LICENSE.APACHE`
-livré avec pip (SHA-256 `0D542E0C8804E39AA7F37EB00DA5A762149DC682D7829451287E11B938E94594`). Texte de référence : http://www.apache.org/licenses/LICENSE-2.0
-(à comparer avant publication). Aucune ligne de copyright n'a été ajoutée : le titulaire est à fixer par l'équipe.
+Licence du projet : **Apache 2.0** (`LICENSE`). Depuis le 2026-11-12, `LICENSE` est le texte créé par GitHub à l'ouverture du dépôt
+https://github.com/VictoireNdala/Lunar_Holocron (conditions + annexe facultative). Les conditions sont **identiques** à la copie livrée avec pip utilisée auparavant
+(`git diff` : seules différences, une ligne vide initiale et l'annexe). Les champs `[yyyy] [name of copyright owner]` de l'annexe restent vides : titulaire à fixer (`Q-010`).
 
 ## 4. Usage de l'IA (transparence)
 
