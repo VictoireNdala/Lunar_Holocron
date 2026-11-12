@@ -4,7 +4,7 @@
 
 **Dernière mise à jour** : 2026-11-12 (T-09 terminé ; T-02 accepté par CHAT, M-008)
 **Phase** : J1 (pipeline) et J2 (interface) en parallèle
-**Prochaine tâche** : T-04 (MNT synthétique), puis T-06 (partie JS) → T-10, et T-05 (M-010).
+**Prochaine tâche** : T-05 (masque d'horizon) et T-06 (formules partagées Python/JS), puis T-10 (M-010).
 **Page affichable** : **oui** — `py -m http.server 8000 -d web`, puis ouvrir http://localhost:8000 (jeu d'exemple, aucun relief dessiné). Capture : `docs/captures/t09-page-fr.png`.
 
 ## Tableau d'avancement
@@ -15,7 +15,7 @@
 | T-01 | Schéma de données et validateur | terminé (recalcul des KPI reporté à T-07) | `pytest pipeline/tests -q` → 30 passed ; site complet de 43 824 échantillons validé en 1,23 s |
 | T-02 | Constantes, géodésie, projection | terminé — **revue CHAT demandée (M-006)** | `pytest pipeline/tests -q` → 68 passed ; 1e6 points : `destination` 0,16 s, `lonlat_to_xy` 0,05 s, `xy_to_lonlat` 0,09 s ; recalcul indépendant de TESTS-VALIDATION §§ 1-3 conforme |
 | T-03 | Jeu d'exemple fait main + constantes JS | terminé | `py -m pipeline.validate web/data/sample` → OK ; `pytest pipeline/tests -q` → 85 passed ; `node --test "web/tests/**/*.test.js"` → 3 pass |
-| T-04 | MNT synthétique et interface `Dem` | à faire | |
+| T-04 | MNT synthétique et interface `Dem` | terminé (question Q-011 ouverte) | `pytest pipeline/tests -q` → 104 passed ; grille 20 m ±25 km : 13,2 s ; 120 m ±155 km : 13,8 s |
 | T-05 | Masque d'horizon | à faire | |
 | T-06 | Visibilité partagée et indicateurs | à faire | |
 | T-07 | Éphémérides de démonstration et export | à faire | |
@@ -39,6 +39,7 @@
 ## À arbitrer par l'humain
 
 Voir `DECISIONS.md` § Questions ouvertes : `Q-001` (code avant événement) et `Q-002` (usage de l'IA) sont à lever dès la lecture du guide du 13 novembre.
+`Q-010` (titulaire du copyright), `Q-011` (position du site `demo-a` par rapport à son cratère, à trancher avant T-07).
 
 ## Revue (écrite par l'agent vérificateur)
 
@@ -81,3 +82,7 @@ Résumé par jour seulement. Le **journal détaillé et horodaté** (actions, co
   `?data=data/absent/` → « Fichier introuvable : data/absent/index.json (HTTP 404) » ; date hors période → avertissement et valeurs à la borne. Journal du serveur : seules des adresses locales demandées.
   **Non testé** : les clics (boutons ±1 h / ±1 jour, FR/EN, choix du site) dans un navigateur réel ; seul le chargement via le fragment d'URL l'a été. Le test de fumée Playwright est prévu en T-15.
   Choix : dossier de données par défaut `data/sample/` (à basculer sur `data/` en T-08) ; `?data=chemin/` permet d'en choisir un autre (chemin relatif validé).
+- T-04 : `pipeline/dem.py` (`Dem`, `GridDem` : grille du plan stéréographique polaire avec interpolation bilinéaire, `MultiResDem`), `pipeline/dem_synthetic.py` (`crater`, `massif`, `flat`, bruit de valeur fractal déterministe),
+  `geodesy.distance_azimuth` (problème inverse, testé par aller-retour avec `destination`). 21 tests nouveaux (`test_dem.py`, `test_dem_synthetic.py`, 2 dans `test_geodesy.py`).
+  Aperçu visuel contrôlé : cratère centré avec dorsale au nord, massif à l'est, terrain plat bruité (±33 m). Optimisation du bruit par table de nœuds : 20 s → 13 s par grille, valeurs identiques (test).
+  Question ouverte **Q-011** : position du site `demo-a` (au centre, l'horizon vaut ≈ 20,6° et rien n'est jamais visible).

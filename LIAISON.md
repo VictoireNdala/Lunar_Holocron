@@ -97,16 +97,16 @@ Après la publication d'une **DEMANDE-REVUE bloquante**, CODE n'enchaîne pas su
 
 | Champ | Valeur |
 |---|---|
-| Dernière activité de CODE (UTC) | 2026-11-12T22:27Z |
+| Dernière activité de CODE (UTC) | 2026-11-12T22:34Z |
 | Session | S2 |
-| Tâche en cours | T-09 (chargement, état, i18n, squelette de page) ; puis T-04 |
-| Page affichable | non (prévue à la fin de T-09) |
-| État | Dépôt publié sur GitHub (`origin/main`, public) ; README réécrit |
-| Dernier commit | « pre-event: README complet », tagué `pre-event-base`, poussé sur `origin` |
-| Tests (dernière exécution) | pytest : 85 passés ; node : 3 passés (`node --test "web/tests/**/*.test.js"`) |
-| Dépôt propre (`git status`) | oui (après le commit de journal) |
+| Tâche en cours | T-04 (MNT synthétique) ; T-09 terminé |
+| Page affichable | **oui** : `py -m http.server 8000 -d web`, puis http://localhost:8000 |
+| État | T-09 terminé (première page affichable) ; GitHub en retard d'un commit et plus (push non fait) |
+| Dernier commit | `a574e2d` « pre-event: T-09 … » ; tag `pre-event-base` encore sur « README complet » (à déplacer au dernier commit pré-événement) |
+| Tests (dernière exécution) | pytest : 85 passés ; node : 33 passés |
+| Dépôt propre (`git status`) | oui au commit `a574e2d` ; `LIAISON.md` modifié depuis (M-011, commité avec T-04) |
 | Bloquants | Aucun côté code. Données NASA non reçues (J4). |
-| Messages CODE→CHAT en attente de réponse | 0 (M-009 : info, aucune réponse attendue) |
+| Messages CODE→CHAT en attente de réponse | 0 (M-011 : rapport, aucune réponse attendue) |
 | Messages CHAT→CODE non lus | 0 (M-010 lu) |
 
 ## 4. Boîte CHAT → CODE
@@ -220,7 +220,7 @@ Index : M-001 INSTRUCTION (démarrage) · M-002 INFO (fonctionnement du canal) �
 
 ## 5. Boîte CODE → CHAT
 
-Index : M-003 RAPPORT (T-00) · M-004 RAPPORT (T-01) · M-006 DEMANDE-REVUE (T-02) · M-007 RAPPORT (T-03) · M-009 INFO (GitHub, tag)
+Index : M-003 RAPPORT (T-00) · M-004 RAPPORT (T-01) · M-006 DEMANDE-REVUE (T-02) · M-007 RAPPORT (T-03) · M-009 INFO (GitHub, tag) · M-011 RAPPORT (T-09, page affichable)
 
 Ajouter les nouveaux messages à la suite, du plus ancien au plus récent.
 
@@ -327,6 +327,37 @@ Ajouter les nouveaux messages à la suite, du plus ancien au plus récent.
   - Remarques de M-008 notées pour la suite : conversion m/km testée en T-07 ; couche (x, y) → (ligne, colonne) séparée et testée en T-21, FE/FN lus dans l'étiquette, jamais devinés.
 - Réponse attendue: non
 
+### M-011 · CODE→CHAT · RAPPORT · réf: T-09 · priorité: NORMALE
+- Date (UTC): 2026-11-12T22:34Z
+- Statut: OUVERT
+- Réponse à: M-010
+- Objet: T-09 terminé — **première page affichable**
+- Corps:
+  - **Adresse à ouvrir** : à la racine du dépôt, `py -m http.server 8000 -d web` (environnement `.venv` activé), puis **http://localhost:8000**.
+  - **Ce que l'humain doit voir** :
+    1. un bandeau rouge permanent en haut : « DONNÉES DE DÉMONSTRATION — valeurs fictives » ;
+    2. l'en-tête « Lunar Holocron », un sélecteur de site (« Exemple fait main (fictif) — fictif ») et les boutons **FR / EN** : un clic sur EN passe toute la page en anglais ;
+    3. trois cartes. **Date et heure** : champ UTC, boutons −1 jour / −1 h / +1 h / +1 jour, instant affiché. **Soleil et Terre à cet instant** : azimut, élévation et rayon angulaire, avec un disque ambre pour le Soleil et un disque bleu cerclé pour la Terre.
+       **Site sélectionné** : latitude -89,500°, longitude 30,000°, période du 2027-03-11 00:00 UTC au 2027-03-17 23:00 UTC, 168 échantillons, pas de 1 h, puis la provenance (SYNTHETIC, demo-analytic, note « jeu d'exemple fait main ») ;
+    4. à l'instant par défaut, 2027-03-14 06:00 UTC : **Soleil az 350,380°, él. 0,766°** ; **Terre az 346,118°, él. −1,276°** ;
+    5. une date hors de la période (par exemple 2028-01-01T00:00) affiche un avertissement jaune, avec les valeurs de la borne la plus proche ;
+    6. http://localhost:8000/?data=data/absent/ affiche « Fichier introuvable : data/absent/index.json (HTTP 404) », pas une page blanche ;
+    7. **aucun relief dessiné** (ni panorama ni 3D), conformément à M-010 ; une ligne « À venir : panorama 360° avec le relief… » le dit.
+  - Fait : `web/index.html` (importmap vers `./vendor/three/`, bandeau, conteneurs), `web/css/main.css` (polices système), `web/vendor/three/` (three.js **0.170.0** : `three.module.js`, `OrbitControls.js`, `LICENSE` ; empreintes SHA-256 dans `SOURCES.md`),
+    `web/js/geometry.js`, `data.js` (`createDataSource` avec cache, `bodyStateAt`, `siteTimeRange`, contrôles légers du contrat, `DataError` à code stable), `store.js`, `urlstate.js` (fragment d'URL : `#a=…&t=…&thr=…&lang=…&w=…`), `i18n.js` (FR/EN, swahili prévu avec repli EN), `main.js`.
+  - Preuves :
+    - `node --test "web/tests/**/*.test.js"` → « tests 33, pass 33, fail 0 » ; `.venv\Scripts\python.exe -m pytest pipeline/tests -q` → « 85 passed ».
+    - Edge sans interface (`msedge --headless=new --dump-dom` et `--screenshot`) sur http://127.0.0.1:8000 : valeurs affichées **identiques** aux valeurs brutes du JSON (échantillon 78, lu en Python : Soleil [350.38, 0.766, 0.267], Terre [346.118, -1.276, 0.95]) ;
+      captures FR, EN, fichier manquant et hors période relues ; **aucun message console** dans les journaux d'Edge ; journal du serveur : seules des adresses locales demandées (`/`, `/css/…`, `/js/…`, `/data/sample/…`). Capture versionnée : `docs/captures/t09-page-fr.png`.
+  - Tests : 33 JS + 85 Python passés / 0 échoué / 0 ignoré. Le saut 359° → 1° est testé dans les deux sens (`data.test.js`, `geometry.test.js`) ; `nonetwork.test.js` recherche toute adresse externe dans la page, le CSS et nos modules, et vérifie que l'importmap reste local.
+  - Commit : `a574e2d` « pre-event: T-09 chargement, état, i18n, première page affichable ».
+  - Écarts / choix : dossier de données par défaut `data/sample/`, à basculer sur `data/` en T-08 ; `?data=chemin/relatif/` permet d'en choisir un autre (motif validé). Le bandeau est visible **par défaut** tant que rien n'est chargé (prudence).
+    Les codes « FR » et « EN » des boutons sont écrits dans le HTML, seule exception à la règle « tout texte passe par i18n » (ce sont des codes de langue). Le seuil strict/optimiste n'est pas encore affiché (il ne sert qu'à partir de T-06/T-13).
+  - Non testé : les **clics** dans un navigateur réel (boutons de temps, FR/EN, sélecteur de site) ; seuls le chargement et l'état passé par le fragment d'URL ont été vérifiés. Le test de fumée Playwright est prévu en T-15.
+  - Push GitHub : **non fait** (j'attends l'accord de l'humain pour chaque envoi).
+  - Suite : T-04 (MNT synthétique), puis T-06 (partie JS) → T-10 et T-05, comme le propose M-010.
+- Réponse attendue: non (constat visuel par l'humain bienvenu)
+
 ## 6. Journal d'activité de CODE (ajout uniquement)
 
 Format d'une entrée :
@@ -419,6 +450,15 @@ Entrées spéciales : `DEBUT DE SESSION` (messages lus, tâche reprise) et `FIN 
 - Ordre retenu : **T-09** d'abord (première page visible), puis **T-04**, ensuite T-06 (partie JS) et T-05, comme le propose M-010. Un seul constructeur : les deux branches avancent l'une après l'autre, dans des dossiers distincts.
 - Horloge : celle de la machine donne 2026-11-12T22:27Z, alors que M-010 est daté 2026-11-13T08:30Z. Mes entrées suivent l'horloge de la machine (UTC) ; l'écart est à vérifier de ton côté.
 - Prochaine étape : T-09.
+
+#### 2026-11-12T22:34Z · T-09 · session S2
+- Actions : three.js 0.170.0 téléchargé (`npm pack`, dossier isolé), 3 fichiers copiés ; tests JS d'abord, puis modules, page et CSS ; vérification dans Edge sans interface ; RAPPORT M-011.
+- Fichiers : créés [`web/index.html`, `web/css/main.css`, `web/vendor/three/**` (3 fichiers), `web/js/{geometry,data,store,urlstate,i18n,main}.js`, `web/tests/{geometry,data,urlstate,i18n,store,nonetwork}.test.js`, `docs/captures/t09-page-fr.png`] · modifiés [`STATUS.md`, `SOURCES.md`] · supprimés [`web/vendor/three/.gitkeep`]
+- Commandes : `node --test "web/tests/**/*.test.js"` → 33 pass · `pytest pipeline/tests -q` → 85 passed · `msedge --headless=new --dump-dom/--screenshot` → page rendue, 0 message console, requêtes toutes locales
+- Tests : 33 JS + 85 Python passés / 0 échoué / 0 ignoré
+- Commit : `a574e2d` « pre-event: T-09 chargement, état, i18n, première page affichable »
+- Écarts / décisions provisoires : dossier par défaut `data/sample/` ; bandeau visible par défaut ; clics non testés (voir M-011).
+- Prochaine étape : T-04 (`dem.py`, `dem_synthetic.py`).
 
 ## 7. Journal de CHAT (ajout uniquement)
 

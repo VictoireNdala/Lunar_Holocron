@@ -139,6 +139,34 @@ def test_point_elevation_observer_height() -> None:
     assert geodesy.point_elevation_deg(100.0, 1000.0, 2.0) < geodesy.point_elevation_deg(100.0, 1000.0, 0.0)
 
 
+def test_distance_azimuth_inverts_destination() -> None:
+    """distance_azimuth est l'inverse de destination (1000 cas aléatoires, graine fixe)."""
+    rng = np.random.default_rng(99)
+    lat = rng.uniform(-89.99, -80.0, 1000)
+    lon = rng.uniform(-180.0, 180.0, 1000)
+    az = rng.uniform(0.0, 360.0, 1000)
+    dist = rng.uniform(1.0, 200_000.0, 1000)
+    lat2, lon2 = geodesy.destination(lat, lon, az, dist)
+    d_back, az_back = geodesy.distance_azimuth(lat, lon, lat2, lon2)
+    assert np.max(np.abs(d_back - dist)) < 1e-6
+    daz = (az_back - az + 180.0) % 360.0 - 180.0
+    assert np.max(np.abs(daz)) < 1e-6
+
+
+def test_distance_azimuth_reference_cases() -> None:
+    """Depuis (-89, 0) : 1° d'arc vers le nord, et le point (-88.585822, 45.004364) à l'est."""
+    d, az = geodesy.distance_azimuth(-89.0, 0.0, -88.0, 0.0)
+    assert d == pytest.approx(ARC_1DEG_M, abs=1e-6)
+    assert az == pytest.approx(0.0, abs=1e-9)
+    d, az = geodesy.distance_azimuth(-89.0, 0.0, -88.585822, 45.004364)
+    assert d == pytest.approx(ARC_1DEG_M, abs=0.1)
+    # Point de référence arrondi à 1e-6° : à 1° de distance, l'azimut en hérite une erreur ≈ 3e-5°.
+    # L'inversion exacte est vérifiée par test_distance_azimuth_inverts_destination.
+    assert az == pytest.approx(90.0, abs=1e-4)
+    d, _ = geodesy.distance_azimuth(-88.3, 12.0, -88.3, 12.0)
+    assert d == 0.0
+
+
 def test_vectorized_one_million_points_under_one_second() -> None:
     """Un appel sur 1 million de points prend moins d'une seconde."""
     rng = np.random.default_rng(7)

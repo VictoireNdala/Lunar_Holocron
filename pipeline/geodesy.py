@@ -41,6 +41,18 @@ def destination(lat_deg: ArrayLike, lon_deg: ArrayLike, az_deg: ArrayLike, dist_
     return np.degrees(lat2), wrap_lon_deg(np.degrees(lon2))
 
 
+def distance_azimuth(lat1_deg: ArrayLike, lon1_deg: ArrayLike, lat2_deg: ArrayLike, lon2_deg: ArrayLike,
+                     radius_m: float = R_REF_M) -> tuple[FloatArray, FloatArray]:
+    """Problème inverse : distance au sol (m, haversine) et azimut initial [0, 360) du point 1 vers le point 2."""
+    lat1 = np.radians(np.asarray(lat1_deg, dtype=np.float64))
+    lat2 = np.radians(np.asarray(lat2_deg, dtype=np.float64))
+    dlon = np.radians(np.asarray(lon2_deg, dtype=np.float64) - np.asarray(lon1_deg, dtype=np.float64))
+    hav = np.sin((lat2 - lat1) / 2.0) ** 2 + np.cos(lat1) * np.cos(lat2) * np.sin(dlon / 2.0) ** 2
+    delta = 2.0 * np.arctan2(np.sqrt(hav), np.sqrt(np.clip(1.0 - hav, 0.0, None)))
+    az = np.arctan2(np.sin(dlon) * np.cos(lat2), np.cos(lat1) * np.sin(lat2) - np.sin(lat1) * np.cos(lat2) * np.cos(dlon))
+    return delta * radius_m, wrap_az_deg(np.degrees(az))
+
+
 def enu_basis(lat_deg: ArrayLike, lon_deg: ArrayLike) -> tuple[FloatArray, FloatArray, FloatArray]:
     """Vecteurs unitaires (east, north, up) dans MOON_ME, de forme (..., 3) (docs/PIPELINE.md § geodesy)."""
     lat = np.radians(np.asarray(lat_deg, dtype=np.float64))
