@@ -2,9 +2,10 @@
 
 > Fichier **vivant** : Claude Code le met à jour à la fin de chaque tâche. Rester court. Les anciennes entrées du journal sont regroupées par jour, pas supprimées.
 
-**Dernière mise à jour** : 2026-11-12 (T-03 terminé ; J0 terminé, sous réserve de la revue de T-02)
-**Phase** : J0 — fondations terminées
-**Prochaine tâche** : en attente de la revue de T-02 par CHAT (M-006). Ensuite T-04 (pipeline) et T-09 (interface, ne dépend que de T-03).
+**Dernière mise à jour** : 2026-11-12 (T-09 terminé ; T-02 accepté par CHAT, M-008)
+**Phase** : J1 (pipeline) et J2 (interface) en parallèle
+**Prochaine tâche** : T-04 (MNT synthétique), puis T-06 (partie JS) → T-10, et T-05 (M-010).
+**Page affichable** : **oui** — `py -m http.server 8000 -d web`, puis ouvrir http://localhost:8000 (jeu d'exemple, aucun relief dessiné). Capture : `docs/captures/t09-page-fr.png`.
 
 ## Tableau d'avancement
 
@@ -19,7 +20,7 @@
 | T-06 | Visibilité partagée et indicateurs | à faire | |
 | T-07 | Éphémérides de démonstration et export | à faire | |
 | T-08 | Génération de bout en bout + fichier d'or | à faire | |
-| T-09 | Chargement, état, i18n, squelette | à faire | |
+| T-09 | Chargement, état, i18n, squelette | terminé | `node --test "web/tests/**/*.test.js"` → 33 pass ; Edge sans interface sur http://127.0.0.1:8000 → page rendue, valeurs = JSON, 0 message console, requêtes toutes locales |
 | T-10 | Panorama 360° | à faire | |
 | T-11 | Vue 3D du terrain | à faire | |
 | T-12 | Barre de temps et frise | à faire | |
@@ -70,3 +71,13 @@ Résumé par jour seulement. Le **journal détaillé et horodaté** (actions, co
   écrit par `tests/reference/make_web_sample.py` (déterministe : deux exécutions → mêmes empreintes SHA-256) ; `tests/golden/visible_fraction.json` (11 cas) ; `web/tests/constants.test.js` ; `web/package.json` (`"type": "module"`, sans dépendance).
   **Commande JS** : sous Node 24, `node --test web/tests/` échoue (« Cannot find module …\web\tests ») : depuis Node 21, les arguments sont des fichiers ou des motifs, plus des dossiers.
   Commande qui fonctionne : `node --test "web/tests/**/*.test.js"`. CLAUDE.md § 3 n'est pas modifié (fichier de règles) : signalé à CHAT (M-007).
+  → adopté par CHAT (M-008), CLAUDE.md corrigé par CHAT, Node ≥ 22.
+
+### 2026-11-12 (session S2)
+- Dépôt publié sur https://github.com/VictoireNdala/Lunar_Holocron (fusion de l'historique GitHub, README complet).
+- T-09 : `web/index.html` (importmap, bandeau, conteneurs), `web/css/main.css`, `web/vendor/three/` (three.js 0.170.0), `web/js/{geometry,data,store,urlstate,i18n,main}.js`,
+  tests `geometry`, `data`, `urlstate`, `i18n`, `store`, `nonetwork` (33 tests JS au total).
+  Vérifié dans Edge sans interface (`--dump-dom`, `--screenshot`) : bandeau visible ; FR et EN ; à 2027-03-14T06:00Z, Soleil az 350,380° el 0,766°, Terre az 346,118° el −1,276°, identiques au JSON (échantillon 78) ;
+  `?data=data/absent/` → « Fichier introuvable : data/absent/index.json (HTTP 404) » ; date hors période → avertissement et valeurs à la borne. Journal du serveur : seules des adresses locales demandées.
+  **Non testé** : les clics (boutons ±1 h / ±1 jour, FR/EN, choix du site) dans un navigateur réel ; seul le chargement via le fragment d'URL l'a été. Le test de fumée Playwright est prévu en T-15.
+  Choix : dossier de données par défaut `data/sample/` (à basculer sur `data/` en T-08) ; `?data=chemin/` permet d'en choisir un autre (chemin relatif validé).

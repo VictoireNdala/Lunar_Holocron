@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lunar Holocron</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="./css/main.css">
+  <!-- Aucune ressource externe : three.js est copié localement (version figée, voir SOURCES.md). -->
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "./vendor/three/three.module.js",
+        "three/addons/": "./vendor/three/addons/"
+      }
+    }
+  </script>
+  <script type="module" src="./js/main.js"></script>
+</head>
+<body>
+  <!-- Tous les textes sont injectés par js/i18n.js (attributs data-i18n). -->
+  <div id="banner" class="banner" role="status" data-i18n="banner.synthetic"></div>
+
+  <header class="header">
+    <div class="brand">
+      <h1 data-i18n="app.title"></h1>
+      <p class="tagline" data-i18n="app.tagline"></p>
+    </div>
+    <div class="controls">
+      <label class="field">
+        <span data-i18n="site.label"></span>
+        <select id="site-select"></select>
+      </label>
+      <div class="lang" role="group" data-i18n-aria="lang.label">
+        <button type="button" class="lang-btn" data-lang="fr" aria-pressed="true">FR</button>
+        <button type="button" class="lang-btn" data-lang="en" aria-pressed="false">EN</button>
+      </div>
+    </div>
+  </header>
+
+  <div id="error" class="error" role="alert" hidden>
+    <strong data-i18n="error.title"></strong>
+    <p id="error-text"></p>
+  </div>
+  <p id="loading" class="loading" data-i18n="loading"></p>
+
+  <main id="panel-a" class="panel" hidden>
+    <section class="card" aria-labelledby="time-heading">
+      <h2 id="time-heading" data-i18n="time.heading"></h2>
+      <form id="time-form" class="time-form" novalidate>
+        <label class="field">
+          <span data-i18n="time.label"></span>
+          <input id="time-input" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" aria-describedby="time-hint">
+        </label>
+        <button type="submit" class="btn primary" data-i18n="time.apply"></button>
+      </form>
+      <div class="steps">
+        <button type="button" class="btn" data-step-h="-24" data-i18n="time.minusDay"></button>
+        <button type="button" class="btn" data-step-h="-1" data-i18n="time.minusHour"></button>
+        <button type="button" class="btn" data-step-h="1" data-i18n="time.plusHour"></button>
+        <button type="button" class="btn" data-step-h="24" data-i18n="time.plusDay"></button>
+      </div>
+      <p id="time-hint" class="hint" data-i18n="time.hint"></p>
+      <p id="time-current" class="current"></p>
+      <p id="time-warning" class="warning" role="status" hidden></p>
+    </section>
+
+    <section class="card" aria-labelledby="bodies-heading">
+      <h2 id="bodies-heading" data-i18n="bodies.heading"></h2>
+      <table class="readings">
+        <thead>
+          <tr>
+            <th scope="col" data-i18n="reading.body"></th>
+            <th scope="col" data-i18n="reading.az"></th>
+            <th scope="col" data-i18n="reading.el"></th>
+            <th scope="col" data-i18n="reading.radius"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr data-body="sun">
+            <th scope="row"><span class="icon icon-sun" aria-hidden="true"></span><span data-i18n="body.sun"></span></th>
+            <td data-field="az"></td><td data-field="el"></td><td data-field="radius"></td>
+          </tr>
+          <tr data-body="earth">
+            <th scope="row"><span class="icon icon-earth" aria-hidden="true"></span><span data-i18n="body.earth"></span></th>
+            <td data-field="az"></td><td data-field="el"></td><td data-field="radius"></td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="hint" data-i18n="bodies.note"></p>
+    </section>
+
+    <section class="card" aria-labelledby="site-heading">
+      <h2 id="site-heading" data-i18n="site.heading"></h2>
+      <p id="site-name" class="site-name"></p>
+      <p id="site-synthetic" class="tag" data-i18n="site.synthetic" hidden></p>
+      <dl id="site-info" class="facts"></dl>
+      <h3 data-i18n="prov.heading"></h3>
+      <dl id="site-provenance" class="facts"></dl>
+    </section>
+
+    <p class="upcoming" data-i18n="upcoming"></p>
+  </main>
+
+  <footer class="footer">
+    <p id="footer-data"></p>
+    <p data-i18n="footer.license"></p>
+  </footer>
+</body>
+</html>

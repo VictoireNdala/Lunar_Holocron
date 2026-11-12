@@ -33,13 +33,18 @@ On reprend des **idées de fonctionnalité**, pas du code ni des textes. Tout é
 
 | Composant | Rôle | Licence | Version retenue |
 |---|---|---|---|
-| three.js | Vue 3D | MIT | à noter à l'installation (T-09) |
+| three.js | Vue 3D | MIT (`web/vendor/three/LICENSE`, copié du paquet) | **0.170.0** (paquet npm officiel `three@0.170.0`, téléchargé le 2026-11-12 par `npm pack`). Copiés tels quels (empreintes ci-dessous) : `build/three.module.js`, `examples/jsm/controls/OrbitControls.js`, `LICENSE` |
 | NumPy | Calcul numérique | BSD | 2.5.4 (installée le 2026-11-12, `requirements.txt` : ≥ 1.26) |
 | SpiceyPy (CSPICE) | Éphémérides | MIT (SpiceyPy) ; CSPICE : conditions NAIF à relever | 8.4.0 (≥ 6.0) |
 | rasterio / GDAL | Lecture des MNT | BSD / MIT (X11) | rasterio 1.5.2 (≥ 1.3) |
 | Pillow | Aperçus d'images uniquement | MIT-CMU (HPND) — à relever | 13.0.0 (≥ 10.0) |
 | jsonschema, pytest | Validation, tests | MIT | jsonschema 4.26.0 (≥ 4.20), pytest 9.2.0 (≥ 8.0) |
 | Playwright | Test de fumée | Apache-2.0 | à noter (T-15) |
+
+Empreintes SHA-256 des fichiers three.js copiés dans `web/vendor/three/` :
+`three.module.js` `CE1FA418DE16A19495A9F72495580E3015D7745C296D3CE0485897F902DDEDFB` ·
+`addons/controls/OrbitControls.js` `80EFAADEA4F8A636A65FB0BD08BFEF62F3D93A0BB94E2E7500F23176C5C07F4E` ·
+`LICENSE` `4C40A1EF62450B857C3B2AAF294936304CD552D965FBCD9D32D4C5BCF4BA4454`.
 
 Environnement de construction : Python 3.12.8, Node v24.11.1, Git 2.54.0 (Windows 11), relevés le 2026-11-12.
 
