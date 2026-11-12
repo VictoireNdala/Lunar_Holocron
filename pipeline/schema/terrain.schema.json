@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "lunar-holocron/terrain.schema.json",
+  "title": "terrain/<id>.json — contrat de données 1.x (docs/CONTRAT-DONNEES.md § 6)",
+  "description": "Les contrôles croisés (spacing_m = size_m / (n - 1), min_m <= max_m, nom du .bin, taille du .bin) sont faits par pipeline/validate.py.",
+  "type": "object",
+  "required": ["schema_version", "id", "synthetic", "center", "grid", "frame", "z"],
+  "properties": {
+    "schema_version": { "type": "string", "pattern": "^1\\.[0-9]+$" },
+    "id": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$" },
+    "synthetic": { "type": "boolean" },
+    "center": {
+      "type": "object",
+      "required": ["lat_deg", "lon_deg"],
+      "properties": {
+        "lat_deg": { "type": "number", "minimum": -89.99, "maximum": 89.99 },
+        "lon_deg": { "type": "number", "minimum": -180, "maximum": 180 }
+      }
+    },
+    "grid": {
+      "type": "object",
+      "required": ["n", "size_m", "spacing_m"],
+      "properties": {
+        "n": { "type": "integer", "minimum": 2 },
+        "size_m": { "type": "number", "exclusiveMinimum": 0 },
+        "spacing_m": { "type": "number", "exclusiveMinimum": 0 }
+      }
+    },
+    "frame": { "const": "local-enu" },
+    "z": {
+      "type": "object",
+      "required": ["encoding", "min_m", "max_m", "file", "byte_order", "row_order", "col_order"],
+      "properties": {
+        "encoding": { "const": "uint16-linear" },
+        "min_m": { "type": "number" },
+        "max_m": { "type": "number" },
+        "file": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*\\.bin$" },
+        "byte_order": { "const": "little" },
+        "row_order": { "const": "north-to-south" },
+        "col_order": { "const": "west-to-east" }
+      }
+    }
+  }
+}

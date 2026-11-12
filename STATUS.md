@@ -2,16 +2,16 @@
 
 > Fichier **vivant** : Claude Code le met à jour à la fin de chaque tâche. Rester court. Les anciennes entrées du journal sont regroupées par jour, pas supprimées.
 
-**Dernière mise à jour** : 2026-11-12 (T-00 terminé)
+**Dernière mise à jour** : 2026-11-12 (T-01 terminé)
 **Phase** : J0 — fondations
-**Prochaine tâche** : T-01 (schéma de données et validateur) — voir `PLAN.md`
+**Prochaine tâche** : T-02 (constantes, géodésie, projection) — voir `PLAN.md`
 
 ## Tableau d'avancement
 
 | Tâche | Intitulé | État | Preuve (commande → résultat) |
 |---|---|---|---|
 | T-00 | Initialisation du dépôt | terminé | `pip install -r pipeline/requirements.txt` → code 0 ; `pytest pipeline/tests -q` → « no tests ran », code 5 ; `node --version` → v24.11.1 ; `git status` propre après commit |
-| T-01 | Schéma de données et validateur | à faire | |
+| T-01 | Schéma de données et validateur | terminé (recalcul des KPI reporté à T-07) | `pytest pipeline/tests -q` → 30 passed ; site complet de 43 824 échantillons validé en 1,23 s |
 | T-02 | Constantes, géodésie, projection | à faire | |
 | T-03 | Jeu d'exemple fait main + constantes JS | à faire | |
 | T-04 | MNT synthétique et interface `Dem` | à faire | |
@@ -59,3 +59,6 @@ Résumé par jour seulement. Le **journal détaillé et horodaté** (actions, co
 - Aucun code, aucune donnée. Les valeurs de référence de `docs/TESTS-VALIDATION.md` ont été calculées à la main : à recalculer indépendamment en T-02 et T-05.
 - T-00 : dépôt Git (branche `main`), `.gitignore`, `LICENSE` (texte Apache 2.0 non modifié), arborescence, `pipeline/requirements.txt`, `README.md` provisoire, `.venv` créé.
   Remarque : les commandes sont lancées avec `.venv\Scripts\python.exe` (équivalent de `py` une fois l'environnement activé).
+- T-01 : `pipeline/schema/{site,index,terrain}.schema.json` (JSON Schema 2020-12), `pipeline/validate.py`, `pipeline/tests/test_schema.py` (30 tests), `pipeline/tests/factories.py`.
+  En attendant `cli.py` (T-07), la validation se lance par `py -m pipeline.validate [dossier]`. Le recalcul des indicateurs (CONTRAT § 7.6) sera branché en T-07.
+  Interprétation : la latitude `-89.99` est **acceptée** (bornes incluses `[-89.99, 89.99]`), car `docs/` l'utilise comme latitude de test, alors que D-012 écrit `lat_deg > -89.99`.

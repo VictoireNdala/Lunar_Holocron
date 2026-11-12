@@ -97,15 +97,15 @@ Après la publication d'une **DEMANDE-REVUE bloquante**, CODE n'enchaîne pas su
 
 | Champ | Valeur |
 |---|---|
-| Dernière activité de CODE (UTC) | 2026-11-12T21:41Z |
+| Dernière activité de CODE (UTC) | 2026-11-12T21:49Z |
 | Session | S1 |
-| Tâche en cours | — (aucune ; prochaine : T-00) |
-| État | Documents lus, aucun code écrit |
-| Dernier commit | — |
-| Tests (dernière exécution) | — |
-| Dépôt propre (`git status`) | — |
+| Tâche en cours | T-01 (schéma et validateur) |
+| État | T-00 terminé |
+| Dernier commit | `7f95b75` « pre-event: T-00 initialisation du dépôt » |
+| Tests (dernière exécution) | pytest : 0 test (code 5) |
+| Dépôt propre (`git status`) | oui au commit `7f95b75` ; `LIAISON.md` modifié depuis (rapport M-003, commité avec T-01) |
 | Bloquants | Aucun côté code. Données NASA non reçues (J4). |
-| Messages CODE→CHAT en attente de réponse | 0 |
+| Messages CODE→CHAT en attente de réponse | 0 (M-003 : rapport, aucune réponse attendue) |
 | Messages CHAT→CODE non lus | 0 (M-001 et M-002 lus) |
 
 ## 4. Boîte CHAT → CODE
@@ -142,9 +142,26 @@ Index : M-001 INSTRUCTION (démarrage) · M-002 INFO (fonctionnement du canal)
 
 ## 5. Boîte CODE → CHAT
 
-Index : (vide)
+Index : M-003 RAPPORT (T-00)
 
-_Aucun message._ Ajouter les nouveaux messages à la suite, du plus ancien au plus récent.
+Ajouter les nouveaux messages à la suite, du plus ancien au plus récent.
+
+### M-003 · CODE→CHAT · RAPPORT · réf: T-00 · priorité: NORMALE
+- Date (UTC): 2026-11-12T21:49Z
+- Statut: OUVERT
+- Réponse à: M-001
+- Objet: T-00 terminé
+- Corps:
+  - Fait : dépôt Git (branche `main`), `.gitignore`, `.gitattributes` (LF partout), `LICENSE`, arborescence d'ARCHITECTURE § 4 avec `.gitkeep`, `pipeline/requirements.txt`, `pipeline/__init__.py`, `README.md` provisoire, `.venv`.
+  - Preuves : `.venv\Scripts\python.exe -m pip install -r pipeline/requirements.txt` → code 0 (numpy 2.5.4, spiceypy 8.4.0, rasterio 1.5.2, pillow 13.0.0, jsonschema 4.26.0, pytest 9.2.0) ;
+    `.venv\Scripts\python.exe -m pytest pipeline/tests -q` → « no tests ran in 0.02s », code 5 ; `node --version` → v24.11.1 ; `git status --porcelain` après commit → 0 ligne.
+  - Tests : 0 (aucun code testable dans T-00).
+  - Fichiers : créés [`.gitignore`, `.gitattributes`, `LICENSE`, `README.md`, `pipeline/requirements.txt`, `pipeline/__init__.py`, `pipeline/tests/__init__.py`, `.gitkeep` ×9], modifiés [`STATUS.md`, `SOURCES.md`, `LIAISON.md`].
+  - Commit : `7f95b75` « pre-event: T-00 initialisation du dépôt ».
+  - Écarts par rapport à PLAN.md : (1) ajout de `.gitattributes` (LF) pour protéger la reproductibilité octet pour octet sous Windows ; (2) le tag `pre-event-base` n'est **pas encore posé** : je le poserai sur le dernier commit de la session et je l'écrirai ici.
+  - Décisions provisoires prises : aucune.
+  - Non testé / non vérifié : `LICENSE` est la copie du texte Apache 2.0 livré avec pip (`pip/_vendor/packaging/LICENSE.APACHE`), non comparée en ligne au texte d'apache.org ; aucune ligne de copyright (titulaire à fixer par l'équipe).
+- Réponse attendue: non
 
 ## 6. Journal d'activité de CODE (ajout uniquement)
 
@@ -169,6 +186,15 @@ Entrées spéciales : `DEBUT DE SESSION` (messages lus, tâche reprise) et `FIN 
 - Commit : aucun
 - Écarts / décisions provisoires : incohérences relevées dans la documentation, non corrigées : (1) `ARCHITECTURE.md` § 2 donne `observer_height_m` « par défaut 0 », alors que D-008 et `PIPELINE.md` donnent 2,0 m ; (2) `CONTRAT-DONNEES.md` § 1 vise ≈ 2 Mo brut par `sites/<id>.json`, `PLAN.md` T-08 tolère < 2,5 Mo.
 - Prochaine étape : T-00 (initialisation du dépôt), sur feu vert de l'humain.
+
+#### 2026-11-12T21:49Z · T-00 · session S1
+- Actions : feu vert de l'humain ; T-00 réalisé (voir M-003).
+- Fichiers : créés [`.gitignore`, `.gitattributes`, `LICENSE`, `README.md`, `pipeline/requirements.txt`, `pipeline/__init__.py`, `pipeline/tests/__init__.py`, `.gitkeep` ×9] · modifiés [`STATUS.md`, `SOURCES.md`]
+- Commandes : `py -m venv .venv` → OK · `pip install -r pipeline/requirements.txt` → code 0 · `pytest pipeline/tests -q` → code 5 (0 test) · `git init -b main` → OK
+- Tests : 0
+- Commit : `7f95b75` « pre-event: T-00 initialisation du dépôt »
+- Écarts / décisions provisoires : `.gitattributes` ajouté ; tag `pre-event-base` différé à la fin de session.
+- Prochaine étape : T-01 (schéma JSON et validateur).
 
 ## 7. Journal de CHAT (ajout uniquement)
 
