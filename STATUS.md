@@ -2,9 +2,9 @@
 
 > Fichier **vivant** : Claude Code le met à jour à la fin de chaque tâche. Rester court. Les anciennes entrées du journal sont regroupées par jour, pas supprimées.
 
-**Dernière mise à jour** : 2026-11-12 (T-01 terminé)
+**Dernière mise à jour** : 2026-11-12 (T-02 terminé, revue CHAT demandée)
 **Phase** : J0 — fondations
-**Prochaine tâche** : T-02 (constantes, géodésie, projection) — voir `PLAN.md`
+**Prochaine tâche** : T-03 (jeu d'exemple + constantes JS). T-05 et suivantes attendent la réponse de CHAT à M-006.
 
 ## Tableau d'avancement
 
@@ -12,7 +12,7 @@
 |---|---|---|---|
 | T-00 | Initialisation du dépôt | terminé | `pip install -r pipeline/requirements.txt` → code 0 ; `pytest pipeline/tests -q` → « no tests ran », code 5 ; `node --version` → v24.11.1 ; `git status` propre après commit |
 | T-01 | Schéma de données et validateur | terminé (recalcul des KPI reporté à T-07) | `pytest pipeline/tests -q` → 30 passed ; site complet de 43 824 échantillons validé en 1,23 s |
-| T-02 | Constantes, géodésie, projection | à faire | |
+| T-02 | Constantes, géodésie, projection | terminé — **revue CHAT demandée (M-006)** | `pytest pipeline/tests -q` → 68 passed ; 1e6 points : `destination` 0,16 s, `lonlat_to_xy` 0,05 s, `xy_to_lonlat` 0,09 s ; recalcul indépendant de TESTS-VALIDATION §§ 1-3 conforme |
 | T-03 | Jeu d'exemple fait main + constantes JS | à faire | |
 | T-04 | MNT synthétique et interface `Dem` | à faire | |
 | T-05 | Masque d'horizon | à faire | |
@@ -62,3 +62,7 @@ Résumé par jour seulement. Le **journal détaillé et horodaté** (actions, co
 - T-01 : `pipeline/schema/{site,index,terrain}.schema.json` (JSON Schema 2020-12), `pipeline/validate.py`, `pipeline/tests/test_schema.py` (30 tests), `pipeline/tests/factories.py`.
   En attendant `cli.py` (T-07), la validation se lance par `py -m pipeline.validate [dossier]`. Le recalcul des indicateurs (CONTRAT § 7.6) sera branché en T-07.
   Interprétation : la latitude `-89.99` est **acceptée** (bornes incluses `[-89.99, 89.99]`), car `docs/` l'utilise comme latitude de test, alors que D-012 écrit `lat_deg > -89.99`.
+  → confirmé par CHAT (M-005), D-012 précisé.
+- T-02 : `pipeline/config.py`, `geodesy.py` (destination, base ENU, azimut/élévation, position du site, élévation d'un point du relief), `projection.py` (`PolarProjection`), 38 tests.
+  Recalcul indépendant (méthodes différentes des formules documentées) : fraction visible par intégration numérique (écart ≤ 5e-7), élévations par géométrie vectorielle (≤ 4,4e-7°),
+  trajets par rotation 3D et projection par construction géométrique (égalité aux décimales données). `point_elevation_deg` (formule d'élévation de T-05) est déjà dans `geodesy.py` et testée.

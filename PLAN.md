@@ -79,7 +79,7 @@ Pour toutes les tâches s'appliquent la boucle de travail et la définition de �
 ### T-07 — Éphémérides de démonstration et export
 - Dépend de : T-02, T-05, T-06 · Dossier : `pipeline/`.
 - Livrables : `ephemeris_demo.py`, `export.py`, `cli.py` (commandes `demo`, `build`, `validate`), `config/pipeline.json`, `config/sites.json` (3 sites de démonstration) ; tests `test_ephemeris_demo.py`, `test_export.py`.
-- Critères : conformes à `docs/PIPELINE.md` ; `terrain/*.bin` décodable ; `index.json` cohérent ; tous les fichiers portent `synthetic: true` ; compatibilité avec `validate`.
+- Critères : conformes à `docs/PIPELINE.md` ; `terrain/*.bin` décodable ; `index.json` cohérent ; tous les fichiers portent `synthetic: true` ; compatibilité avec `validate` ; `generated_utc` = `build_utc` de la configuration, pas l'horloge (D-013).
 
 ### T-08 — Génération de bout en bout et fichier d'or d'accord Python/JS
 - Dépend de : T-07 · Dossier : `pipeline/`, `tests/golden/`.

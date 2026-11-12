@@ -8,7 +8,7 @@ Le schéma exécutable est `pipeline/schema/site.schema.json` (à écrire en T-0
 | Fichier | Rôle | Taille visée |
 |---|---|---|
 | `index.json` | Liste des sites disponibles | < 10 Ko |
-| `sites/<id>.json` | Horizon, séries Soleil/Terre, indicateurs d'un site | < 700 Ko compressé (≈ 2 Mo brut) |
+| `sites/<id>.json` | Horizon, séries Soleil/Terre, indicateurs d'un site | < 700 Ko compressé (≤ 2,5 Mo brut) |
 | `terrain/<id>.json` | Métadonnées de la grille de terrain 3D | < 5 Ko |
 | `terrain/<id>.bin` | Hauteurs de la grille, `uint16` | 257² × 2 o ≈ 132 Ko |
 
@@ -92,6 +92,7 @@ Le schéma exécutable est `pipeline/schema/site.schema.json` (à écrire en T-0
   L'interface affiche un avertissement si ce drapeau est vrai à l'azimut d'un corps.
 - Le tableau `horizon.elev_deg` est **indépendant du temps** (relief fixe).
 - Les noms `name` contiennent au moins `fr` et `en` ; `sw` (swahili) est optionnel.
+- `provenance.generated_utc` : valeur **fixée par la configuration** (`config/pipeline.json` → `build_utc`), jamais l'horloge, pour garder des sorties identiques octet pour octet (D-013).
 
 ### Lecture côté application
 

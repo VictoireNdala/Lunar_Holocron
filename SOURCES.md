@@ -14,6 +14,7 @@ Les liens ci-dessous sont les adresses connues des services ; **les vérifier av
 | NAIF / SPICE — noyaux génériques (`naif0012.tls`, `de440s.bsp`, orientation lunaire `moon_pa_de440_*`, `moon_de440_*.tf`) | Éphémérides Soleil et Terre | à relever (règles NAIF ; reconnaissance demandée) | cité |
 | JPL Horizons (ssd.jpl.nasa.gov/horizons) | Valeurs de contrôle (validation) | à relever | cité |
 | Données fournies par le défi Space Apps 2026 | À déterminer (`Q-004`) | à relever | à recevoir |
+| Constantes de `pipeline/config.py` : rayon nominal du Soleil 695 700 km (résolution B3 de l'UAI, 2015) ; rayon moyen de la Terre 6 371,0 km ; sphère LOLA 1 737,4 km | Rayons angulaires, géométrie | — | utilisé ; **valeurs écrites de mémoire** (reprises de `docs/PIPELINE.md`), à vérifier dans les sources primaires |
 
 ## 2. Outils et idées étudiés (étude comparative)
 

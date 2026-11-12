@@ -24,7 +24,8 @@ Calendrier : événement les 14 et 15 novembre 2026 ; guide officiel le 13 novem
 | D-009 | 2026-11-12 | Interface en **français et anglais** dès le départ ; swahili prévu (P2) avec repli sur l'anglais. | Soumission probablement en anglais (`Q-003`) ; le swahili est un plus pour le public d'Afrique de l'Est. | Active |
 | D-010 | 2026-11-12 | Organisation du travail : **Claude (chat/projet)** pour contexte, décisions et revue scientifique ; **Claude Code (VS Code)** pour la construction ; coordination par les fichiers MD de ce dépôt ; au plus 3 agents (constructeur pipeline, constructeur interface, vérificateur). | Gain réel mais limité du parallélisme ; la revue scientifique reste humaine. | Active |
 | D-011 | 2026-11-12 | Commits d'avant le 14 novembre préfixés **`pre-event:`** ; tag `pre-event-base`. | Pouvoir repartir proprement si le règlement interdit le code écrit avant l'événement (`Q-001`). | Active |
-| D-012 | 2026-11-12 | Pas de pôle exact : `lat_deg > -89.99`. | L'azimut n'est pas défini au pôle. | Active |
+| D-012 | 2026-11-12 | Pas de pôle exact : `-89.99 ≤ lat_deg ≤ 89.99`, bornes **incluses** (précisé après M-004). | L'azimut n'est pas défini au pôle ; `-89.99` sert de latitude de test. | Active |
+| D-013 | 2026-11-12 | `provenance.generated_utc` est **fixé par la configuration** (`config/pipeline.json` → `build_utc`), jamais lu sur l'horloge ; à changer à la main lors d'une régénération voulue. | Sorties identiques octet pour octet (principe 5 de `CLAUDE.md`) ; la date reste une information de provenance. | Active |
 
 ## Questions ouvertes
 
@@ -39,6 +40,7 @@ Calendrier : événement les 14 et 15 novembre 2026 ; guide officiel le 13 novem
 | Q-007 | Hauteur de l'œil (ou de l'antenne) par défaut ? | 2 m / hauteur d'atterrisseur / hauteur d'antenne | 2 m (D-008) | Humain |
 | Q-008 | Un site « vitrine » avec MNT à 5 m (PGDA produit 78) ? | oui / non | non | Humain, selon les données disponibles |
 | Q-009 | La période 2026-2030 convient-elle aux données fournies ? | garder / changer | garder | Humain, après réception des données |
+| Q-010 | Qui est le **titulaire du copyright** de la licence Apache 2.0 (noms des deux membres, nom d'équipe) ? | noms des membres / nom d'équipe | aucune ligne de copyright (état actuel de `LICENSE`) | Humain |
 
 ## Format d'une nouvelle entrée
 

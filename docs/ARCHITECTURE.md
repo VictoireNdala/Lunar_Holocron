@@ -36,7 +36,7 @@ Le passage de l'un à l'autre ne doit **modifier ni le contrat, ni l'application
 
 | Terme | Définition |
 |---|---|
-| **Site** | Un point d'observation à la surface : latitude, longitude, hauteur de l'œil au-dessus du sol (`observer_height_m`, par défaut 0). |
+| **Site** | Un point d'observation à la surface : latitude, longitude, hauteur de l'œil au-dessus du sol (`observer_height_m`, par défaut 2,0 m : D-008, provisoire). |
 | **Corps** | Le Soleil (`sun`) ou la Terre (`earth`). |
 | **Élévation** | Angle, en degrés, entre la direction du centre du corps et le **plan horizontal local** (perpendiculaire à la verticale locale, c'est-à-dire la direction radiale). Positive au-dessus. **Géométrique, sans réfraction** (pas d'atmosphère). |
 | **Azimut** | Degrés, **0 = Nord, 90 = Est**, sens horaire vu d'en haut, dans [0, 360). Le Nord est la direction locale vers le pôle Nord lunaire. |
@@ -56,7 +56,7 @@ Suffixes d'unités des champs : `_deg` degrés (flottants), `_mdeg` millidegrés
 `_s` secondes, `_h` heures, `_pct` pourcentage [0, 100].
 
 Cas limites imposés :
-- **Pôle exact interdit** : `lat_deg > -89.99` (l'azimut n'est pas défini au pôle). Pour tester près du pôle, utiliser `-89.99`.
+- **Pôle exact interdit** : `-89.99 ≤ lat_deg ≤ 89.99`, bornes **incluses** (D-012) : l'azimut n'est pas défini au pôle. Pour tester près du pôle, utiliser `-89.99`.
 - **Azimut 0/360** : toute interpolation d'azimut gère le saut (interpoler sur l'angle « déroulé »).
 - **Masque d'horizon** : interpolation linéaire entre les points voisins, avec bouclage 359° → 0°.
 

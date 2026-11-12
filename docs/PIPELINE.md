@@ -18,9 +18,11 @@ Aucun accès réseau dans les calculs. Le téléchargement est isolé dans `pipe
     "observer_height_m": 2.0
   },
   "terrain": { "size_m": 20000.0, "n": 257 },
-  "ephemeris": { "engine": "demo-analytic" }
+  "ephemeris": { "engine": "demo-analytic" },
+  "build_utc": "2026-11-12T00:00:00Z"
 }
 ```
+`build_utc` est recopié dans `provenance.generated_utc` (D-013) ; on ne le change qu'à la main, lors d'une régénération voulue.
 `engine` vaut `"demo-analytic"` (défaut tant qu'il n'y a pas de noyaux) ou `"spice"`.
 
 ### `config/sites.json`
