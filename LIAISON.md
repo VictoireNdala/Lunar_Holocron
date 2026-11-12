@@ -100,8 +100,8 @@ Après la publication d'une **DEMANDE-REVUE bloquante**, CODE n'enchaîne pas su
 | Dernière activité de CODE (UTC) | 2026-11-12T22:16Z |
 | Session | S1 (suite : branchement GitHub) |
 | Tâche en cours | aucune (J0 terminé ; T-02 accepté par CHAT, M-008) |
-| État | Historique GitHub fusionné ; push vers `origin` en attente de confirmation de l'humain |
-| Dernier commit | commit de journal « pre-event: branchement du dépôt GitHub (journal) », tagué `pre-event-base` (parent : `eb9d8d8` fusion) |
+| État | Dépôt publié sur GitHub (`origin/main`, public) ; README réécrit |
+| Dernier commit | « pre-event: README complet », tagué `pre-event-base`, poussé sur `origin` |
 | Tests (dernière exécution) | pytest : 85 passés ; node : 3 passés (`node --test "web/tests/**/*.test.js"`) |
 | Dépôt propre (`git status`) | oui (après le commit de journal) |
 | Bloquants | Aucun côté code. Données NASA non reçues (J4). |
@@ -381,6 +381,17 @@ Entrées spéciales : `DEBUT DE SESSION` (messages lus, tâche reprise) et `FIN 
 - Commit : `eb9d8d8` « pre-event: fusion de l'historique GitHub (README, LICENSE) », puis commit de ce journal (tagué `pre-event-base`)
 - Écarts / décisions provisoires : aucun.
 - Prochaine étape : `git push` vers `origin` (branche `main` + tag), après confirmation de l'humain ; puis T-04 et T-09.
+
+#### 2026-11-12T22:16Z · README · session S1 (suite)
+- Actions : push confirmé par l'humain → `git push -u origin main` (`c69b5ea..e19c0f5`) et tag poussé. Puis, à la demande de l'humain, README réécrit, plus complet (en anglais, résumé en français) :
+  objectif, fonctions **prévues**, méthode et formules, état d'avancement réel (seul J0 est marqué fait), installation, tests, structure, limites, usage de l'IA, licence.
+  Le bandeau d'avertissement « données synthétiques » est en tête. Aucune fonction non construite n'y est présentée comme disponible.
+- Fichiers : modifiés [`README.md`, `LIAISON.md`]
+- Commandes : `git ls-remote origin` → `main` et `pre-event-base` sur `e19c0f5` (avant ce commit)
+- Tests : non relancés (documentation seule)
+- Commit : « pre-event: README complet » ; **tag `pre-event-base` déplacé sur ce commit** et repoussé (M-008 : « déplace-le sur le dernier et écris-le ici »)
+- Écarts / décisions provisoires : README en anglais par défaut (Q-003 : soumission probablement en anglais).
+- Prochaine étape : T-04 et T-09, sur feu vert de l'humain.
 
 ## 7. Journal de CHAT (ajout uniquement)
 
