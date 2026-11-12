@@ -58,7 +58,7 @@ La machine de travail est sous **Windows** (PowerShell). Évite tout ce qui ne f
 | Générer les données de démonstration | `py -m pipeline.cli demo` |
 | Valider les JSON contre le schéma | `py -m pipeline.cli validate` |
 | Tests Python | `py -m pytest pipeline/tests -q` |
-| Tests JavaScript (Node ≥ 20, aucune dépendance) | `node --test web/tests/` |
+| Tests JavaScript (Node ≥ 22, aucune dépendance) | `node --test "web/tests/**/*.test.js"` (motif entre guillemets : valable sous PowerShell ; `node --test <dossier>` ne marche plus depuis Node 21) |
 | Servir l'application | `py -m http.server 8000 -d web` puis ouvrir http://localhost:8000 |
 | Test de fumée navigateur (optionnel) | `npx playwright test` (dossier `tests/e2e/`) |
 

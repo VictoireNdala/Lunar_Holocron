@@ -55,7 +55,7 @@ Hébergement : PDS Geosciences Node (imbrium.mit.edu) et PGDA (Goddard). Licence
 py -m pipeline.cli build --all --engine spice
 py -m pipeline.cli validate
 py -m pytest pipeline/tests -q
-node --test web/tests/
+node --test "web/tests/**/*.test.js"
 ```
 Puis contrôles de `TESTS-VALIDATION.md` § 6 (Horizons, PGDA, outil officiel). Les écarts et leurs explications vont dans `docs/VALIDATION-RESULTATS.md`.
 
