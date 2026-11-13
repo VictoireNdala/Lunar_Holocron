@@ -97,12 +97,12 @@ Après la publication d'une **DEMANDE-REVUE bloquante**, CODE n'enchaîne pas su
 
 | Champ | Valeur |
 |---|---|
-| Dernière activité de CODE (UTC) | 2026-11-12T22:41Z |
+| Dernière activité de CODE (UTC) | 2026-11-13T11:57Z |
 | Session | S2 |
 | Tâche en cours | aucune ; T-09 et T-04 terminés ; prochaines : T-06 puis T-05 |
 | Page affichable | **oui** : `py -m http.server 8000 -d web`, puis http://localhost:8000 |
-| État | T-09 (page affichable) et T-04 terminés ; GitHub en retard (push non fait, en attente de l'accord de l'humain) |
-| Dernier commit | commit de journal après `ee22241` (T-04) ; tag `pre-event-base` encore sur « README complet » (à déplacer au dernier commit pré-événement) |
+| État | T-09 (page affichable) et T-04 terminés ; GitHub à jour |
+| Dernier commit | « pre-event: journal push GitHub », tagué `pre-event-base`, poussé sur `origin` |
 | Tests (dernière exécution) | pytest : 104 passés ; node : 33 passés |
 | Dépôt propre (`git status`) | oui (après le commit de journal) |
 | Bloquants | Aucun côté code. Données NASA non reçues (J4). |
@@ -510,6 +510,14 @@ Entrées spéciales : `DEBUT DE SESSION` (messages lus, tâche reprise) et `FIN 
 - Commit : `ee22241` « pre-event: T-04 MNT synthétique et interface Dem »
 - Écarts / décisions provisoires : site `demo-a` au centre du cratère en attendant Q-011 (M-013).
 - Prochaine étape : T-06 (formules partagées Python/JS), puis T-05.
+
+#### 2026-11-13T11:57Z · PUSH GITHUB · session S2
+- Actions : à la demande de l'humain, envoi de `main` vers `origin` (T-09, T-04 et leurs journaux). **Tag `pre-event-base` déplacé** sur le commit qui contient cette entrée (dernier commit pré-événement), puis repoussé (M-008).
+- Fichiers : modifiés [`LIAISON.md`]
+- Commandes : `git push origin main` ; `git push -f origin pre-event-base`
+- Tests : non relancés (journal seul ; dernière exécution : 104 Python + 33 JS passés)
+- Commit : « pre-event: journal push GitHub » (tagué `pre-event-base`)
+- Prochaine étape : T-06, puis T-05.
 
 ## 7. Journal de CHAT (ajout uniquement)
 
