@@ -2,6 +2,7 @@
 // Pas encore de relief dessiné : le panorama (T-10) et la vue 3D (T-11) viendront ensuite.
 import { bodyStateAt, createDataSource, DataError, siteTimeRange } from './data.js';
 import { formatNumber, formatUtc, getLang, setLang, t } from './i18n.js';
+import { createPanel3d } from './panel3d.js';
 import { createStore } from './store.js';
 import { decode, encode } from './urlstate.js';
 
@@ -22,6 +23,7 @@ function dataRoot() {
 
 const source = createDataSource(dataRoot());
 const store = createStore(decode(window.location.hash));
+const panel3d = createPanel3d(store);
 let index = null;
 let site = null;
 
@@ -153,6 +155,8 @@ async function loadSiteA() {
     $('error').hidden = true;
     $('panel-a').hidden = false;
     renderAll();
+    const terrain = await source.loadTerrain(id);
+    if (store.get().siteIdA === id) await panel3d.show(site, terrain);
   } catch (err) {
     showError(err);
   } finally {
@@ -196,6 +200,7 @@ store.subscribe((state, changed) => {
   window.history.replaceState(null, '', encode(state));
   if (changed.includes('siteIdA')) { loadSiteA(); return; }
   renderAll();
+  if (site) panel3d.update(changed);
 });
 
 /** Démarrage : langue, index, site initial. */

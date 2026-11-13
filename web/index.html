@@ -45,6 +45,34 @@
   <p id="loading" class="loading" data-i18n="loading"></p>
 
   <main id="panel-a" class="panel" hidden>
+    <section class="card card-wide" aria-labelledby="view3d-heading">
+      <h2 id="view3d-heading" data-i18n="view3d.heading"></h2>
+      <div class="toolbar">
+        <div class="seg" role="group" data-i18n-aria="view3d.mode">
+          <button type="button" class="btn mode-btn" data-mode="overview" aria-pressed="true" data-i18n="view3d.overview"></button>
+          <button type="button" class="btn mode-btn" data-mode="ground" aria-pressed="false" data-i18n="view3d.ground"></button>
+        </div>
+        <div id="view3d-turn" class="seg" hidden>
+          <button type="button" class="btn" data-turn="-1" data-i18n="view3d.turnLeft"></button>
+          <span id="view3d-az" class="az"></span>
+          <button type="button" class="btn" data-turn="1" data-i18n="view3d.turnRight"></button>
+        </div>
+        <label class="field inline">
+          <span data-i18n="view3d.exaggeration"></span>
+          <input id="view3d-exag" type="range" min="1" max="5" step="0.5" value="1">
+          <output id="view3d-exag-value" for="view3d-exag"></output>
+        </label>
+      </div>
+      <div id="view3d" class="view3d"></div>
+      <div class="legend">
+        <span data-i18n="view3d.legend"></span>
+        <div id="legend-bar" class="legend-bar" aria-hidden="true"></div>
+        <div class="legend-scale"><span id="legend-min"></span><span id="legend-max"></span></div>
+      </div>
+      <p id="view3d-status" class="warning" role="status" hidden></p>
+      <p class="hint" data-i18n="view3d.note"></p>
+    </section>
+
     <section class="card" aria-labelledby="time-heading">
       <h2 id="time-heading" data-i18n="time.heading"></h2>
       <form id="time-form" class="time-form" novalidate>

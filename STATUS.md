@@ -4,7 +4,7 @@
 
 **Dernière mise à jour** : 2026-11-12 (T-09 terminé ; T-02 accepté par CHAT, M-008)
 **Phase** : J1 (pipeline) et J2 (interface) en parallèle
-**Prochaine tâche** : T-11 étape A (maquette 3D sur le jeu d'exemple), puis aperçu 3D du relief réel, puis T-06, T-05, T-10 (ordre modifié par M-014, à la demande de l'humain).
+**Prochaine tâche** : contrôle du MNT réel et aperçu 3D du relief réel (M-014, étape B), puis T-06, T-05, T-10 (ordre modifié par M-014, à la demande de l'humain).
 **Fichier LDEM réel présent** : oui, `data/raw/LDEM_80S_80MPP_ADJ.tiff` (189 Mo, hors Git) ; **décodé : non** (unités, orientation, convention de pixel à contrôler, M-014 § 4).
 **Page affichable** : **oui** — `py -m http.server 8000 -d web`, puis ouvrir http://localhost:8000 (jeu d'exemple, aucun relief dessiné). Capture : `docs/captures/t09-page-fr.png`.
 
@@ -23,7 +23,7 @@
 | T-08 | Génération de bout en bout + fichier d'or | à faire | |
 | T-09 | Chargement, état, i18n, squelette | terminé | `node --test "web/tests/**/*.test.js"` → 33 pass ; Edge sans interface sur http://127.0.0.1:8000 → page rendue, valeurs = JSON, 0 message console, requêtes toutes locales |
 | T-10 | Panorama 360° | à faire | |
-| T-11 | Vue 3D du terrain | à faire | |
+| T-11 | Vue 3D du terrain | étape A terminée (jeu d'exemple) ; test d'ombre de `demo-a` après T-07/T-08 | `node --test` → 41 pass ; Edge (SwiftShader) : vue d'ensemble et vue au sol rendues ; 20 reconstructions → 3 géométries / 3 textures stables ; 20 vues libérées → 0 canvas restant |
 | T-12 | Barre de temps et frise | à faire | |
 | T-13 | Verdicts, lectures, indicateurs | à faire | |
 | T-14 | Carte polaire, A/B, page méthode, README | à faire | |
@@ -88,3 +88,12 @@ Résumé par jour seulement. Le **journal détaillé et horodaté** (actions, co
   `geodesy.distance_azimuth` (problème inverse, testé par aller-retour avec `destination`). 21 tests nouveaux (`test_dem.py`, `test_dem_synthetic.py`, 2 dans `test_geodesy.py`).
   Aperçu visuel contrôlé : cratère centré avec dorsale au nord, massif à l'est, terrain plat bruité (±33 m). Optimisation du bruit par table de nœuds : 20 s → 13 s par grille, valeurs identiques (test).
   Question ouverte **Q-011** : position du site `demo-a` (au centre, l'horizon vaut ≈ 20,6° et rien n'est jamais visible).
+
+### 2026-11-13 (session S3)
+- M-014 lu ; MNT réel rangé dans `data/raw/` (hors Git) ; scripts jetables de CHAT supprimés avec l'accord de l'humain.
+- T-11, étape A : `web/js/terrainmesh.js` (géométrie pure, testée : Nord vers −z, Ouest vers −x, site à l'origine, normales vers +y, directions des corps),
+  `web/js/terrain3d.js` (three.js : maillage, teinte hypsométrique, exagération ×1 à ×5, lumière dans la direction du Soleil, éteinte si `el < 0`, ombres 2048 avec qualité adaptative 2048 → 1024 → aucune,
+  sprites Soleil et Terre dessinés par canvas, atténués sous l'horizon, caméras vue d'ensemble et au sol, `renderNow`, `info`, `dispose`), `web/js/panel3d.js` (carte de la page, three chargé à la demande).
+  Vérifié dans Edge sans interface (WebGL logiciel SwiftShader) : captures `docs/captures/t11-vue-ensemble-en.png` et `t11-au-sol-nord.png` ; page de contrôle hors dépôt : 3 géométries / 3 textures stables après 20 reconstructions, 0 canvas après 20 vues libérées.
+  **Non testé** : clics réels (boutons de mode, curseur d'exagération, rotation au sol) ; déclenchement de la qualité adaptative ; message « Soleil sous l'horizon » (le Soleil du jeu d'exemple ne descend jamais sous 0,2°) ;
+  l'ombre du rebord de `demo-a` (D-014), qui attend T-07/T-08.
