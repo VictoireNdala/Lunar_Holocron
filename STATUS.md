@@ -4,7 +4,8 @@
 
 **Dernière mise à jour** : 2026-11-12 (T-09 terminé ; T-02 accepté par CHAT, M-008)
 **Phase** : J1 (pipeline) et J2 (interface) en parallèle
-**Prochaine tâche** : T-05 (masque d'horizon) et T-06 (formules partagées Python/JS), puis T-10 (M-010).
+**Prochaine tâche** : T-11 étape A (maquette 3D sur le jeu d'exemple), puis aperçu 3D du relief réel, puis T-06, T-05, T-10 (ordre modifié par M-014, à la demande de l'humain).
+**Fichier LDEM réel présent** : oui, `data/raw/LDEM_80S_80MPP_ADJ.tiff` (189 Mo, hors Git) ; **décodé : non** (unités, orientation, convention de pixel à contrôler, M-014 § 4).
 **Page affichable** : **oui** — `py -m http.server 8000 -d web`, puis ouvrir http://localhost:8000 (jeu d'exemple, aucun relief dessiné). Capture : `docs/captures/t09-page-fr.png`.
 
 ## Tableau d'avancement
@@ -39,7 +40,8 @@
 ## À arbitrer par l'humain
 
 Voir `DECISIONS.md` § Questions ouvertes : `Q-001` (code avant événement) et `Q-002` (usage de l'IA) sont à lever dès la lecture du guide du 13 novembre.
-`Q-010` (titulaire du copyright), `Q-011` (position du site `demo-a` par rapport à son cratère, à trancher avant T-07).
+`Q-010` (titulaire du copyright). `Q-011` tranchée par D-014 (site `demo-a` sur le rebord).
+Suppression des scripts jetables de CHAT dans `data/raw/` (`_decode.py`, `_decode.log`, `ldem80_decoded.npy` partiel) : refusée à CODE par le contrôle des permissions, à faire par l'humain.
 
 ## Revue (écrite par l'agent vérificateur)
 

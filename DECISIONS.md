@@ -26,6 +26,7 @@ Calendrier : événement les 14 et 15 novembre 2026 ; guide officiel le 13 novem
 | D-011 | 2026-11-12 | Commits d'avant le 14 novembre préfixés **`pre-event:`** ; tag `pre-event-base`. | Pouvoir repartir proprement si le règlement interdit le code écrit avant l'événement (`Q-001`). | Active |
 | D-012 | 2026-11-12 | Pas de pôle exact : `-89.99 ≤ lat_deg ≤ 89.99`, bornes **incluses** (précisé après M-004). | L'azimut n'est pas défini au pôle ; `-89.99` sert de latitude de test. | Active |
 | D-013 | 2026-11-12 | `provenance.generated_utc` est **fixé par la configuration** (`config/pipeline.json` → `build_utc`), jamais lu sur l'horloge ; à changer à la main lors d'une régénération voulue. | Sorties identiques octet pour octet (principe 5 de `CLAUDE.md`) ; la date reste une information de provenance. | Active |
+| D-014 | 2026-11-13 | Site `demo-a` placé **sur le rebord** du cratère synthétique (par défaut à 4 km au sud du centre ; à ajuster en T-07 pour que Soleil et Terre soient visibles dans au moins un secteur, sans que tous les indicateurs soient 0 % ou 100 %). Réponse à `Q-011` (M-013). | Un site au centre donne un horizon ≈ 20,6° partout : indicateurs tous à 0 %, ombre du rebord invisible (T-11), comparaison A/B sans intérêt. | Active |
 
 ## Questions ouvertes
 
@@ -41,7 +42,7 @@ Calendrier : événement les 14 et 15 novembre 2026 ; guide officiel le 13 novem
 | Q-008 | Un site « vitrine » avec MNT à 5 m (PGDA produit 78) ? | oui / non | non | Humain, selon les données disponibles |
 | Q-009 | La période 2026-2030 convient-elle aux données fournies ? | garder / changer | garder | Humain, après réception des données |
 | Q-010 | Qui est le **titulaire du copyright** de la licence Apache 2.0 (noms des deux membres, nom d'équipe) ? | noms des membres / nom d'équipe | aucune ligne de copyright (état actuel de `LICENSE`) | Humain |
-| Q-011 | Site `demo-a` : **au centre** du cratère synthétique (horizon ≈ 20,6° : Soleil et Terre jamais visibles, cas « ombre permanente ») ou **sur le rebord** ou à côté (horizon bas d'un côté) ? | centre / rebord / extérieur | Centre (le terrain est centré sur le site, `dem_synthetic.py`) ; le choix se fait en T-07 via la position du site, sans toucher au MNT | CHAT / humain |
+| Q-011 *(tranchée : D-014, option b)* | Site `demo-a` : **au centre** du cratère synthétique (horizon ≈ 20,6° : Soleil et Terre jamais visibles, cas « ombre permanente ») ou **sur le rebord** ou à côté (horizon bas d'un côté) ? | centre / rebord / extérieur | Centre (le terrain est centré sur le site, `dem_synthetic.py`) ; le choix se fait en T-07 via la position du site, sans toucher au MNT | CHAT / humain |
 
 ## Format d'une nouvelle entrée
 
