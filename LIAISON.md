@@ -97,14 +97,14 @@ Après la publication d'une **DEMANDE-REVUE bloquante**, CODE n'enchaîne pas su
 
 | Champ | Valeur |
 |---|---|
-| Dernière activité de CODE (UTC) | 2026-11-13T20:11Z |
+| Dernière activité de CODE (UTC) | 2026-11-13T20:21Z |
 | Session | S3 |
-| Tâche en cours | aucune ; prochaine : T-11 étape A (maquette 3D, M-014), puis contrôle du MNT réel |
+| Tâche en cours | aucune ; T-11 étape A terminée (M-015) ; prochaine : étape B, contrôle du MNT réel puis aperçu 3D |
 | Fichier LDEM réel présent | oui, `data/raw/LDEM_80S_80MPP_ADJ.tiff` (hors Git) ; décodé : **non** |
-| Page affichable | **oui** : `py -m http.server 8000 -d web`, puis http://localhost:8000 |
-| État | T-09 (page affichable) et T-04 terminés ; GitHub à jour |
-| Dernier commit | « pre-event: journal push GitHub », tagué `pre-event-base`, poussé sur `origin` |
-| Tests (dernière exécution) | pytest : 104 passés ; node : 33 passés |
+| Page affichable | **oui** : `py -m http.server 8000 -d web`, puis http://localhost:8000 (avec la vue 3D depuis T-11 A) |
+| État | T-09, T-04, T-11 (étape A) terminés ; GitHub en retard (push non fait) |
+| Dernier commit | commit de journal après `71f131b` (T-11 A) ; tag `pre-event-base` encore sur `5a73c53` |
+| Tests (dernière exécution) | pytest : 104 passés ; node : 41 passés |
 | Dépôt propre (`git status`) | oui (après le commit de journal) |
 | Bloquants | Aucun côté code. Données NASA non reçues (J4). |
 | Messages CODE→CHAT en attente de réponse | 0 (M-013 traité par M-014 / D-014) |
@@ -251,7 +251,7 @@ Index : M-001 INSTRUCTION (démarrage) · M-002 INFO (fonctionnement du canal) �
 
 ## 5. Boîte CODE → CHAT
 
-Index : M-003 RAPPORT (T-00) · M-004 RAPPORT (T-01) · M-006 DEMANDE-REVUE (T-02) · M-007 RAPPORT (T-03) · M-009 INFO (GitHub, tag) · M-011 RAPPORT (T-09, page affichable) · M-012 RAPPORT (T-04) · M-013 QUESTION (Q-011, site demo-a)
+Index : M-003 RAPPORT (T-00) · M-004 RAPPORT (T-01) · M-006 DEMANDE-REVUE (T-02) · M-007 RAPPORT (T-03) · M-009 INFO (GitHub, tag) · M-011 RAPPORT (T-09, page affichable) · M-012 RAPPORT (T-04) · M-013 QUESTION (Q-011, site demo-a) · M-015 RAPPORT (T-11 étape A, vue 3D)
 
 Ajouter les nouveaux messages à la suite, du plus ancien au plus récent.
 
@@ -431,6 +431,44 @@ Ajouter les nouveaux messages à la suite, du plus ancien au plus récent.
   - Inscrite dans `DECISIONS.md` sous **Q-011**.
 - Réponse attendue: oui — choix (a), (b) ou (c) avant T-07.
 
+### M-015 · CODE→CHAT · RAPPORT · réf: T-11 (étape A) · priorité: NORMALE
+- Date (UTC): 2026-11-13T20:21Z
+- Statut: OUVERT
+- Réponse à: M-014
+- Objet: T-11 étape A terminée — vue 3D du terrain sur le jeu d'exemple
+- Corps:
+  - **Adresse à ouvrir** : `py -m http.server 8000 -d web`, puis **http://localhost:8000**.
+  - **Ce que l'humain doit voir**, en tête de page, la carte « Vue 3D du terrain » :
+    - la grille d'exemple de 20 × 20 km, avec un cratère au centre et le mât cyan du site ;
+    - une teinte du bleu-gris (0 m) au blanc cassé (985 m), avec la légende sous la vue ;
+    - le Soleil (disque ambre) et la Terre (disque bleu cerclé, **atténué** car sous l'horizon à −1,28°) au-dessus du bord **nord**, la Terre un peu à gauche du Soleil (az 346° contre 350°) ;
+    - deux boutons : « Vue d'ensemble » (orbite à la souris) et « Au sol » (caméra à 2 m au-dessus du site, rotation de 30° en 30°) ;
+    - un curseur d'exagération verticale de ×1 à ×5 et une note « rendu illustratif ».
+  - Fait :
+    - `web/js/terrainmesh.js` : géométrie pure, sans three.js. Ligne 0 = nord → −z, colonne 0 = ouest → −x, site au centre à l'origine, triangles orientés vers +y, `bodyDirection(az, el)` = `enuToThree(sin az·cos el, cos az·cos el, sin el)`, dégradé hypsométrique.
+    - `web/js/terrain3d.js` (INTERFACE § 6) :
+      - `z_m` utilisé tel quel (courbure déjà incluse) ;
+      - `DirectionalLight` dans la direction du Soleil, intensité 0 si `el < 0` (ambiance 0,12 au lieu de 0,35) ;
+      - ombres PCF 2048 couvrant la grille, qualité adaptative 2048 → 1024 → aucune si un rendu dépasse 25 ms en moyenne sur 30 images ;
+      - sprites dessinés par canvas, rayon apparent minimal de 2° (agrandis, c'est dit dans la note) ;
+      - caméras `overview` (sud, 35°, 1,2 × le côté) et `ground` (FOV 60°, regard vers `panoramaCenterAz`) ;
+      - `renderNow`, `info`, `dispose`.
+    - `web/js/panel3d.js` : la carte, avec three.js chargé à la demande ; si WebGL manque, un message s'affiche et le reste de la page fonctionne.
+  - Preuves :
+    - `node --test "web/tests/**/*.test.js"` → « tests 41, pass 41 » ; `pytest pipeline/tests -q` → « 104 passed ».
+    - Edge sans interface avec WebGL logiciel (`--use-angle=swiftshader`) : captures relues, `docs/captures/t11-vue-ensemble-en.png` (vue d'ensemble, EN) et `docs/captures/t11-au-sol-nord.png` (au sol, regard vers 350°).
+      Au sol, au fond du cratère, la paroi masque le Soleil (0,77°), ce qui est cohérent. En vue d'ensemble, la paroi intérieure nord, dos au Soleil, est dans l'ombre.
+    - Page de contrôle **hors dépôt** (copie de `web/` dans mon dossier temporaire) : après 20 reconstructions du terrain et de l'exagération, `renderer.info.memory` = 3 géométries / 3 textures, **stables** ; 20 vues créées puis libérées → 0 canvas restant.
+  - Choix à relire :
+    1. Sprites placés à **0,9 × le côté** de la grille au lieu de « grande distance ». À 2,5 × le côté, le Soleil sortait du cadre en vue d'ensemble (caméra inclinée de 35°, champ vertical de 45°). La direction vue depuis le site est inchangée, donc exacte pour la caméra au sol.
+    2. Ambiance relevée (0,35 avec le Soleil, 0,12 sans) pour garder la teinte lisible sous un Soleil rasant ; physiquement, le ciel lunaire n'éclaire presque pas. Le rendu est annoncé comme illustratif.
+    3. Corps sous l'horizon géométrique : sprite atténué (opacité 0,35) plutôt que caché.
+  - Non testé : les clics réels (boutons de mode, curseur, rotation) ; le déclenchement de la qualité adaptative ; le message « Soleil sous l'horizon » (le Soleil de l'exemple reste ≥ 0,2°).
+    **Vérification d'ombre de `demo-a` (D-014) reportée à T-07/T-08**, comme prévu dans M-014. Bords d'ombre crénelés sur la grille d'exemple (65², pas de 312 m), à revoir sur 257².
+  - Commit : `71f131b` « pre-event: T-11 vue 3D du terrain (étape A, jeu d'exemple) ». Push : non fait.
+  - Suite : étape B (contrôle du MNT réel, puis aperçu 3D sur le relief réel). Elle demande d'ajouter `tifffile` et `imagecodecs` (à inscrire dans DECISIONS) ou d'écrire un lecteur NumPy maison (M-014, point 5).
+- Réponse attendue: non
+
 ## 6. Journal d'activité de CODE (ajout uniquement)
 
 Format d'une entrée :
@@ -557,6 +595,16 @@ Entrées spéciales : `DEBUT DE SESSION` (messages lus, tâche reprise) et `FIN 
 - **Non fait** : la suppression de `data/raw/_decode.py`, `_decode.log` et `ldem80_decoded.npy` (partiel, invalide) a été **refusée par le contrôle des permissions** de mon environnement (action destructive).
   Ces fichiers restent en place, ignorés par Git, et je ne m'en sers pas. La suppression revient à l'humain (ou à une autorisation explicite).
 - Prochaine étape : T-11, étape A (maquette 3D sur le jeu d'exemple), sur feu vert de l'humain ; puis contrôle du fichier réel (M-014, points 4 et 5).
+
+#### 2026-11-13T20:21Z · T-11 (étape A) · session S3
+- Actions : feu vert de l'humain ; suppression des 3 fichiers jetables de `data/raw/` **autorisée par l'humain** et faite ; tests d'abord (`terrainmesh.test.js`), puis `terrainmesh.js`, `terrain3d.js`, `panel3d.js`, intégration dans la page ;
+  vérification dans Edge sans interface (SwiftShader) ; trois corrections après les captures (sprites hors cadre, Terre sous l'horizon atténuée, ambiance) ; `renderNow` ajouté pour rendre le contrôle des fuites probant (sans rendu, `info()` valait 0) ; RAPPORT M-015.
+- Fichiers : créés [`web/js/terrainmesh.js`, `web/js/terrain3d.js`, `web/js/panel3d.js`, `web/tests/terrainmesh.test.js`, `docs/captures/t11-*.png` ×2] · modifiés [`web/index.html`, `web/css/main.css`, `web/js/i18n.js`, `web/js/main.js`, `STATUS.md`] · supprimés [`data/raw/_decode.py`, `_decode.log`, `ldem80_decoded.npy` (hors Git)]
+- Commandes : `node --test "web/tests/**/*.test.js"` → 41 pass · `pytest pipeline/tests -q` → 104 passed · Edge `--use-angle=swiftshader --screenshot/--dump-dom` → captures et contrôle des fuites
+- Tests : 41 JS + 104 Python passés / 0 échoué / 0 ignoré
+- Commit : `71f131b` « pre-event: T-11 vue 3D du terrain (étape A, jeu d'exemple) »
+- Écarts / décisions provisoires : sprites à 0,9 × le côté ; ambiance relevée ; corps sous l'horizon atténués (voir M-015).
+- Prochaine étape : étape B (MNT réel).
 
 ## 7. Journal de CHAT (ajout uniquement)
 
