@@ -106,7 +106,7 @@ Contrôles de plausibilité **indépendants de toute référence externe**, à `
 - Tests JavaScript (`web/tests/`) : `visibility.test.js` (mêmes valeurs d'or), `geometry.test.js` (déroulement d'azimut, `enuToThree`), `data.test.js` (`bodyStateAt` : interpolation, saut 359°→1°, bornes de période),
   `urlstate.test.js` (aller-retour, valeurs invalides ignorées).
 - **Accord Python/JavaScript** : un fichier `tests/golden/body_state_cases.json` donne, pour un site de démonstration, 20 instants et les `(az, el, radius, f_sun, f_earth)` attendus ;
-  pytest ET `node --test` doivent le satisfaire (tolérance 0,001°). Ce fichier est régénéré par le pipeline (`cli demo --write-golden`) puis **relu par un humain** avant d'être figé.
+  pytest ET `node --test` doivent le satisfaire (tolérance 0,001°). Ce fichier est régénéré par le pipeline (`py -m pipeline.golden`) puis **relu** avant d'être figé. **État réel (2026-11-15)** : relu et signé par CHAT sur délégation de l'humain (recalcul indépendant des 20 cas, écart max 4,9e-10), empreinte SHA-256 dans `docs/REVUE-FICHIER-OR.md`, vérifiée par `pipeline/tests/test_golden_signature.py` ; une contresignature humaine reste possible. Tolérances : 0,001° pour les angles (spec) et **0,002 pour la fraction visible, validée par CHAT le 15/11** (écarts mesurés : 4,9e-4° et 9,8e-4).
 - Test de fumée Playwright (`tests/e2e/smoke.spec.ts`) : charger l'application servie en local ; attendre la bannière « DONNÉES DE DÉMONSTRATION » ; aucun `console.error` ;
   vue 3D affichée (pixels non uniformes dans le canvas) ; déplacer le curseur change l'élévation affichée ; basculer strict/optimiste change au moins un indicateur ; capture d'écran enregistrée.
 
