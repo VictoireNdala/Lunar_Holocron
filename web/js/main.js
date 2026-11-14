@@ -18,6 +18,7 @@ const TIME_INPUT_PATTERN = /^(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2})$/;
 const BODIES = ['sun', 'earth'];
 
 const $ = (id) => document.getElementById(id);
+document.documentElement.dataset.booted = '1'; // lu par le filet de sécurité de index.html
 
 /** Dossier de données : `?data=chemin/relatif/` si valide, sinon l'exemple. */
 function dataRoot() {

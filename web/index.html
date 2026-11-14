@@ -19,6 +19,18 @@
     }
   </script>
   <script type="module" src="./js/main.js"></script>
+  <script>
+    // Filet de sécurité (jamais de page blanche) : si main.js ne démarre pas (module en cache périmé, erreur de chargement),
+    // message statique bilingue, hors i18n puisque i18n.js peut justement être en cause.
+    setTimeout(function () {
+      if (document.documentElement.dataset.booted) return;
+      var box = document.getElementById('error');
+      var text = document.getElementById('error-text');
+      if (!box || !text) return;
+      text.textContent = "L'application n'a pas démarré (fichiers en cache périmés ou erreur de chargement). Rechargez sans cache : Ctrl+Maj+R. / The app did not start (stale cached files or a load error). Hard-reload: Ctrl+Shift+R.";
+      box.hidden = false;
+    }, 4000);
+  </script>
 </head>
 <body class="app">
   <!-- Tous les textes sont injectés par js/i18n.js (attributs data-i18n). -->

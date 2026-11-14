@@ -116,7 +116,8 @@ py -m pipeline.validate web/data/sample   # exit code 0 if valid, 1 otherwise
 
 ```powershell
 py -m pipeline.cli demo                 # generate the three demonstration sites (J1)
-py -m http.server 8000 -d web           # serve the application at http://localhost:8000 (J2)
+py -m pipeline.tools.serve                    # serve the application at http://localhost:8000, no browser caching (recommended)
+py -m http.server 8000 -d web           # alternative; the browser may keep stale JS modules: hard-reload with Ctrl+Shift+R
 ```
 
 ## Repository layout

@@ -97,7 +97,7 @@ Après la publication d'une **DEMANDE-REVUE bloquante**, CODE n'enchaîne pas su
 
 | Champ | Valeur |
 |---|---|
-| Dernière activité de CODE (UTC) | 2026-11-14T21:10Z |
+| Dernière activité de CODE (UTC) | 2026-11-14T21:25Z |
 | Session | S4 |
 | Tâche en cours | A-01 à A-05 faits (M-031, M-032) ; prochaine : A-06 (onglets, URL, lecture animée) |
 | Fichier LDEM réel présent | oui, `data/raw/LDEM_80S_80MPP_ADJ.tiff` (hors Git) ; décodé : **oui**, contrôlé (unités, projection, pixel, orientation) ; aperçu Shackleton : http://localhost:8000/preview.html |
@@ -1106,6 +1106,13 @@ Entrées spéciales : `DEBUT DE SESSION` (messages lus, tâche reprise) et `FIN 
 - Commandes : `node --test "web/tests/**/*.test.js"` → 85 pass · `pytest pipeline/tests -q` → 215 passed · captures Edge des trois vues
 - Commit : « A-05 : cartes 2D (monde, pôle Sud, pôle Nord) » (`24c5b66`)
 - Prochaine étape : A-06 (sélecteur de projection, `proj=` dans l'URL, lecture animée).
+
+#### 2026-11-14T21:25Z · CORRECTIF « page blanche » (signalé par l'humain) · session S5
+- Constat : l'humain a ouvert http://localhost:8000/#view=site dans Chrome : barre du haut vide, aucun texte, aucune donnée. Dans une Edge neuve, la même adresse s'affiche correctement (relue sur capture).
+- Cause (reproduite) : les modules JS **en cache périmé** du navigateur (le serveur `http.server` n'envoie pas de directive de cache) : le nouveau `main.js` importe de nouveaux exports (`mappanel.js`, `TEXTURE_URL`), l'ancien fichier en cache ne les fournit pas → tout le graphe de modules échoue, d'où une page statique sans texte. Reproduit en cassant volontairement un import : même écran que celui de l'humain.
+- Corrections : (1) `pipeline/tools/serve.py` (`py -m pipeline.tools.serve`) : serveur local avec `Cache-Control: no-store` (en-tête vérifié avec curl) ; (2) filet de sécurité dans `web/index.html` : si `main.js` n'a pas démarré après 4 s, message bilingue statique « Rechargez sans cache (Ctrl+Maj+R) » au lieu d'une page blanche (vérifié sur capture) ; (3) README mis à jour. La commande `py -m http.server` de CLAUDE.md reste valable ; je propose à l'humain/CHAT d'y substituer `serve` (CLAUDE.md non modifié par CODE).
+- Commandes : `node --test` → 85 pass · `pytest` → 215 passed
+- Prochaine étape : A-06.
 
 ## 7. Journal de CHAT (ajout uniquement)
 
