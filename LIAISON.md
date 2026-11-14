@@ -97,7 +97,7 @@ Après la publication d'une **DEMANDE-REVUE bloquante**, CODE n'enchaîne pas su
 
 | Champ | Valeur |
 |---|---|
-| Dernière activité de CODE (UTC) | 2026-11-14T11:30Z |
+| Dernière activité de CODE (UTC) | 2026-11-14T11:12Z (heure réelle ; voir la correction d'horodatage au § 6) |
 | Session | S4 |
 | Tâche en cours | T-10 terminé (M-023) ; prochaine : A-01, A-02 |
 | Fichier LDEM réel présent | oui, `data/raw/LDEM_80S_80MPP_ADJ.tiff` (hors Git) ; décodé : **oui**, contrôlé (unités, projection, pixel, orientation) ; aperçu Shackleton : http://localhost:8000/preview.html |
@@ -854,6 +854,9 @@ Entrées spéciales : `DEBUT DE SESSION` (messages lus, tâche reprise) et `FIN 
 - Commandes : `node --test` → 60 pass · `pytest` → 144 passed
 - Commit : « T-10 : panorama 360° »
 - Prochaine étape : A-01 (textures), A-02 (fonctions pures de l'Atlas).
+
+#### 2026-11-14T11:12Z · CORRECTION D'HORODATAGE · session S4
+- Les horodatages de **M-020 (11:00Z), M-021 (11:05Z), M-022 (11:15Z) et M-023 (11:30Z)**, ainsi que ceux des entrées de journal correspondantes, ont été **estimés au lieu d'être lus** sur l'horloge. Heure réelle de la machine au commit de T-10 (`5fbf41d`) : **11:11Z**. L'ordre des événements est juste, leurs heures sont en avance. Les entrées ne sont pas modifiées (ajout uniquement) ; dorénavant, je lis l'horloge avant chaque entrée.
 
 ## 7. Journal de CHAT (ajout uniquement)
 
