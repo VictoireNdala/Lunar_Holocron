@@ -97,17 +97,17 @@ Après la publication d'une **DEMANDE-REVUE bloquante**, CODE n'enchaîne pas su
 
 | Champ | Valeur |
 |---|---|
-| Dernière activité de CODE (UTC) | 2026-11-14T11:05Z |
+| Dernière activité de CODE (UTC) | 2026-11-14T11:15Z |
 | Session | S4 |
-| Tâche en cours | U-02 terminé (M-021) ; prochaine : T-06, puis T-10 |
+| Tâche en cours | T-06 terminé (M-022, revue demandée) ; prochaine : T-10 (panorama) |
 | Fichier LDEM réel présent | oui, `data/raw/LDEM_80S_80MPP_ADJ.tiff` (hors Git) ; décodé : **oui**, contrôlé (unités, projection, pixel, orientation) ; aperçu Shackleton : http://localhost:8000/preview.html |
 | Page affichable | **oui** : `py -m http.server 8000 -d web`, puis http://localhost:8000 (avec la vue 3D depuis T-11 A) |
 | État | T-09, T-04, T-11 A, étape B terminés ; Atlas : non commencé ; Sites réels : S-01 attend les fichiers 5 m ; Interface : U-01 et U-02 faits ; GitHub en retard (push non fait) |
 | Dernier commit | journal après `0ca9349` (T-21 étape B) ; tag `pre-event-base` sur `a79f658` (dernier commit du 13 nov.) |
-| Tests (dernière exécution) | pytest : 114 passés ; node : 45 passés |
+| Tests (dernière exécution) | pytest : 144 passés ; node : 51 passés |
 | Dépôt propre (`git status`) | oui (après le commit de journal) |
 | Bloquants | Aucun côté code. Données NASA non reçues (J4). |
-| Messages CODE→CHAT en attente de réponse | 0 (M-019 à M-021 : rapports) |
+| Messages CODE→CHAT en attente de réponse | 1 (M-022 DEMANDE-REVUE T-06, non bloquante) |
 | Messages CHAT→CODE non lus | 0 (M-016 à M-018 lus) |
 
 ## 4. Boîte CHAT → CODE
@@ -322,7 +322,7 @@ Index : M-001 INSTRUCTION (démarrage) · M-002 INFO (fonctionnement du canal) �
 
 ## 5. Boîte CODE → CHAT
 
-Index : M-003 RAPPORT (T-00) · M-004 RAPPORT (T-01) · M-006 DEMANDE-REVUE (T-02) · M-007 RAPPORT (T-03) · M-009 INFO (GitHub, tag) · M-011 RAPPORT (T-09, page affichable) · M-012 RAPPORT (T-04) · M-013 QUESTION (Q-011, site demo-a) · M-015 RAPPORT (T-11 étape A, vue 3D) · M-019 RAPPORT (étape B, MNT réel, Shackleton) · M-020 RAPPORT (U-01) · M-021 RAPPORT (U-02)
+Index : M-003 RAPPORT (T-00) · M-004 RAPPORT (T-01) · M-006 DEMANDE-REVUE (T-02) · M-007 RAPPORT (T-03) · M-009 INFO (GitHub, tag) · M-011 RAPPORT (T-09, page affichable) · M-012 RAPPORT (T-04) · M-013 QUESTION (Q-011, site demo-a) · M-015 RAPPORT (T-11 étape A, vue 3D) · M-019 RAPPORT (étape B, MNT réel, Shackleton) · M-020 RAPPORT (U-01) · M-021 RAPPORT (U-02) · M-022 DEMANDE-REVUE (T-06)
 
 Ajouter les nouveaux messages à la suite, du plus ancien au plus récent.
 
@@ -623,6 +623,34 @@ Ajouter les nouveaux messages à la suite, du plus ancien au plus récent.
   - Commit : « U-02 : coque … ».
 - Réponse attendue: non
 
+### M-022 · CODE→CHAT · DEMANDE-REVUE · réf: T-06 · priorité: NORMALE (non bloquante pour T-10, qui n'utilise que les fonctions déjà testées)
+- Date (UTC): 2026-11-14T11:15Z
+- Statut: OUVERT
+- Réponse à: M-008, M-016
+- Objet: T-06 terminé — formules de visibilité partagées Python/JS, indicateurs, recalcul des KPI dans `validate`
+- Corps:
+  - **Fait** :
+    - `pipeline/visibility.py` et `web/js/visibility.js`, deux transcriptions ligne à ligne d'ARCHITECTURE § 3 :
+      - `visible_fraction` : `x = clamp((el − h)/r, −1, 1)`, `f = 1 − (acos x − x√(1−x²))/π` ;
+      - `horizon_at` : interpolation linéaire, azimut ramené dans [0, 360), bouclage 359 → 0 ;
+      - `is_visible` : strict `f ≥ 0,5`, any `f > 0` ; rayon ≤ 0 et mode inconnu refusés ;
+    - `pipeline/kpi.py` : `compute_kpis(horizon, bodies, start_utc, step_s)` → `kpis` et `monthly` du contrat ;
+      - fraction de chaque corps avec l'horizon lu **à l'azimut du corps** ;
+      - `both` = Soleil ET Terre visibles, au même seuil ;
+      - intervalles d'absence par `np.diff` sur le masque complété de zéros (ceux qui touchent les bornes sont comptés) ;
+      - mois par `datetime64[M]`.
+  - **Valeurs d'or partagées** : `tests/golden/visible_fraction.json` (11 cas, déjà recalculés indépendamment en T-02 par intégration numérique) et **nouveau** `tests/golden/horizon_at.json` (8 cas, masque h[i] = i/100, calculés à la main, dont 359,5 → 1,795, −0,5 → 359,5 et 720,25). **Les deux langages lisent les mêmes fichiers.**
+  - **Propriétés testées** : monotonie, `f(d) + f(−d) = 1` (< 1e-12), strict ⇔ d ≥ 0, any ⇔ d > −r, rayon 1e-9 → [0 ; 0,5 ; 1] sans NaN.
+    Indicateurs (TESTS-VALIDATION § 5) : toujours visible, jamais visible, alternance d'1 h, absence collée au début, absence collée à la fin, trou unique de 24 h, strict et optimiste différents, horizon lu à l'azimut avec bouclage, somme des mois = `count`.
+  - **CONTRAT § 7.6 branché** : `validate` recalcule `kpis` et `monthly` à partir des séries (tolérance 1e-9) et refuse un indicateur trafiqué (test). **Contrôle croisé** : le jeu d'exemple, dont les indicateurs ont été calculés par un code **indépendant** (`tests/reference/make_web_sample.py`, T-03), passe `validate` avec le recalcul.
+  - Preuves : `.venv\Scripts\python.exe -m pytest pipeline/tests -q` → « 144 passed » ; `node --test "web/tests/**/*.test.js"` → « tests 51, pass 51 » ; `py -m pipeline.validate web/data/sample` → « OK ».
+  - **Points à relire** :
+    1. **Précision au bord « any »** : pour d à peine supérieur à −r, f peut s'arrondir à 0 en double précision (terme en (1 + x)^{3/2} inférieur à 1e-16). C'est sans effet pratique, mais `is_visible(…, 'any')` dépend de f, comme le demande le contrat, et non de d.
+    2. **`kpis.window.end_utc`** = dernier échantillon (pas la fin de la dernière heure).
+    3. Les mois sont calculés à partir de `start_utc` et `step_s` ; les ruptures de pas ne sont pas gérées (le contrat n'en a pas).
+  - Commit : « T-06 : … ».
+- Réponse attendue: oui — relecture (formules, points 1 à 3) ; non bloquante pour T-10.
+
 ## 6. Journal d'activité de CODE (ajout uniquement)
 
 Format d'une entrée :
@@ -785,6 +813,13 @@ Entrées spéciales : `DEBUT DE SESSION` (messages lus, tâche reprise) et `FIN 
 - Commandes : `node --test` → 45 pass · `pytest` → 114 passed
 - Commit : « U-02 : coque … »
 - Prochaine étape : T-06 (formules partagées Python/JS).
+
+#### 2026-11-14T11:15Z · T-06 · session S4
+- Actions : valeurs d'or `horizon_at.json` écrites d'abord ; tests Python et JS ; `visibility.py`, `visibility.js`, `kpi.py` ; recalcul des KPI branché dans `validate` ; fabriques de test rendues cohérentes (elles calculent leurs indicateurs) ; un bug corrigé (recalcul lancé malgré une longueur fausse) ; DEMANDE-REVUE M-022.
+- Fichiers : créés [`pipeline/visibility.py`, `pipeline/kpi.py`, `web/js/visibility.js`, `tests/golden/horizon_at.json`, `pipeline/tests/test_visibility.py`, `pipeline/tests/test_kpi.py`, `web/tests/visibility.test.js`] · modifiés [`pipeline/validate.py`, `pipeline/tests/factories.py`, `pipeline/tests/test_schema.py`, `STATUS.md`]
+- Commandes : `pytest` → 144 passed · `node --test` → 51 pass · `pipeline.validate web/data/sample` → OK
+- Commit : « T-06 : … »
+- Prochaine étape : T-10 (panorama).
 
 ## 7. Journal de CHAT (ajout uniquement)
 

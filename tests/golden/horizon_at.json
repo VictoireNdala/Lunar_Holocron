@@ -1,0 +1,16 @@
+{
+  "description": "Interpolation linéaire du masque d'horizon avec bouclage 359° → 0° (ARCHITECTURE § 2). Masque de test : elev_deg[i] = i / 100. Lu par pytest et par node --test.",
+  "method": "Calcul à la main : h(az) = h[i0]·(1 − w) + h[(i0 + 1) mod 360]·w, i0 = floor(az mod 360), w = (az mod 360) − i0.",
+  "mask_rule": "elev_deg[i] = i / 100",
+  "tolerance_abs": 1e-9,
+  "cases": [
+    { "az_deg": 0.0,    "h_deg": 0.0,    "note": "nœud 0" },
+    { "az_deg": 10.25,  "h_deg": 0.1025, "note": "0,10·0,75 + 0,11·0,25" },
+    { "az_deg": 359.0,  "h_deg": 3.59,   "note": "nœud 359" },
+    { "az_deg": 359.5,  "h_deg": 1.795,  "note": "bouclage : (3,59 + 0) / 2, jamais h[360]" },
+    { "az_deg": 359.9,  "h_deg": 0.359,  "note": "3,59·0,1 + 0·0,9" },
+    { "az_deg": -0.5,   "h_deg": 1.795,  "note": "azimut négatif ramené à 359,5" },
+    { "az_deg": 360.0,  "h_deg": 0.0,    "note": "360 ramené à 0" },
+    { "az_deg": 720.25, "h_deg": 0.0025, "note": "deux tours + 0,25" }
+  ]
+}

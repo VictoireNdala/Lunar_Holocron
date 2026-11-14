@@ -1,7 +1,7 @@
 """Contrôles du contrat de données (docs/CONTRAT-DONNEES.md § 7) : schéma JSON puis contrôles croisés.
 
 Usage : `py -m pipeline.validate [dossier]` (par défaut `web/data`). Code de sortie 0 si tout est valide, 1 sinon.
-Le recalcul des indicateurs (§ 7.6) sera branché en T-07, quand `pipeline/kpi.py` existera.
+Le recalcul des indicateurs (§ 7.6) utilise `pipeline/kpi.py` (branché en T-06).
 """
 
 from __future__ import annotations
@@ -26,6 +26,7 @@ UTC_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 SPACING_REL_TOL = 1e-9  # Tolérance relative sur spacing_m = size_m / (n - 1).
 COORD_ABS_TOL_DEG = 1e-9  # Tolérance sur l'égalité des coordonnées entre fichiers.
 MAX_SHOWN_CHARS = 60  # Longueur maximale d'une valeur citée dans un message.
+KPI_ABS_TOL = 1e-9  # Tolérance du recalcul des indicateurs (CONTRAT § 7.6).
 
 
 @lru_cache(maxsize=None)
@@ -120,6 +121,8 @@ def _site_cross_checks(doc: dict[str, Any]) -> list[str]:
             n = len(doc["bodies"][body][key])
             if n != count:
                 errors.append(f"bodies.{body}.{key}: longueur {n}, attendu time.count = {count}")
+    if errors:
+        return errors  # longueurs fausses : aucun recalcul possible
     prov = doc["provenance"]
     if (prov["dem"]["product"] == "SYNTHETIC" or prov["ephemeris"]["engine"] == "demo-analytic") and not doc["synthetic"]:
         errors.append("synthetic: doit valoir true (MNT SYNTHETIC ou éphémérides demo-analytic)")
@@ -137,7 +140,34 @@ def _site_cross_checks(doc: dict[str, Any]) -> list[str]:
     expected = _months_between(start, end)
     if got != expected:
         errors.append(f"monthly: mois {_short(got)} ; attendu {len(expected)} mois triés de {expected[0]} à {expected[-1]}")
-    return errors
+        return errors
+    return errors + _kpi_recompute_errors(doc)
+
+
+def _close(a: Any, b: Any) -> bool:
+    """Égalité numérique à KPI_ABS_TOL près (récursive sur dict et list)."""
+    if isinstance(a, dict) and isinstance(b, dict):
+        return a.keys() == b.keys() and all(_close(a[k], b[k]) for k in a)
+    if isinstance(a, list) and isinstance(b, list):
+        return len(a) == len(b) and all(_close(x, y) for x, y in zip(a, b))
+    if isinstance(a, (int, float)) and isinstance(b, (int, float)) and not isinstance(a, bool):
+        return abs(a - b) <= KPI_ABS_TOL
+    return a == b
+
+
+def _kpi_recompute_errors(doc: dict[str, Any]) -> list[str]:
+    """CONTRAT § 7.6 : les indicateurs sont recalculés à partir des séries et comparés (tolérance 1e-9)."""
+    from pipeline.kpi import compute_kpis  # import local : validate reste utilisable sans le reste du pipeline
+
+    kpis, monthly = compute_kpis(doc["horizon"]["elev_deg"], doc["bodies"], doc["time"]["start_utc"], doc["time"]["step_s"])
+    errors = []
+    for key, value in kpis.items():
+        if not _close(doc["kpis"].get(key), value):
+            errors.append(f"kpis.{key}: valeur {_short(doc['kpis'].get(key))} différente du recalcul {_short(value)}")
+    for k, (m_doc, m_calc) in enumerate(zip(doc["monthly"], monthly)):
+        if not _close({x: m_doc[x] for x in m_calc}, m_calc):
+            errors.append(f"monthly[{k}]: valeurs différentes du recalcul ({m_calc['ym']})")
+    return errors[:MAX_ERRORS]
 
 
 def validate_site(doc: Any) -> list[str]:

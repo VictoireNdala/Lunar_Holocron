@@ -8,6 +8,8 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
+from pipeline.kpi import compute_kpis
+
 UTC_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 
@@ -37,7 +39,7 @@ def make_site(site_id: str = "demo-x", count: int = 48,
     start = datetime.strptime(start_utc, UTC_FORMAT).replace(tzinfo=timezone.utc)
     end = start + timedelta(hours=count - 1)
     pair = {"strict": _kpi_block(), "any": _kpi_block()}
-    return {
+    doc = {
         "schema_version": "1.0",
         "id": site_id,
         "name": {"fr": "Site de test", "en": "Test site"},
@@ -70,6 +72,9 @@ def make_site(site_id: str = "demo-x", count: int = 48,
         "monthly": [{"ym": ym, "sun_strict_pct": 50.0, "earth_strict_pct": 0.0, "both_strict_pct": 0.0}
                     for ym in _months(start, end)],
     }
+    # Indicateurs cohérents avec les séries (validate les recalcule, CONTRAT § 7.6).
+    doc["kpis"], doc["monthly"] = compute_kpis(doc["horizon"]["elev_deg"], doc["bodies"], start_utc, 3600)
+    return doc
 
 
 def make_terrain(site_id: str = "demo-x", n: int = 5, synthetic: bool = True) -> dict[str, Any]:

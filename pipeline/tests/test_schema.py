@@ -150,6 +150,17 @@ def test_kpi_window_must_match_period() -> None:
     assert "kpis.window.end_utc" in _joined(validate.validate_site(site))
 
 
+def test_kpi_recomputed_and_compared() -> None:
+    """CONTRAT § 7.6 : un indicateur qui ne correspond pas aux séries est refusé."""
+    site = make_site()
+    assert validate.validate_site(site) == []
+    site["kpis"]["sun"]["strict"]["visible_pct"] += 0.5
+    assert "kpis.sun" in _joined(validate.validate_site(site))
+    site = make_site(count=24 * 40)
+    site["monthly"][1]["both_strict_pct"] = 99.0
+    assert "monthly[1]" in _joined(validate.validate_site(site))
+
+
 def test_kpi_min_max_order() -> None:
     """min ≤ max pour les élévations extrêmes."""
     site = make_site()
