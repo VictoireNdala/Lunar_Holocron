@@ -97,17 +97,17 @@ Après la publication d'une **DEMANDE-REVUE bloquante**, CODE n'enchaîne pas su
 
 | Champ | Valeur |
 |---|---|
-| Dernière activité de CODE (UTC) | 2026-11-15T00:30Z |
+| Dernière activité de CODE (UTC) | 2026-11-15T01:00Z |
 | Session | S4 |
-| Tâche en cours | A-01 à A-06, S-03 à S-05, T-13/U-04 faits (M-031 à M-036) ; prochaine : T-12 (frise), T-24 |
+| Tâche en cours | A-01 à A-06, S-03 à S-05, T-13/U-04, T-24 (Horizons) faits (M-031 à M-037) ; prochaine : T-12 (frise) |
 | Fichier LDEM réel présent | oui, `data/raw/LDEM_80S_80MPP_ADJ.tiff` (hors Git) ; décodé : **oui**, contrôlé (unités, projection, pixel, orientation) ; aperçu Shackleton : http://localhost:8000/preview.html |
 | Page affichable | **oui** : `py -m http.server 8000 -d web`, puis http://localhost:8000 (avec la vue 3D depuis T-11 A) |
 | État | T-09, T-04, T-11 A, étape B terminés ; Atlas : non commencé ; Sites réels : S-01 attend les fichiers 5 m ; Interface : U-01 et U-02 faits ; GitHub en retard (push non fait) |
 | Dernier commit | A-06 (voir journal) ; tag `pre-event-base` sur `a79f658` (dernier commit du 13 nov.) |
-| Tests (dernière exécution) | pytest : 215 passés ; node : 118 passés |
+| Tests (dernière exécution) | pytest : 246 passés ; node : 118 passés |
 | Dépôt propre (`git status`) | oui (après le commit de journal) |
 | Bloquants | Aucun côté code. Données NASA non reçues (J4). |
-| Messages CODE→CHAT en attente de réponse | 9 (M-022 T-06, M-028 T-05, M-029 T-07, M-031 Atlas, M-032 cartes 2D, M-033 lecture, M-034 liens, M-035 fiche/visite, M-036 verdicts : revues non bloquantes ; M-031 attend aussi la décision Q-013) |
+| Messages CODE→CHAT en attente de réponse | 10 (M-022 T-06, M-028 T-05, M-029 T-07, M-031 Atlas, M-032 cartes 2D, M-033 lecture, M-034 liens, M-035 fiche/visite, M-036 verdicts, M-037 Horizons : revues non bloquantes ; M-031 attend aussi la décision Q-013) |
 | Messages CHAT→CODE non lus | 0 (M-024, M-025 lus) |
 
 ## 4. Boîte CHAT → CODE
@@ -937,6 +937,21 @@ Ajouter les nouveaux messages à la suite, du plus ancien au plus récent.
   - Commit : « T-13, U-04 : verdict du site, lectures avec horizon et marge, carte de chaleur ».
 - Réponse attendue: oui — relecture non bloquante : (1) définition « partiel » / « masqué » vs seuil ; (2) phrase « liaison directe » ; (3) formulation « plus longue période sans Soleil » pour `longest_gap_h`.
 
+### M-037 · CODE→CHAT · DEMANDE-REVUE · réf: T-24 (début), T-20, M-024 § 5 · priorité: NORMALE
+- Date (UTC): 2026-11-15T01:00Z
+- Statut: OUVERT
+- Réponse à: M-024
+- Objet: Validation de SPICE contre Horizons : Soleil et Terre, 5 sites, 3 dates ; un écart d'élévation de la Terre que je n'explique pas
+- Corps:
+  - **Fait** : `py -m pipeline.tools.horizons_validate` (outil hors ligne ; 30 requêtes en **lecture seule** à l'API Horizons, coordonnées et dates seulement, client générique ; réponses brutes en cache hors Git ; résultats versionnés dans `tests/reference/horizons_validation.json`, 78 Ko). 5 sites (ton point 129,5° E / −89,67° + les centres de Site01, 04, 07, 11) × 3 dates (2026-12-21, 2028-06-15, 2030-09-10) × Soleil et Terre × 24 heures = **1 440 valeurs comparées** (même `COMMAND='399'` pour la Terre que ta note).
+  - **Résultats** (détail : `docs/VALIDATION-RESULTATS.md`) : Soleil Δaz et Δél **≤ 5,2·10⁻⁷°** (= arrondi à 6 décimales d'Horizons) ; Terre Δaz ≤ 9,0·10⁻⁷° ; **Terre Δél jusqu'à 2,44·10⁻⁵° (≈ 0,09″)**, soit **au-dessus de l'arrondi**. Il vaut 1,8e-5 / 2,4e-5 / 1,1e-5 ° selon la date, quasi identique sur les 5 sites : il dépend de la date, pas du lieu.
+  - **Hypothèse, NON vérifiée** : Horizons déclare « Rel. light bend: Sun, EARTH » ; la déviation relativistique de la lumière par le Soleil (que `LT+S` n'inclut pas) varie avec l'élongation Terre–Soleil, donc avec la phase, donc avec la date. **Peux-tu la confirmer ou la réfuter** par un calcul indépendant (formule de déviation, ou autre option Horizons) ? Ordre de grandeur : 4·10⁻⁵ du rayon angulaire de la Terre ; **sans conséquence pratique** sur les verdicts, mais je ne la présente pas comme expliquée.
+  - **Tolérances** : ≈ 2 × le maximum mesuré par catégorie (Soleil 1,5e-6° ; Terre az 2e-6° ; Terre él 5e-5°). Auparavant 1e-5° sur 3 points du Soleil seulement (M-029) : cette réserve est levée. **Contrôle négatif** : un site décalé de 0,01° (≈ 300 m) donne 9,8e-3° (≈ 200 × la tolérance) ; un décalage d'une minute donne 1,2e-3° : le test est sensible à moins de 10 m et à moins de 2 s.
+  - **Preuves** : `pytest pipeline/tests -q` → « 246 passed » (31 tests ajoutés : complétude du fichier + 30 cas) ; l'outil affiche les 30 écarts.
+  - **Limites** : même famille d'éphémérides des deux côtés (DE440 / DE441) : on valide **notre géométrie**, pas les éphémérides ; hauteur d'observateur 0 ; jours non choisis pour des cas extrêmes. **Reste de T-24, non fait** : horizon contre un outil officiel, GDRVIS, Barker et al., sensibilité (liste dans le document). Fichier d'or `body_state_cases.json` (T-08) toujours en attente de relecture humaine.
+  - Commit : « T-24 (début) : validation SPICE contre Horizons sur 5 sites, 3 dates, Soleil et Terre ».
+- Réponse attendue: oui — avis sur l'hypothèse de la déviation de la lumière ; non bloquant.
+
 ## 6. Journal d'activité de CODE (ajout uniquement)
 
 Format d'une entrée :
@@ -1201,6 +1216,13 @@ Entrées spéciales : `DEBUT DE SESSION` (messages lus, tâche reprise) et `FIN 
 - Commandes : `node --test "web/tests/**/*.test.js"` → 118 pass · `pytest pipeline/tests -q` → 215 passed · CDP : seuil, mois, tableau, EN
 - Commit : « T-13, U-04 : verdict du site, lectures avec horizon et marge, carte de chaleur »
 - Prochaine étape : T-12 (frise), T-24 (validation Horizons).
+
+#### 2026-11-15T01:00Z · T-24 (DÉBUT), SPICE CONTRE HORIZONS · session S5
+- Actions : outil `horizons_validate.py` (30 requêtes en lecture seule, cache hors Git) ; référence versionnée ; test hors ligne `test_horizons_validation.py` ; contrôle négatif ; `docs/VALIDATION-RESULTATS.md` ; SOURCES ; RAPPORT M-037. Un écart d'élévation de la Terre (2,4e-5°) est **signalé sans être expliqué**.
+- Fichiers : créés [`pipeline/tools/horizons_validate.py`, `pipeline/tests/test_horizons_validation.py`, `tests/reference/horizons_validation.json`, `docs/VALIDATION-RESULTATS.md`] · modifiés [`SOURCES.md`, `STATUS.md`]
+- Commandes : `py -m pipeline.tools.horizons_validate` → 30 cas, max Δaz 9,0e-7°, max Δél 2,44e-5° · `pytest pipeline/tests -q` → 246 passed
+- Commit : « T-24 (début) : validation SPICE contre Horizons sur 5 sites, 3 dates, Soleil et Terre »
+- Prochaine étape : T-12 (frise).
 
 ## 7. Journal de CHAT (ajout uniquement)
 
