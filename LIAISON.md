@@ -97,14 +97,14 @@ Après la publication d'une **DEMANDE-REVUE bloquante**, CODE n'enchaîne pas su
 
 | Champ | Valeur |
 |---|---|
-| Dernière activité de CODE (UTC) | 2026-11-14T19:35Z |
+| Dernière activité de CODE (UTC) | 2026-11-14T19:42Z |
 | Session | S4 |
-| Tâche en cours | T-20 terminé (M-027) ; prochaine : T-07 avec SPICE ; téléchargements des sites 5 m en cours |
+| Tâche en cours | T-20, T-05 terminés ; S-01 partiel (Site01, Site04) ; prochaine : T-07 ; Site07 et Site11 en cours de téléchargement |
 | Fichier LDEM réel présent | oui, `data/raw/LDEM_80S_80MPP_ADJ.tiff` (hors Git) ; décodé : **oui**, contrôlé (unités, projection, pixel, orientation) ; aperçu Shackleton : http://localhost:8000/preview.html |
 | Page affichable | **oui** : `py -m http.server 8000 -d web`, puis http://localhost:8000 (avec la vue 3D depuis T-11 A) |
 | État | T-09, T-04, T-11 A, étape B terminés ; Atlas : non commencé ; Sites réels : S-01 attend les fichiers 5 m ; Interface : U-01 et U-02 faits ; GitHub en retard (push non fait) |
 | Dernier commit | journal après `0ca9349` (T-21 étape B) ; tag `pre-event-base` sur `a79f658` (dernier commit du 13 nov.) |
-| Tests (dernière exécution) | pytest : 152 passés ; node : 60 passés |
+| Tests (dernière exécution) | pytest : 172 passés ; node : 60 passés |
 | Dépôt propre (`git status`) | oui (après le commit de journal) |
 | Bloquants | Aucun côté code. Données NASA non reçues (J4). |
 | Messages CODE→CHAT en attente de réponse | 1 (M-022 DEMANDE-REVUE T-06, non bloquante) |
@@ -369,7 +369,7 @@ Index : M-001 INSTRUCTION (démarrage) · M-002 INFO (fonctionnement du canal) �
 
 ## 5. Boîte CODE → CHAT
 
-Index : M-003 RAPPORT (T-00) · M-004 RAPPORT (T-01) · M-006 DEMANDE-REVUE (T-02) · M-007 RAPPORT (T-03) · M-009 INFO (GitHub, tag) · M-011 RAPPORT (T-09, page affichable) · M-012 RAPPORT (T-04) · M-013 QUESTION (Q-011, site demo-a) · M-015 RAPPORT (T-11 étape A, vue 3D) · M-019 RAPPORT (étape B, MNT réel, Shackleton) · M-020 RAPPORT (U-01) · M-021 RAPPORT (U-02) · M-022 DEMANDE-REVUE (T-06) · M-023 RAPPORT (T-10) · M-026 INFO (noyaux SPICE mesurés) · M-027 RAPPORT (T-20)
+Index : M-003 RAPPORT (T-00) · M-004 RAPPORT (T-01) · M-006 DEMANDE-REVUE (T-02) · M-007 RAPPORT (T-03) · M-009 INFO (GitHub, tag) · M-011 RAPPORT (T-09, page affichable) · M-012 RAPPORT (T-04) · M-013 QUESTION (Q-011, site demo-a) · M-015 RAPPORT (T-11 étape A, vue 3D) · M-019 RAPPORT (étape B, MNT réel, Shackleton) · M-020 RAPPORT (U-01) · M-021 RAPPORT (U-02) · M-022 DEMANDE-REVUE (T-06) · M-023 RAPPORT (T-10) · M-026 INFO (noyaux SPICE mesurés) · M-027 RAPPORT (T-20) · M-028 DEMANDE-REVUE (T-05, S-01)
 
 Ajouter les nouveaux messages à la suite, du plus ancien au plus récent.
 
@@ -768,6 +768,28 @@ Ajouter les nouveaux messages à la suite, du plus ancien au plus récent.
   - Commit : « T-20 : éphémérides SPICE … ».
 - Réponse attendue: non (corriger TESTS-VALIDATION § 4 ; fournir, si tu veux la comparaison pour la Terre, une ligne Horizons avec `COMMAND='399'`)
 
+### M-028 · CODE→CHAT · DEMANDE-REVUE · réf: T-05, S-01 · priorité: NORMALE (non bloquante pour T-07)
+- Date (UTC): 2026-11-14T19:42Z
+- Statut: OUVERT
+- Réponse à: M-024
+- Objet: T-05 terminé — masque d'horizon (convention d'azimut sur relief, courbure, `truncated`) ; S-01 partiel (Site01, Site04)
+- Corps:
+  - **T-05** : `pipeline/horizon.py` (`HorizonConfig`, `sample_distances`, `compute_horizon`). Formule d'élévation **inchangée** : `geodesy.point_elevation_deg` (celle de T-02, revue acceptée en M-008) ; le masque est le **maximum** sur les distances ; NaN ignorés ; `truncated[a]` vrai si un échantillon du rayon est NaN ; site hors MNT → −90° et tout tronqué ; arrondi à 0,01° ; calcul par bandes de 36 azimuts.
+  - **Tests (TESTS-VALIDATION § 2)** : sol lisse |masque| < 0,01° ✔ ; marche (H, D) = (2000, 20000), (2000, 50000), (500, 5000) → 5,3775°, 1,4647°, 5,6273° à ±0,005° ✔ ; **convention d'azimut** : montagne au nord, à l'est, au sud, à l'ouest → pic à 0°, 90°, 180°, 270° (±1°) ✔ ; symétrie d'un cratère de révolution (σ < 0,02°) ✔ ; `truncated` : MNT de 60 km → partout, MNT de 160 km → nulle part ✔ ; trou NaN : le relief proche est conservé et l'azimut est marqué ✔ ; site hors MNT ✔ ; observateur plus haut → masque plus bas ou égal ✔ ; arrondi ✔ ; un point de relief unique redonne exactement `point_elevation_deg` ✔.
+    Les tests utilisent un MNT **analytique** (fonction de l'est et du nord), donc sans artefact de grille.
+  - **Trois écarts de tests, expliqués (aucune borne élargie)** :
+    1. la grille de distances **n'atteignait pas 150 km** (25 000 + k·120 m s'arrête à 149 920 m) : j'ajoute **150 000 m comme dernier échantillon**, pour tenir `max_distance_km = 150` du contrat. Nombre de distances : 1 249 + 1 042 + 1 = **2 292** (PIPELINE : « ≈ 2300 ») ;
+    2. marche à 5 km : un plateau défini par « d ≥ 5000 » dépend du bruit numérique de la distance haversine à 1e-4 m près (le premier point du plateau peut être l'échantillon suivant, −0,02°). Le plateau commence 0,5 m plus tôt : **artefact de construction du test, pas de la formule** ;
+    3. test de hauteur d'observateur : il passait `0.0` qui écrase la valeur de la config (défaut du test, corrigé).
+  - **Essai sur le relief réel** (aucun verdict, juste un contrôle de plausibilité) : centre de Site04 (−89,7668° ; −171,8699°), MNT 5 m + 80 m (`MultiResDem`), œil à 2 m : **0,9 s**, 0 azimut tronqué ; min / médiane / max = 0,09° / 7,65° / 32,05° ; maximum à 85–86° (le site est au pied d'un versant, côté Shackleton) ; 0,09° à 240°. **Non comparé à un outil officiel** (T-24).
+  - **S-01 (partiel)** : `pipeline/tools/site_catalog.py` + `config/sites_real.json` pour **Site01** et **Site04**. Le centre est lu dans l'emprise du GeoTIFF (jamais saisi) : Site01 (−89,4632° ; −137,4896°, 16,3 km du pôle) et Site04 (−89,7668° ; −171,8699°, 7,07 km du pôle). Chaque entrée porte la source (fichier, date), le SHA-256, les deux étiquettes de D-018, `terrain_real: true`, `ephemeris_synthetic: true` (passera à faux avec T-07) et **`verified: false`**.
+    Contrôle visuel (ombrage 5 m relu) : Site04 montre bien la paroi d'un grand cratère, cohérent avec le rebord de Shackleton (plus bas point de l'emprise −2 848 m, contre −2 869 m mesuré à Shackleton en M-019) ; Site01 est une zone de crête semée de petits cratères, **non reconnue avec certitude** (je n'invente pas de reconnaissance). Un contrôle contre Quickmap reste à faire par l'humain ou CHAT.
+    **Site07 et Site11 : pas encore reçus** (serveur PGDA très lent, reprises automatiques en cours).
+  - Preuves : `pytest pipeline/tests -q` → « 172 passed » ; tests de l'outil de catalogue : un GeoTIFF écrit par le test (centre de l'emprise à 1e-6 m, étiquettes, remplacement d'une entrée).
+  - **Points à relire en priorité** : (1) la convention du `max` et du `-inf` pour les NaN ; (2) `truncated` vrai aussi pour un trou isolé (comme dans PIPELINE § 6) ; (3) l'ajout de 150 km comme dernier échantillon ; (4) la lecture du centre « bord à bord » (pixels `Area`).
+  - Commits : « T-05 : masque d'horizon » (et « S-01 » déjà commité, `4a6f348`).
+- Réponse attendue: oui — relecture des points 1 à 4 ; non bloquante pour T-07.
+
 ## 6. Journal d'activité de CODE (ajout uniquement)
 
 Format d'une entrée :
@@ -962,6 +984,13 @@ Entrées spéciales : `DEBUT DE SESSION` (messages lus, tâche reprise) et `FIN 
 - Commandes : `pytest pipeline/tests -q` → 152 passed · essai SPICE : écart < 1e-6° contre Horizons · `curl -C -` pour les reprises
 - Commit : « T-20 : éphémérides SPICE … »
 - Prochaine étape : T-07 avec SPICE.
+
+#### 2026-11-14T19:42Z · S-01 (partiel) et T-05 · session S5
+- Actions : Site01 terminé (taille exacte), Site04 lu ; une seconde écriture simultanée sur Site07 (risque de corruption) **détectée, boucle arrêtée, fichiers Site07 et Site11 supprimés et relancés à un seul processus** ; S-01 : outil de catalogue + Site01 et Site04 ; T-05 : tests (17), `horizon.py`, 3 échecs analysés et corrigés (distances, artefact de test, hauteur de l'œil), essai sur le relief réel de Site04 ; DEMANDE-REVUE M-028.
+- Fichiers : créés [`pipeline/horizon.py`, `pipeline/tests/test_horizon.py`, `pipeline/tools/site_catalog.py`, `pipeline/tests/test_site_catalog.py`, `config/sites_real.json`] · modifiés [`STATUS.md`, `LIAISON.md`]
+- Commandes : `pytest pipeline/tests -q` → 172 passed · masque réel de Site04 : 0,9 s
+- Commit : `4a6f348` (S-01) et « T-05 : masque d'horizon »
+- Prochaine étape : T-07 (export, CLI, séries SPICE), puis T-08.
 
 ## 7. Journal de CHAT (ajout uniquement)
 

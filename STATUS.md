@@ -20,7 +20,7 @@
 | T-02 | Constantes, géodésie, projection | terminé — **revue CHAT demandée (M-006)** | `pytest pipeline/tests -q` → 68 passed ; 1e6 points : `destination` 0,16 s, `lonlat_to_xy` 0,05 s, `xy_to_lonlat` 0,09 s ; recalcul indépendant de TESTS-VALIDATION §§ 1-3 conforme |
 | T-03 | Jeu d'exemple fait main + constantes JS | terminé | `py -m pipeline.validate web/data/sample` → OK ; `pytest pipeline/tests -q` → 85 passed ; `node --test "web/tests/**/*.test.js"` → 3 pass |
 | T-04 | MNT synthétique et interface `Dem` | terminé (question Q-011 ouverte) | `pytest pipeline/tests -q` → 104 passed ; grille 20 m ±25 km : 13,2 s ; 120 m ±155 km : 13,8 s |
-| T-05 | Masque d'horizon | à faire | |
+| T-05 | Masque d'horizon | terminé — **revue CHAT demandée (M-028)** | `pytest pipeline/tests -q` → 172 passed (17 tests d'horizon) ; masque réel de Site04 (5 m + 80 m) en 0,9 s ; 0 azimut tronqué |
 | T-06 | Visibilité partagée et indicateurs | terminé — **revue CHAT demandée (M-022)** | `pytest` → 144 passed ; `node --test` → 51 pass ; mêmes valeurs d'or (`visible_fraction.json`, `horizon_at.json`) en Python et en JS ; `validate web/data/sample` → OK avec recalcul des KPI (§ 7.6) |
 | T-07 | Éphémérides de démonstration et export | à faire | |
 | T-08 | Génération de bout en bout + fichier d'or | à faire | |
