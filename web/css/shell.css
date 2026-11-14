@@ -134,6 +134,17 @@
 .proj-seg { margin-bottom: var(--s-2); flex-wrap: wrap; }
 .timebar .hint { flex-basis: 100%; margin: 0; }
 
+/* --- Fiche de site et visite guidée de l'Atlas (S-03, S-04) --- */
+.atlas-sites { margin-bottom: var(--s-3); display: flex; flex-direction: column; gap: var(--s-2); align-items: flex-start; }
+.sheet { width: 100%; padding: var(--s-3); border-radius: 12px; border: 1px solid var(--line-strong); background: var(--bg-2); }
+.sheet-head { display: flex; gap: var(--s-2); justify-content: space-between; align-items: flex-start; }
+.sheet-head h3 { margin: 0; font-size: var(--fs-16); text-transform: none; letter-spacing: normal; color: var(--text); }
+.sheet-close { min-height: 32px; width: 32px; padding: 0; }
+.chips { list-style: none; margin: var(--s-2) 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--s-1); }
+.chips li { padding: 2px 10px; border-radius: 999px; font-size: var(--fs-12); border: 1px solid var(--line-strong); color: var(--text-2); }
+.chips li.chip-real { color: var(--ok); border-color: var(--ok); }
+.chips li.chip-demo { color: var(--warn); border-color: var(--warn); }
+
 /* --- Cartes 2D de l'Atlas (A-05) : le canvas occupe la zone libre entre barre du haut, dock et tiroir ; la carte du monde garde son rapport 2:1 --- */
 .scene-map canvas { position: absolute; top: 96px; left: var(--s-3); width: calc(100% - 2 * var(--s-3)); height: calc(100% - 220px); display: block; cursor: crosshair; }
 .scene-map[data-scene="world"] canvas { height: auto; aspect-ratio: 2 / 1; max-height: calc(100% - 220px); top: 50%; transform: translateY(-50%); }

@@ -56,7 +56,7 @@ export function createMapPanel(store, atlas, openSite) {
     const sp = atlas.subPoints(store.get().tMs);
     const image = sp ? shade(m.base, sp.sun) : new ImageData(m.base.rgb, w, h);
     const layers = atlas.layerState();
-    drawMap(m.ctx, m.proj, { image, sun: sp?.sun ?? { latDeg: 0, lonDeg: 0 }, earth: sp?.earth ?? { latDeg: 0, lonDeg: 0 }, sites: sitesNow(), layers: sp ? layers : { ...layers, terminator: false, earthZone: false } }, style(), {});
+    drawMap(m.ctx, m.proj, { image, sun: sp?.sun ?? { latDeg: 0, lonDeg: 0 }, earth: sp?.earth ?? { latDeg: 0, lonDeg: 0 }, sites: sitesNow(), selectedId: store.get().selectedSiteId, layers: sp ? layers : { ...layers, terminator: false, earthZone: false } }, style(), {});
   }
 
   let sitesCache = [];
@@ -109,7 +109,7 @@ export function createMapPanel(store, atlas, openSite) {
     /** Réagit aux changements d'état : instant, langue. */
     update(changed) {
       const view = current();
-      if (MAP_KINDS.includes(view) && (changed.includes('tMs') || changed.includes('lang') || changed.includes('view'))) render(view);
+      if (MAP_KINDS.includes(view) && (changed.includes('tMs') || changed.includes('lang') || changed.includes('view') || changed.includes('selectedSiteId'))) render(view);
     },
   };
 }

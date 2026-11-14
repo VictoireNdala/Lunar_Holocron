@@ -184,6 +184,7 @@ export function drawMap(ctx, proj, state, style, labels) {
       ctx.beginPath(); ctx.arc(q.x, q.y, big ? 6 : 4, 0, 2 * Math.PI);
       ctx.fillStyle = s.synthetic ? style.synthetic : (big ? style.real : style.realSoft); ctx.fill();
       ctx.lineWidth = 1.5; ctx.strokeStyle = '#06080c'; ctx.stroke();
+      if (s.id === state.selectedId) { ctx.beginPath(); ctx.arc(q.x, q.y, 11, 0, 2 * Math.PI); ctx.lineWidth = 2.5; ctx.strokeStyle = style.text; ctx.stroke(); }
     }
   }
 }

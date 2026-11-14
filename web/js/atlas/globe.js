@@ -101,6 +101,7 @@ export function createGlobe(container, { textureUrl, onTextureError = () => {}, 
   graticule.visible = false;
 
   const siteGroup = new THREE.Group();
+  let selectedId = null;
   scene.add(siteGroup);
   const raycaster = new THREE.Raycaster();
   const pointer = new THREE.Vector2();
@@ -202,6 +203,13 @@ export function createGlobe(container, { textureUrl, onTextureError = () => {}, 
         m.position.set(p.x * MARKER_RADIUS, p.y * MARKER_RADIUS, p.z * MARKER_RADIUS);
         m.userData = s; siteGroup.add(m);
       }
+      api.setSelected(selectedId);
+      requestRender();
+    },
+    /** Marqueur du site dont la fiche est ouverte : agrandi (null = aucun). */
+    setSelected(id) {
+      selectedId = id;
+      for (const m of siteGroup.children) m.scale.setScalar(m.userData.id === id ? 1.9 : 1);
       requestRender();
     },
     setLayers(next) { Object.assign(layers, next); applyLayers(); },

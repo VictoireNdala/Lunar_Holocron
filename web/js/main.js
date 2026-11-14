@@ -5,6 +5,8 @@ import { createPanel3d } from './panel3d.js';
 import { createPlayback, snapNow } from './playback.js';
 import { createStore } from './store.js';
 import { createAtlasPanel } from './ui/atlaspanel.js';
+import { createAtlasSites } from './ui/atlassites.js';
+import { preloadTier1 } from './preload.js';
 import { createMapPanel } from './ui/mappanel.js';
 import { createPanoramaPanel } from './ui/panoramapanel.js';
 import { createPanels } from './ui/panels.js';
@@ -32,9 +34,11 @@ const source = createDataSource(dataRoot());
 const initialState = decode(window.location.hash);
 if (!initialState.view && !initialState.siteIdA) initialState.view = 'atlas'; // ATLAS § 7 : sans site dans l'URL, on s'ouvre sur l'Atlas
 const store = createStore(initialState);
-const openSite = (id) => store.set({ siteIdA: id, view: 'site' });
-const atlas = createAtlasPanel(store, source, openSite);
-const maps = createMapPanel(store, atlas, openSite);
+const openSite = (id) => store.set({ siteIdA: id, view: 'site', selectedSiteId: null });
+const selectSite = (id) => store.set({ selectedSiteId: id });
+const atlas = createAtlasPanel(store, source, selectSite);
+const maps = createMapPanel(store, atlas, selectSite);
+const atlasSites = createAtlasSites(store, atlas, openSite);
 const panel3d = createPanel3d(store);
 const shell = createShell(store);
 const panorama = createPanoramaPanel(store);
@@ -268,12 +272,14 @@ store.subscribe((state, changed) => {
   if (changed.includes('playing') && !state.playing && coveredRange() && state.tMs >= coveredRange().endMs) showTimeNote(t('time.ended'));
   if (changed.includes('siteIdA')) {
     if (changed.includes('view')) renderAll(); // bascule de vue immédiate ; le site se charge ensuite
+    atlasSites.render();
     loadSiteA();
     return;
   }
   renderAll();
   atlas.update(changed);
   maps.update(changed);
+  atlasSites.render();
   if (site) { panel3d.update(changed); panorama.update(changed); }
 });
 
@@ -289,11 +295,14 @@ async function start() {
     return;
   }
   showAtlasView();
+  atlasSites.setEntries(index.sites);
   const requested = store.get().siteIdA;
   const siteIdA = index.sites.some((s) => s.id === requested) ? requested : index.sites[0].id;
   if (siteIdA !== requested) store.set({ siteIdA });
   else await loadSiteA();
   window.history.replaceState(null, '', encode(store.get()));
+  // Préchargement discret du terrain et des séries des sites prioritaires, une fois la première vue affichée (S-04).
+  setTimeout(() => preloadTier1(source, index.sites), 1500);
 }
 
 start();

@@ -14,6 +14,7 @@ export const DEFAULT_STATE = Object.freeze({
   playing: false,
   speed: 3600,
   panoramaCenterAz: 0,
+  selectedSiteId: null,     // site dont la fiche est ouverte sur l'Atlas (pas dans l'URL)
 });
 
 /** Crée un store : get() renvoie un état figé ; set(patch) notifie les abonnés avec la liste des clés changées. */

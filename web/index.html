@@ -250,6 +250,24 @@
       <aside class="drawer" data-view-panel="atlas world south north" hidden>
         <section class="card glass" aria-labelledby="layers-heading" data-panel="layers" data-panel-view="atlas world south north" data-panel-title="atlas.layers">
           <h2 id="layers-heading" data-i18n="atlas.layers"></h2>
+          <div class="atlas-sites">
+            <button type="button" class="btn" id="tour-start" data-i18n="tour.start"></button>
+            <article id="site-sheet" class="sheet" aria-live="polite" hidden>
+              <header class="sheet-head">
+                <h3 id="sheet-name"></h3>
+                <button type="button" class="btn sheet-close" id="sheet-close" data-i18n-aria="sheet.close">×</button>
+              </header>
+              <ul id="sheet-chips" class="chips"></ul>
+              <dl id="sheet-facts" class="facts"></dl>
+              <p id="tour-status" class="hint" hidden></p>
+              <div class="toolbar">
+                <button type="button" class="btn primary" id="sheet-open" data-i18n="sheet.open"></button>
+                <button type="button" class="btn" id="tour-prev" data-i18n="tour.prev" hidden></button>
+                <button type="button" class="btn" id="tour-next" data-i18n="tour.next" hidden></button>
+                <button type="button" class="btn" id="tour-stop" data-i18n="tour.stop" hidden></button>
+              </div>
+            </article>
+          </div>
           <div class="seg proj-seg" role="group" data-i18n-aria="atlas.proj.label">
             <button type="button" class="btn proj-btn" data-proj-view="atlas" aria-pressed="false" data-i18n="atlas.proj.globe"></button>
             <button type="button" class="btn proj-btn" data-proj-view="world" aria-pressed="false" data-i18n="atlas.proj.world"></button>

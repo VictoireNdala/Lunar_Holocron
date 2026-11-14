@@ -8,8 +8,8 @@ import { formatNumber, getLang, t } from '../i18n.js';
 export const TEXTURE_URL = 'assets/moon/lroc_color_2k.jpg';
 const $ = (id) => document.getElementById(id);
 
-/** Crée la vue ; `source` = source de données ; `openSite(id)` ouvre la vue de site. Renvoie l'API partagée avec les cartes 2D. */
-export function createAtlasPanel(store, source, openSite) {
+/** Crée la vue ; `source` = source de données ; `selectSite(id)` ouvre la fiche du site. Renvoie l'API partagée avec les cartes 2D. */
+export function createAtlasPanel(store, source, selectSite) {
   let globe = null;
   let globalDoc = null;
   let sites = [];
@@ -97,7 +97,7 @@ export function createAtlasPanel(store, source, openSite) {
       globe = createGlobe($('globe'), {
         textureUrl: TEXTURE_URL,
         onTextureError: () => { failure = 'atlas.textureMissing'; renderStatus(); },
-        onSiteClick: (s) => openSite(s.id),
+        onSiteClick: (s) => selectSite(s.id),
         onHover: showTip,
         reducedMotion: window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false,
       });
@@ -107,6 +107,7 @@ export function createAtlasPanel(store, source, openSite) {
       return;
     }
     globe.setLayers(layerState());
+    globe.setSelected(store.get().selectedSiteId);
     globe.setSites((await ensureSites()).map((s) => ({ ...s, name: s.name[getLang()] ?? s.name.en })));
     await ensureGlobal();
     pushTime();
@@ -134,9 +135,12 @@ export function createAtlasPanel(store, source, openSite) {
     /** Réagit aux changements d'état (instant, langue). */
     update(changed) {
       if (changed.includes('tMs')) pushTime();
+      if (changed.includes('selectedSiteId')) globe?.setSelected(store.get().selectedSiteId);
       if (changed.includes('lang') && globe) globe.setSites(sites.map((s) => ({ ...s, name: s.name[getLang()] ?? s.name.en })));
       renderFacts();
     },
+    /** Caméra du globe vers un point (sans effet sur les cartes 2D, fixes). */
+    flyTo(latDeg, lonDeg) { globe?.flyTo(latDeg, lonDeg, 1.7); },
     /** Lecture lat/lon sous le curseur (cartes 2D). */
     setCursor(ll) { latLon = ll; renderFacts(); },
     setStatus(key) { failure = key; renderStatus(); },
