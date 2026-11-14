@@ -42,7 +42,9 @@ def test_web_data_holds_only_real_sites() -> None:
     assert index["synthetic"] is False
     assert index["sites"]
     for entry in index["sites"]:
-        assert entry["synthetic"] is False and entry["terrain_real"] is True and entry["ephemeris_synthetic"] is False, entry["id"]
+        # relief réel (5 m / 80 m) OU explicitement non modélisé (`flat`) : jamais fictif
+        assert entry["synthetic"] is False and entry["ephemeris_synthetic"] is False, entry["id"]
+        assert entry["terrain_real"] is True or entry["terrain_modeled"] is False, entry["id"]
         assert not re.match(r"demo-|sample-", entry["id"])
     assert not (data / "sample").exists()
     assert not list(data.rglob("demo-*"))

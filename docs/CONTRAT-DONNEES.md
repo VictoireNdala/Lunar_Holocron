@@ -189,6 +189,18 @@ Ajoutés sans rien retirer (l'interface ignore les champs inconnus ; un fichier 
 - **`web/data/global.json`** (Atlas, A-03, facultatif) : points sub-solaire et sub-terrestre sur la même période et le même pas que les sites (`time.t0_utc`, `step_s`, `n`), `lat_mdeg`, `lon_mdeg` (dans [-180000, 180000)) et `radius_mdeg` entiers pour `sun` et `earth`, avec `synthetic` et `provenance.ephemeris` ; schéma `global.schema.json`, vérifié par `validate` (longueurs = `time.n`, `synthetic` cohérent avec le moteur). Même vecteur Lune vers corps que les séries de site. Spécification : `docs/ATLAS.md` § 3.3.
 - **Seuil « any »** : `is_visible(f, 'any')` dépend de la fraction visible `f` (> 0), pas de l'écart d'élévation `d` : pour `d` à peine supérieur à `-r`, `f` peut s'arrondir à 0 en double précision (sans effet pratique).
 
+## 7 ter. Version 1.2 : catalogue étendu (D-026), champs optionnels
+
+Ajoutés sans rien retirer (un fichier 1.0 ou 1.1 reste valide ; l'interface ignore les champs inconnus). Présents dans `sites/<id>.json` **et** dans chaque entrée de `index.json` :
+- **`kind`** : `lola_site` (produit PGDA 78 à 5 m) · `feature` (entité nommée, nomenclature IAU) · `nasa_region` · `mission` · `apollo`. (`custom` est réservé au point libre du navigateur, D-027 : **interdit** dans tout fichier de site, vérifié par `validate`.)
+- **`position_basis`** : d'où vient la coordonnée (`dem_center` : centre de l'emprise du GeoTIFF ; `feature_center` : centre de l'entité d'après sa fiche IAU ; `apollo_nssdc` : module lunaire d'après le NSSDC).
+- **`approximate`** (booléen) et **`position_uncertainty_km`** (rayon de l'entité, pour dessiner l'empreinte) ; **`status`** (`landed` · `planned` · `failed` · `candidate` · `reference`) ; **`mission`** (texte) ; **`interest[]`** (`{kind, ref}` : `h_enhanced`, `psr`, `illumination`, `dte`, `lcross`, avec la référence ; jamais « contient de l'eau »).
+- **`sources[]`** : `{label, url, read_utc}`. **Une coordonnée n'entre au catalogue que si sa source est citée** (le pipeline refuse l'entrée sinon).
+- **`terrain_tier`** : `5m` (MNT PGDA 78, `provenance.dem.resolution_m == 5` vérifié) · `80m` (LDEM polaire 80 m, partout au sud de 80° S) · `flat` (relief **non modélisé**).
+- **`terrain_modeled`** (booléen). Un site `flat` a `terrain_modeled: false` **et** `terrain_real: false`, mais `synthetic: false` : **un relief non modélisé n'est pas un relief fictif**. Règle de 1.2 : `synthetic` = `ephemeris_synthetic` OU (NON `terrain_real` ET `terrain_modeled`). `provenance.dem.resolution_m` peut valoir 0 (pas de MNT).
+- Le niveau `tier` de l'index (entier) devient : 1 = sites prioritaires LOLA, 3 = entités nommées, 4 = sites Apollo (ordre de tri et de visite).
+- Azimuts `truncated` : au nord de 80° S le LDEM ne couvre plus le disque de 150 km ; les azimuts concernés sont marqués (minorant), pas masqués.
+
 ## 8. Évolution du contrat
 
 - Ajouter un champ **optionnel** : version mineure (`1.1`), l'interface ignore les champs inconnus.

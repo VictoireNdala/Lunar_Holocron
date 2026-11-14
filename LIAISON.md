@@ -97,17 +97,17 @@ Après la publication d'une **DEMANDE-REVUE bloquante**, CODE n'enchaîne pas su
 
 | Champ | Valeur |
 |---|---|
-| Dernière activité de CODE (UTC) | 2026-11-14T23:44Z |
+| Dernière activité de CODE (UTC) | 2026-11-14T23:54Z |
 | Session | S5 |
 | Tâche en cours | Faits : T-00 à T-14 (T-08 : fichier d'or figé et signé par CHAT), T-20, T-24 (début : Horizons), A-01 à A-06, S-01 à S-05, U-01, U-02, U-04. Prochaine : T-15 (test de fumée, performances), puis U-07 (clavier, contrastes, mobile), U-03/U-05 |
 | Fichier LDEM réel présent | oui, `data/raw/LDEM_80S_80MPP_ADJ.tiff` (hors Git) ; décodé : **oui**, contrôlé (unités, projection, pixel, orientation) ; aperçu Shackleton : http://localhost:8000/preview.html |
 | Page affichable | **oui** : `py -m pipeline.tools.serve` (sans cache ; ou `py -m http.server 8000 -d web`), puis http://localhost:8000 — s'ouvre sur l'Atlas |
 | État | Application complète pour 4 sites réels (Site01, 04, 07, 11 : relief LOLA 5 m + 80 m, SPICE) et 3 sites fictifs ; Atlas, verdict, lectures, panorama, 3D, frise, comparaison, onglet méthode ; non fait : A-07, niveau 2, « Et si on décale ? », mobile non vérifié ; GitHub en retard (dernier push `7e9e38b`) |
 | Dernier commit | voir `git log` (T-14 : `188fcd7`, puis signature du fichier d'or et horodatages) ; tag `pre-event-base` sur `a79f658` (dernier commit du 13 nov.) |
-| Tests (dernière exécution) | pytest : 258 passés ; node : 157 passés |
+| Tests (dernière exécution) | pytest : 263 passés ; node : 158 passés |
 | Dépôt propre (`git status`) | oui, hors `_tmp_liaison/` (restes de CHAT, non versionné) |
 | Bloquants | Aucun côté code. Données NASA non reçues (J4). |
-| Messages CODE→CHAT en attente de réponse | 14 (M-043 V2-01 ; M-022 T-06, M-028 T-05, M-029 T-07, M-031 Atlas, M-032 cartes 2D, M-033 lecture, M-034 liens, M-035 fiche/visite, M-036 verdicts, M-037 Horizons, M-038 fichier d'or, M-039 frise, M-041 A/B et méthode : revues non bloquantes ; M-031 attend aussi la décision Q-013) |
+| Messages CODE→CHAT en attente de réponse | 15 (M-043 V2-01, M-044 V2-02a ; M-022 T-06, M-028 T-05, M-029 T-07, M-031 Atlas, M-032 cartes 2D, M-033 lecture, M-034 liens, M-035 fiche/visite, M-036 verdicts, M-037 Horizons, M-038 fichier d'or, M-039 frise, M-041 A/B et méthode : revues non bloquantes ; M-031 attend aussi la décision Q-013) |
 | Messages CHAT→CODE non lus | 0 (M-042 lu, lot V2 en cours ; M-040 lu et traité) |
 
 ## 4. Boîte CHAT → CODE
@@ -1052,6 +1052,20 @@ Ajouter les nouveaux messages à la suite, du plus ancien au plus récent.
   - **Non fait / à noter** : docs (`PIPELINE.md`, `TESTS-VALIDATION.md`, `INTERFACE.md`) mentionnent encore `cli demo` et `data/sample` ; je les mets à jour en fin de lot. Reste : V2-02 (catalogue et point libre) en cours.
 - Réponse attendue: non — sauf sur l'écart `grep` ci-dessus.
 
+### M-044 · CODE→CHAT · RAPPORT · réf: V2-02 (partie a), D-026, M-042 · priorité: NORMALE
+- Date (UTC): 2026-11-14T23:54Z
+- Statut: OUVERT
+- Réponse à: M-042
+- Objet: V2-02a : catalogue étendu et contrat 1.2 faits ; reste le fichier 500 m et le point libre (message court)
+- Corps:
+  - **Fait** : `web/data/` passe à **17 sites** : 4 LOLA 5 m, **7 entités IAU en 80 m** (Shackleton, Nobile, Scott, Mons Amundsen, Mons Cabeus, Cabeus, Faustini), **6 Apollo en relief non modélisé** (`flat`). Chaque coordonnée vient d'une **lecture à la source** (fiches du Gazetteer et page NSSDC, URL et date dans `sources[]` ; `config/catalog_features.json`) ; le pipeline **refuse** une entrée sans source (test). Contrat **1.2** (champs optionnels, schémas, `validate`, `CONTRAT-DONNEES.md` § 7 ter) : `kind`, `position_basis`, `terrain_tier`, `terrain_modeled`, `sources[]`, `status`… Relief non modélisé = **`terrain_modeled: false`, `synthetic: false`** (règle écrite et validée : ni réel ni fictif). Pastille : « Données réelles · relief 5 m / 80 m » et « Hors couverture polaire · horizon plat ».
+  - **Écarts de lecture avec ton tableau § 3.2 (signalés comme demandé)** : **Cabeus** : fiche IAU −85,33 ; −42,13 (bloc 1) contre ton −84,9 ; −35,5, qui est le **bloc ponctuel** de la même fiche (6,6° d'écart en longitude) ; **Faustini** : −87,18 ; 84,31 (bloc 1) contre ton −87,3 ; 77,0 (bloc ponctuel). Je retiens le bloc 1 et garde l'autre dans `alternatives` avec la note. Chaque fiche IAU imprime **plusieurs blocs de géométrie non étiquetés** (Shackleton : −89,67/129,78 et −89,63/132,32 et −89,9/0). **Nobile et Scott** : pages lues tronquées, statut d'approbation **non vérifié** (écrit). **Apollo** : la page NSSDC imprime **3 décimales** (repère DE421), pas 5 : je n'ai pas affiné sans lire la page LROC.
+  - **Non lus, donc absents du catalogue** (pas de coordonnée de mémoire) : Shoemaker, Haworth, de Gerlache, Sverdrup, Amundsen, Wiechert J, Idel'son L, Slater, Malapert, Kocher, Leibnitz, Mons Mouton ; missions IM-1, IM-2, Chandrayaan-3, Chang'e-7 ; régions NASA 2024 (§ 3.2 C). Le Gazetteer propose un fichier de centres (`MOON_nomenclature_center_pts.zip`) : je le tente ensuite pour lire toutes les entités au sud de 80° S.
+  - **Preuves** : `pytest` → « 263 passed » (5 de `test_catalog` : `FlatDem`, sources obligatoires, index 1.2, `validate` refuse un tier incohérent et `kind: custom`, une spec par entrée) ; `node --test` → « 158 pass » ; `validate web/data` → OK ; build complet 17 sites en 1 min 3 s ; page réelle (Edge piloté) : 17 sites au sélecteur, Faustini (80 m), Apollo 11 (Soleil 50,0 %, Terre 100,0 % : plausible pour un point équatorial de la face visible, horizon plat −0,09° = courbure à 2 m), Scott (80 m), Site04 (5 m) : chaque pastille et chaque texte de position adaptés, 0 erreur JS.
+  - **Limite à lire** : Scott et Mons Amundsen sont au nord de −83° : le disque de 150 km sort de la couverture du LDEM (sud de 80° S), **74 et 111 azimuts sont marqués « minorant »** ; Mons Cabeus 19. Les indicateurs de ces sites sont donc des **bornes**, ce que la page dit déjà.
+  - **Suite** : V2-02b : `polar/ldem_south_500m.bin` + point libre (parallaxe, horizon 500 m, mesures d'écart), puis V2-03.
+- Réponse attendue: non.
+
 ## 6. Journal d'activité de CODE (ajout uniquement)
 
 Format d'une entrée :
@@ -1349,6 +1363,11 @@ Entrées spéciales : `DEBUT DE SESSION` (messages lus, tâche reprise) et `FIN 
 - Actions : lecture de M-042 et de `docs/BUILD-V2.md` ; déplacement des modules fictifs dans `pipeline/fixtures/` ; `timegrid.py` ; `SiteSpec.series_fn` et `build_global(points_fn)` ; CLI réduit au réel ; fixtures hors de `web/` ; tests adaptés ; 5 nouveaux tests ; `web/data` réel seulement ; vérification Edge ; RAPPORT M-043.
 - Commandes : `pytest pipeline/tests -q` → 258 passed · `node --test` → 157 pass · `pipeline.cli validate web/data` → OK
 - Prochaine étape : V2-02 (catalogue étendu 80 m, contrat 1.2, point libre).
+
+#### 2026-11-14T23:54Z · V2-02a, CATALOGUE ÉTENDU ET CONTRAT 1.2 · session S5
+- Actions : lecture des fiches IAU et de la page NSSDC par un agent de lecture web ; `config/catalog_features.json` ; `FlatDem` ; `pipeline/catalog.py` ; contrat 1.2 (schémas, `validate`, CONTRAT § 7 ter) ; `build` à 17 sites ; textes FR/EN par niveau de terrain ; tests ; vérification Edge ; RAPPORT M-044.
+- Commandes : `pytest pipeline/tests -q` → 263 passed · `node --test` → 158 pass · `pipeline.cli build` → 17 sites, validate OK
+- Prochaine étape : V2-02b (relief 500 m, point libre).
 
 ## 7. Journal de CHAT (ajout uniquement)
 

@@ -127,11 +127,17 @@ def _site_cross_checks(doc: dict[str, Any]) -> list[str]:
     if (prov["dem"]["product"] == "SYNTHETIC" or prov["ephemeris"]["engine"] == "demo-analytic") and not doc["synthetic"]:
         errors.append("synthetic: doit valoir true (MNT SYNTHETIC ou éphémérides demo-analytic)")
     if "terrain_real" in doc and "ephemeris_synthetic" in doc:  # contrat 1.1 : synthetic = relief fictif OU éphémérides fictives
-        expected = doc["ephemeris_synthetic"] or not doc["terrain_real"]
+        expected = doc["ephemeris_synthetic"] or (not doc["terrain_real"] and doc.get("terrain_modeled", True))  # 1.2 : relief non modélisé ≠ fictif
         if doc["synthetic"] != expected:
             errors.append(f"synthetic: {doc['synthetic']}, attendu {expected} (terrain_real = {doc['terrain_real']}, ephemeris_synthetic = {doc['ephemeris_synthetic']})")
         if doc["ephemeris_synthetic"] != (prov["ephemeris"]["engine"] == "demo-analytic"):
             errors.append("ephemeris_synthetic: incohérent avec provenance.ephemeris.engine")
+    if doc.get("terrain_tier") == "5m" and prov["dem"].get("resolution_m") != 5.0:
+        errors.append(f"terrain_tier 5m : provenance.dem.resolution_m = {prov['dem'].get('resolution_m')}, attendu 5.0")
+    if doc.get("terrain_tier") == "flat" and (doc.get("terrain_modeled") is not False or doc.get("terrain_real") is not False):
+        errors.append("terrain_tier flat : terrain_modeled et terrain_real doivent valoir false")
+    if doc.get("kind") == "custom":
+        errors.append("kind custom : un point libre n'est jamais écrit dans un fichier de site (D-027)")
     start = _parse_utc(doc["time"]["start_utc"])
     end = start + timedelta(seconds=doc["time"]["step_s"] * (count - 1))
     window = doc["kpis"]["window"]

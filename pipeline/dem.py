@@ -109,3 +109,22 @@ class MultiResDem(Dem):
         for dem in self.dems[1:]:
             result = result | dem.covers(lat_deg, lon_deg)
         return result
+
+
+class FlatDem(Dem):
+    """Relief NON MODÉLISÉ (contrat 1.2, `terrain_tier: "flat"`) : hauteur nulle partout, couverture totale ; seul l'horizon géométrique (courbure) reste.
+
+    Ni réel ni fictif : c'est l'absence de relief, dite comme telle (`terrain_modeled: false`).
+    """
+
+    product = "FLAT (relief non modélisé)"
+    license = "n/a"
+    resolution_m = 0.0
+
+    def height_m(self, lat_deg: ArrayLike, lon_deg: ArrayLike) -> FloatArray:
+        """0 m partout (forme de l'entrée)."""
+        return np.zeros(np.broadcast(np.asarray(lat_deg), np.asarray(lon_deg)).shape, dtype=np.float64)
+
+    def covers(self, lat_deg: ArrayLike, lon_deg: ArrayLike) -> BoolArray:
+        """Toujours vrai."""
+        return np.ones(np.broadcast(np.asarray(lat_deg), np.asarray(lon_deg)).shape, dtype=bool)

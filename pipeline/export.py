@@ -2,7 +2,7 @@
 
 JSON compact (`separators`, clés triées, UTF-8, saut de ligne final) ; aucune horloge dans les sorties (D-013) :
 `generated_utc` = `build_utc` de la configuration. Deux exécutions donnent des fichiers identiques octet pour octet.
-Version écrite : 1.1 (champs optionnels `terrain_real`, `ephemeris_synthetic`, `tier`… ; CONTRAT § 8, D-021).
+Version écrite : 1.2 (champs optionnels de 1.1 : `terrain_real`, `ephemeris_synthetic`, `tier`… ; de 1.2 : `kind`, `terrain_tier`, `terrain_modeled`, `sources`… ; CONTRAT § 7 ter, D-021, D-026).
 """
 
 from __future__ import annotations
@@ -23,7 +23,7 @@ from pipeline.horizon import HorizonConfig, compute_horizon
 from pipeline.kpi import compute_kpis
 from pipeline.terrain_grid import build_terrain_grid, encode_uint16
 
-SCHEMA_VERSION = "1.1"
+SCHEMA_VERSION = "1.2"
 UTC_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 GROUND_HEIGHT_DECIMALS = 2
 
@@ -73,6 +73,8 @@ class SiteSpec:
     verified: bool
     observer_height_m: float | None = None
     index_extra: dict[str, Any] = field(default_factory=dict)  # tier, pgda_id, lola_priority_site, nasa_2024_region…
+    terrain_modeled: bool = True  # False : relief NON MODÉLISÉ (horizon plat) ; ni réel ni fictif (D-026)
+    extra: dict[str, Any] = field(default_factory=dict)  # champs optionnels 1.2 (kind, position_basis, sources…) : site ET index
     series_fn: Callable[[str, float, float, Sequence[str]], dict[str, Any]] | None = None  # (corps, lat, lon, instants) → az/el/rayon ; hors SPICE
 
 
@@ -112,8 +114,8 @@ def build_site(spec: SiteSpec, cfg: PipelineConfig, out_dir: Path) -> dict[str, 
     z_min, z_max, raw = encode_uint16(grid.z_m)
 
     ephemeris_synthetic = spec.engine != "spice"
-    synthetic = ephemeris_synthetic or not spec.terrain_real
-    flags = {"terrain_real": spec.terrain_real, "ephemeris_synthetic": ephemeris_synthetic}
+    synthetic = ephemeris_synthetic or (not spec.terrain_real and spec.terrain_modeled)  # un relief non modélisé n'est pas « fictif »
+    flags = {"terrain_real": spec.terrain_real, "ephemeris_synthetic": ephemeris_synthetic, "terrain_modeled": spec.terrain_modeled, **spec.extra}
     site = {
         "schema_version": SCHEMA_VERSION, "id": spec.id, "name": spec.name, "synthetic": synthetic, **flags,
         "location": {"lat_deg": spec.lat_deg, "lon_deg": spec.lon_deg, "ground_height_m": round(ground, GROUND_HEIGHT_DECIMALS),

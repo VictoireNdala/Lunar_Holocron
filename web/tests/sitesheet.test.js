@@ -72,3 +72,18 @@ test('préchargement : rend la main entre les étapes et peut être annulé', as
   assert.deepEqual(calls, ['site04']); // annulé pendant le premier site : plus aucun autre site n'est lancé
   assert.deepEqual(done, ['site04']);  // le site en cours s'est bien chargé
 });
+
+test('contrat 1.2 : relief 5 m / 80 m / non modélisé dits distinctement ; « non modélisé » n\'est ni réel ni fictif', () => {
+  const base = { id: 'x', synthetic: false, ephemeris_synthetic: false, verified: false, lat_deg: -85, lon_deg: 10 };
+  assert.equal(siteSheet({ ...base, tier: 1, terrain_real: true, terrain_modeled: true, terrain_tier: '5m', kind: 'lola_site', position_basis: 'dem_center' }).reliefKey, 'sheet.relief5');
+  const feature = siteSheet({ ...base, tier: 3, terrain_real: true, terrain_modeled: true, terrain_tier: '80m', kind: 'feature', position_basis: 'feature_center' });
+  assert.equal(feature.reliefKey, 'sheet.relief80');
+  assert.equal(feature.tierKey, 'sheet.kindFeature');
+  assert.equal(feature.coordsKey, 'sheet.coordsFeature');
+  const apollo = siteSheet({ ...base, tier: 4, terrain_real: false, terrain_modeled: false, terrain_tier: 'flat', kind: 'apollo', position_basis: 'apollo_nssdc' });
+  assert.equal(apollo.reliefKey, 'sheet.reliefFlat');
+  assert.equal(apollo.relief, 'flat');
+  assert.equal(apollo.synthetic, false);
+  assert.equal(apollo.coordsKey, 'sheet.coordsApollo');
+  assert.equal(apollo.tierKey, 'sheet.kindApollo');
+});

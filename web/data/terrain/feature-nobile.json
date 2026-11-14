@@ -1,0 +1,1 @@
+{"center":{"lat_deg":-85.28,"lon_deg":53.27},"frame":"local-enu","grid":{"n":257,"size_m":20000.0,"spacing_m":78.125},"id":"feature-nobile","schema_version":"1.2","synthetic":false,"z":{"byte_order":"little","col_order":"west-to-east","encoding":"uint16-linear","file":"feature-nobile.bin","max_m":512.4873596259858,"min_m":-1875.3469566663262,"row_order":"north-to-south"}}

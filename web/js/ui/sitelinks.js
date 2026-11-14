@@ -28,7 +28,7 @@ export function createSiteLinks() {
     $('links-coords').textContent = current.coordsText;
     const manual = !current.quickmap.centered || !current.trek.centered;
     $('links-note').textContent = t(manual ? 'links.noteManual' : 'links.noteCentered');
-    $('links-source').textContent = t(site.synthetic ? 'links.sourceSynthetic' : 'links.sourceDem');
+    $('links-source').textContent = t(site.synthetic ? 'links.sourceSynthetic' : `links.source.${site.position_basis ?? 'dem_center'}`);
   }
 
   $('links-copy').addEventListener('click', async () => {

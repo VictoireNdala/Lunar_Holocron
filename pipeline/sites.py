@@ -42,7 +42,9 @@ def real_specs(path: Path, cfg: PipelineConfig, only: set[str] | None = None) ->
             id=s["id"], name={"fr": s["label_fr"], "en": s["label_en"]}, lat_deg=lat, lon_deg=lon, dem=dem,
             dem_info=_real_dem_info(s), engine="spice", terrain_real=True, verified=bool(s["verified"]),
             index_extra={"tier": s["tier"], "pgda_id": s["pgda_id"], "lola_priority_site": s["lola_priority_site"],
-                         "nasa_2024_region": s["nasa_2024_region"]}))
+                         "nasa_2024_region": s["nasa_2024_region"]},
+            extra={"kind": "lola_site", "position_basis": "dem_center", "approximate": False, "terrain_tier": "5m", "status": "candidate",
+                   "sources": [{"label": f"PGDA produit 78, {s['pgda_id']} (centre de l'emprise du GeoTIFF)", "url": s["dem"]["source"], "read_utc": "2026-11-14"}]}))
     return specs, skipped
 
 

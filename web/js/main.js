@@ -155,8 +155,9 @@ function renderHonesty() {
   // Le site affiché décide ; en attendant son chargement, l'index (prudence : « démonstration » si rien n'est chargé).
   const synthetic = site ? Boolean(site.synthetic) : !index || index.synthetic;
   $('honesty-chip').classList.toggle('chip-real', !synthetic);
-  $('honesty-label').textContent = t(synthetic ? 'honesty.synthetic' : 'honesty.real');
-  $('honesty-note').textContent = t(synthetic ? 'honesty.syntheticNote' : 'honesty.realNote');
+  const tier = !synthetic && site?.terrain_tier ? site.terrain_tier : null; // contrat 1.2 : 5m | 80m | flat, dit à l'écran
+  $('honesty-label').textContent = t(synthetic ? 'honesty.synthetic' : tier ? `honesty.real.${tier}` : 'honesty.real');
+  $('honesty-note').textContent = t(synthetic ? 'honesty.syntheticNote' : tier ? `honesty.realNote.${tier}` : 'honesty.realNote');
 }
 
 /** Boutons de lecture, de vitesse et sélecteur de projection : reflètent l'état commun. */

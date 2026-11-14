@@ -17,6 +17,7 @@ from pipeline import validate
 from pipeline.ephemeris_spice import kernels_available
 from pipeline.export import PipelineConfig, SiteSpec, build_site, write_index
 from pipeline.global_state import build_global, write_global
+from pipeline.catalog import catalog_specs
 from pipeline.sites import real_specs
 
 CONFIG_DIR = Path("config")
@@ -42,7 +43,7 @@ def main(argv: list[str] | None = None) -> int:
         sys.stdout.reconfigure(errors="replace")
     p = argparse.ArgumentParser(prog="pipeline.cli", description="Pipeline Lunar Holocron (hors ligne).")
     sub = p.add_subparsers(dest="command", required=True)
-    s = sub.add_parser("build", help="construit les sites réels dont les fichiers sont présents dans data/raw/, puis valide")
+    s = sub.add_parser("build", help="construit les sites réels (5 m), les entités nommées (80 m) et les sites Apollo (relief non modélisé), puis valide")
     s.add_argument("--out", type=Path, default=DEFAULT_OUT)
     s.add_argument("--config", type=Path, default=CONFIG_DIR / "pipeline.json")
     s.add_argument("--site", action="append", help="identifiant à construire (répétable) ; défaut : tous")
@@ -60,6 +61,8 @@ def main(argv: list[str] | None = None) -> int:
     t0 = time.perf_counter()
     only = set(args.site) if args.site else None
     specs, skipped = real_specs(CONFIG_DIR / "sites_real.json", cfg, only)
+    extra_specs, extra_skipped = catalog_specs(CONFIG_DIR / "catalog_features.json", cfg, only)
+    specs, skipped = specs + extra_specs, skipped + extra_skipped
     for reason in skipped:
         print(f"  ignoré : {reason}")
     unknown = (only or set()) - {sp.id for sp in specs}
