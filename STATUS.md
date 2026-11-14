@@ -4,7 +4,7 @@
 
 **Dernière mise à jour** : 2026-11-12 (T-09 terminé ; T-02 accepté par CHAT, M-008)
 **Phase** : J1 (pipeline) et J2 (interface) en parallèle
-**Prochaine tâche** : A-01 (textures NASA SVS, licence à lire) et A-02 (fonctions pures de l'Atlas), puis `ephemeris_demo`, A-03, A-04 ; S-01 dès que les fichiers 5 m sont là (ordre de M-016, M-017, M-018).
+**Prochaine tâche** (M-024, priorité) : **T-20** (noyaux SPICE, ≈ 45,6 Mo, **accord de l'humain demandé**, M-026) → T-07 avec SPICE → comparaison Horizons → S-01/S-02 (niveau 1, fichiers 5 m à télécharger) → T-05/T-08 → A-01 à A-04 ; S-05 (liens profonds) après S-02, avant S-03 (M-025). Sans l'accord : A-01 et A-02.
 **Fichier LDEM réel présent** : oui, `data/raw/LDEM_80S_80MPP_ADJ.tiff` (189 Mo, hors Git) ; **décodé : oui** (rasterio) ; unités (m), projection, convention de pixel et orientation **contrôlées** (2026-11-14, voir `SOURCES.md`).
 **Aperçu du relief réel** : `py -m pipeline.tools.crop_real_dem --id shackleton --lat -89.67 --lon 129.5`, puis http://localhost:8000/preview.html (données locales non versionnées).
 **Atlas** : non commencé. **Sites réels** : S-01 en attente des fichiers 5 m (4 × 39,1 Mo, à télécharger par l'humain). **Interface** : U-01 et U-02 terminés (coque : rail, barre flottante, scène plein écran, `view=`) ; U-03 à faire (avec T-12).

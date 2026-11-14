@@ -140,7 +140,9 @@ Tâches **U-01 à U-07** (§ 7 de `docs/UI-DESIGN.md`) : jetons et polices local
 ### Bloc « Sites réels » (D-016, spécification : `docs/SITES-REELS.md`)
 Tâches **S-01 à S-04** (§ 8 de `docs/SITES-REELS.md`) : positions lues dans les MNT 5 m de PGDA 78, outil de découpe par site, marqueurs et fiche sur l'Atlas, préchargement et visite guidée. S-01 et S-02 prolongent l'aperçu 3D du relief réel (M-014 étape B) et préparent T-22 / T-23.
 
-### J4 — Données réelles (dès que disponibles ; suivre `docs/BRANCHEMENT-DONNEES-REELLES.md`)
+**S-05 — Liens profonds (D-019).** Fonction pure `deepLinks(site)` (testée en node) et boutons « Ouvrir dans Quickmap / Moon Trek » dans la fiche de site, avec les coordonnées du site et un bouton « copier » ; aucun chargement automatique, aucune iframe, `nonetwork` inchangé. Spécification : `docs/SITES-REELS.md` § 9. Placement : avec U-04 (fiche de site), **après S-02** ; coupe : avant S-03.
+
+### J4 — Données réelles (dès que disponibles ; suivre `docs/BRANCHEMENT-DONNEES-REELLES.md` **et `docs/INVENTAIRE-DONNEES.md`**, fichiers, tailles, sources, ordre ; D-018)
 - **T-20** noyaux SPICE et tests de plausibilité · **T-21** MNT : étiquette, convention de projection, contrôle sur un cratère · **T-22** `RasterDem`, `MultiResDem` réel, un site complet · **T-23** sites réels vérifiés, construction de tous les sites ·
   **T-24** validation scientifique (Horizons, PGDA, outil officiel, sensibilité) et `docs/VALIDATION-RESULTATS.md`.
 
@@ -170,3 +172,4 @@ Tâches **S-01 à S-04** (§ 8 de `docs/SITES-REELS.md`) : positions lues dans l
 | Id | Idée | Origine | Remarque |
 |---|---|---|---|
 | B-01 | **Itinéraire de rover entre cratères** (trajet à pente et éclairage contraints, entre les sites de l'Atlas) | Demande de l'humain, 2026-11-14 | Hors périmètre du produit actuel (qui calcule des visibilités, pas des trajets) ; à spécifier à part (données de pente, critères, honnêteté sur les limites). |
+| B-02 | **Tuiles Moon Trek en texture d'imagerie** (pré-test : couches polaires, alignement, éclairage, licence ; puis éventuellement téléchargement par le pipeline) | Demande de l'humain, 2026-11-14 ; différé par D-019 (Q-012) | Risques listés dans D-019 ; ne rien intégrer avant décision de l'humain |

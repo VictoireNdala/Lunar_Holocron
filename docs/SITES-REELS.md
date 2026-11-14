@@ -2,6 +2,8 @@
 
 Rédigé par CHAT le 14 novembre 2026 (décision D-016), à partir de recherches sur le web. **Rien n'est écrit de mémoire** : chaque information porte sa source, et ce qui n'a **pas** été trouvé est dit. Lire d'abord `docs/ATLAS.md` (l'Atlas) et `docs/BRANCHEMENT-DONNEES-REELLES.md`.
 
+> **RÉVISION D-018 (14/11/2026, plus tard dans la journée) :** la liste des 13 régions de 2022 décrite ci-dessous a été **remplacée par NASA le 28/10/2024** (9 régions) et Artemis III n'est plus une mission d'alunissage. Les niveaux de construction (§ 3) restent valables comme **ordre de travail** ; l'étiquetage et le catalogue sont ceux de `docs/INVENTAIRE-DONNEES.md` § 4.
+
 ## 1. D'où vient la liste
 
 - **NASA, 19 août 2022** : 13 « régions candidates » pour l'atterrissage d'Artemis III, toutes à moins de 6° de latitude du pôle Sud. Chaque région fait environ **15 × 15 km** ; un site d'atterrissage y est une zone d'environ **100 m de rayon**, avec au moins une dizaine de sites par région ; toutes contiennent des sites éclairés en continu pendant **6,5 jours** (durée prévue de la mission).
@@ -87,3 +89,28 @@ Poids total attendu : 13 sites × (≈ 2,5 Mo + 132 Ko) ≈ 35 Mo hors ligne, ac
 | S-02 | Outil de découpe par site (suite de l'aperçu 3D de M-014 B) → `terrain/<id>.bin`, `sites/<id>.json` | S-01, lecteur GeoTIFF | validate OK ; octet pour octet sur 2 exécutions |
 | S-03 | Marqueurs et fiche sur l'Atlas | A-04, A-05, S-02 | § 6 ; niveaux visibles |
 | S-04 | Préchargement, cache, visite guidée | S-03 | § 6 ; pas de blocage de l'interface |
+| S-05 | Liens profonds Quickmap et Moon Trek (D-019) | S-02, U-04 | § 9 ; tests node ; `nonetwork` OK |
+
+## 9. Liens profonds vers Quickmap et Moon Trek (D-019, tâche S-05)
+
+**Décision (D-019).** Nous **n'intégrons pas** ces deux sites : l'iframe est refusée par les deux (en-têtes mesurés par CHAT le 14/11/2026), et charger leurs cartes casserait D-001 (aucun réseau à l'exécution). Nous proposons seulement des **liens** que l'utilisateur ouvre lui-même. La 3D et le panorama restent les nôtres, construits à partir du relief LOLA.
+
+**Ce qu'on construit.**
+- `web/js/links.js` : fonction **pure** `deepLinks(site)` (aucun DOM, aucun `fetch`). Entrée : latitude, longitude du site (centre du MNT source, § 4). Sortie : `{ quickmap: { url, centered }, trek: { url, centered } }` ou `null` si les coordonnées sont hors plage (−90 ≤ lat ≤ 90, −180 ≤ lon ≤ 360 ramené à [−180, 180]).
+- Dans la fiche de site : deux liens « Ouvrir dans Quickmap » et « Ouvrir dans Moon Trek », les coordonnées du site (latitude, longitude, avec la **source** du § 4) et un bouton « copier les coordonnées ».
+- Libellé honnête : « site externe, connexion requise ». Si `centered` est faux, le libellé dit « ouvre la carte ; centrage manuel » : on ne prétend jamais que la carte s'ouvre sur le site si ce n'est pas vérifié.
+
+**Ce que CHAT a observé (à vérifier par CODE ou l'humain en ouvrant les liens, pas à présumer).**
+- Quickmap, domaine actuel `https://quickmap.lroc.im-ldi.com/` (l'ancien `quickmap.lroc.asu.edu` redirige et sera retiré). Après navigation, l'adresse contient des paramètres comme `proj=`, `stack=`, `prjExtent=`, `earthShadowEnabled=true`. LROC indique que les liens courts et les paramètres d'URL servent à partager une vue (https://www.lroc.asu.edu/posts/1153). **Non vérifié** : quels paramètres centrent la carte sur une latitude et une longitude données.
+- Moon Trek, `https://trek.nasa.gov/moon/`. L'adresse porte un fragment de la forme `#v=0.1&x=…&y=…&z=…&p=urn:ogc:def:crs:EPSG::104903&b=moon&e=…`. **Non vérifié** : le sens exact de `x`, `y`, `z` et de `e`.
+- Règle : tant que le centrage par paramètres n'est pas **confirmé en ouvrant le lien** (capture à l'appui), `centered = false` et le lien ouvre la page d'accueil (ou la vue du pôle Sud si elle se nomme par un paramètre confirmé).
+
+**Règles.**
+- Liens `<a href target="_blank" rel="noopener noreferrer">`, déclenchés seulement par un clic. **Aucun** `fetch`, `preconnect`, `prefetch`, image ou iframe vers ces domaines.
+- Le test `nonetwork` reste vert : les seules chaînes `https://` autorisées dans `web/js/` sont dans `links.js` (et les licences vendorisées). Ajouter un test qui le vérifie.
+- Crédits affichés près des liens : « LROC QuickMap » et « NASA Moon Trek » ; **compléter par les crédits exacts lus sur leurs pages** et les noter dans `SOURCES.md`.
+- Hors périmètre : iframe, API, tuiles WMTS, proxy, captures d'écran de ces sites, texture d'imagerie (voir Q-012 et B-02).
+
+**Tests (node).** Site valide → deux URL ; latitude et longitude encodées correctement (point décimal, pas de virgule) ; coordonnées hors plage → `null` ; `deepLinks` n'appelle aucune API réseau (pas de `fetch` dans le module).
+
+**Estimation.** Moins d'une heure ; à faire après S-02, avec U-04. Coupe : avant S-03.
