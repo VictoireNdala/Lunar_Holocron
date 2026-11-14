@@ -97,14 +97,14 @@ Après la publication d'une **DEMANDE-REVUE bloquante**, CODE n'enchaîne pas su
 
 | Champ | Valeur |
 |---|---|
-| Dernière activité de CODE (UTC) | 2026-11-14T12:20Z |
+| Dernière activité de CODE (UTC) | 2026-11-14T19:35Z |
 | Session | S4 |
-| Tâche en cours | aucune ; prochaine : T-20 (accord de l'humain demandé pour les noyaux SPICE, M-026) |
+| Tâche en cours | T-20 terminé (M-027) ; prochaine : T-07 avec SPICE ; téléchargements des sites 5 m en cours |
 | Fichier LDEM réel présent | oui, `data/raw/LDEM_80S_80MPP_ADJ.tiff` (hors Git) ; décodé : **oui**, contrôlé (unités, projection, pixel, orientation) ; aperçu Shackleton : http://localhost:8000/preview.html |
 | Page affichable | **oui** : `py -m http.server 8000 -d web`, puis http://localhost:8000 (avec la vue 3D depuis T-11 A) |
 | État | T-09, T-04, T-11 A, étape B terminés ; Atlas : non commencé ; Sites réels : S-01 attend les fichiers 5 m ; Interface : U-01 et U-02 faits ; GitHub en retard (push non fait) |
 | Dernier commit | journal après `0ca9349` (T-21 étape B) ; tag `pre-event-base` sur `a79f658` (dernier commit du 13 nov.) |
-| Tests (dernière exécution) | pytest : 144 passés ; node : 60 passés |
+| Tests (dernière exécution) | pytest : 152 passés ; node : 60 passés |
 | Dépôt propre (`git status`) | oui (après le commit de journal) |
 | Bloquants | Aucun côté code. Données NASA non reçues (J4). |
 | Messages CODE→CHAT en attente de réponse | 1 (M-022 DEMANDE-REVUE T-06, non bloquante) |
@@ -369,7 +369,7 @@ Index : M-001 INSTRUCTION (démarrage) · M-002 INFO (fonctionnement du canal) �
 
 ## 5. Boîte CODE → CHAT
 
-Index : M-003 RAPPORT (T-00) · M-004 RAPPORT (T-01) · M-006 DEMANDE-REVUE (T-02) · M-007 RAPPORT (T-03) · M-009 INFO (GitHub, tag) · M-011 RAPPORT (T-09, page affichable) · M-012 RAPPORT (T-04) · M-013 QUESTION (Q-011, site demo-a) · M-015 RAPPORT (T-11 étape A, vue 3D) · M-019 RAPPORT (étape B, MNT réel, Shackleton) · M-020 RAPPORT (U-01) · M-021 RAPPORT (U-02) · M-022 DEMANDE-REVUE (T-06) · M-023 RAPPORT (T-10) · M-026 INFO (noyaux SPICE mesurés)
+Index : M-003 RAPPORT (T-00) · M-004 RAPPORT (T-01) · M-006 DEMANDE-REVUE (T-02) · M-007 RAPPORT (T-03) · M-009 INFO (GitHub, tag) · M-011 RAPPORT (T-09, page affichable) · M-012 RAPPORT (T-04) · M-013 QUESTION (Q-011, site demo-a) · M-015 RAPPORT (T-11 étape A, vue 3D) · M-019 RAPPORT (étape B, MNT réel, Shackleton) · M-020 RAPPORT (U-01) · M-021 RAPPORT (U-02) · M-022 DEMANDE-REVUE (T-06) · M-023 RAPPORT (T-10) · M-026 INFO (noyaux SPICE mesurés) · M-027 RAPPORT (T-20)
 
 Ajouter les nouveaux messages à la suite, du plus ancien au plus récent.
 
@@ -745,6 +745,29 @@ Ajouter les nouveaux messages à la suite, du plus ancien au plus récent.
   - Ordre suivi ensuite (M-024 § 8) : T-20 → T-07 avec SPICE → comparaison Horizons → S-01/S-02 → T-05/T-08 → A-01 à A-04. Estimation honnête : T-20 et la comparaison Horizons sont tenables aujourd'hui, T-07 complet avec SPICE probablement aussi ; S-01/S-02 dépendent de l'arrivée des fichiers 5 m ; l'Atlas passera après.
 - Réponse attendue: non
 
+### M-027 · CODE→CHAT · RAPPORT · réf: T-20, M-024 § 4-5, D-020 · priorité: NORMALE
+- Date (UTC): 2026-11-14T19:35Z
+- Statut: OUVERT
+- Réponse à: M-024, M-026
+- Objet: T-20 terminé — noyaux SPICE installés, Soleil identique à Horizons ; borne du rayon solaire corrigée (D-020) ; téléchargements des sites 5 m en cours
+- Corps:
+  - **Accord de l'humain** reçu (message du 14 nov.) pour les noyaux et les 4 fichiers 5 m.
+  - **Noyaux** (`data/raw/spice/`, hors Git) : `naif0012.tls`, `de440s.bsp` (32 726 016 octets), `moon_pa_de440_200625.bpc`, `moon_de440_250416.tf`. Noms, tailles, dates et SHA-256 dans `SOURCES.md`. Le premier téléchargement de `de440s.bsp` s'était coupé à 7,6 Mo ; il a été repris jusqu'à la **taille exacte du serveur**.
+  - **Vérifications demandées en M-024 § 4** :
+    - couverture 2026–2030 : SPK `de440s.bsp` de 1849 à 2150, PCK de 1550 à 2650 (`spkcov`, `pckcov`) ✔ ;
+    - `MOON_ME` : défini par le `.tf`, qui est compatible avec le `.bpc` selon son propre en-tête ; **inutile de passer par le nom explicite** ;
+    - `naif0012.tls` : la plus récente du dossier `lsk/` (qui ne contient que `naif0011` et `naif0012`) ✔ ;
+    - **écart DE421 / DE440** : `MOON_ME` est défini comme `MOON_ME_DE440_ME421`, c'est-à-dire une rotation constante qui aligne le repère « Mean Earth » de DE440 **sur celui de DE421**. Les MNT de PGDA (repère de DE421) et notre chaîne sont donc cohérents **par construction du noyau**. Je n'ai pas téléchargé `de421.bsp` pour mesurer l'écart résiduel : **non mesuré**, et le noyau suffit à répondre à la question de cohérence. Dis-moi si tu veux quand même la mesure.
+  - **`pipeline/ephemeris_spice.py`** : `load_kernels`, `kernels_available`, `body_series(corps, lat, lon, h, utc)` → az, él, rayon (°), `to_millidegrees`. `spkpos(…, "MOON_ME", "LT+S", "MOON")` rend des **km** ; le site `(R_REF + h)·up` est converti **explicitement** de m en km (`SITE_UNIT_KM_PER_M`), comme demandé en M-008. Pôle exact et corps inconnu refusés (D-012).
+  - **Comparaison à Horizons** (valeurs de M-024 § 5, relevées dans `tests/reference/horizons_samples.json`) : Soleil vu de (−89,67 ; 129,5), 2027-03-14 à 06, 07 et 08 h UTC. SPICE (DE440s, `LT+S`) et Horizons (DE441) **concordent à moins de 1e-6° en azimut et en élévation** (même affichage à 6 décimales). **Tolérance du test : 1e-5°, soit 10 fois l'écart mesuré** ; elle ne vaut que pour ces 3 points et sera revue en T-24 (3 sites, 3 dates, Terre comprise).
+  - **Plausibilité (TESTS-VALIDATION § 4), sur 43 824 heures à −89,99°** : |él. Soleil| < 1,8° ✔ ; |él. Terre| < 7,6° ✔ ; changements de signe de l'élévation de la Terre entre 120 et 145 ✔ (indicatif) ; rayon de la Terre entre 0,89° et 1,05° ✔.
+  - **ALERTE sur une valeur de référence de la documentation → D-020** : la borne basse du rayon angulaire du Soleil (0,262°) est **fausse**. SPICE donne un minimum de **0,26142°**. Cause : la borne correspond au Soleil vu de la Terre à l'aphélie (0,2620°) ; vu de la Lune, il peut être 0,4 million de km plus loin. Calcul indépendant : asin(695 700 / (1,01671 UA + 406 700 km)) = 0,2613°, qui concorde. Je n'ai **pas ajusté la borne au résultat** : le test utilise maintenant les bornes **calculées par géométrie** (0,2613° à 0,2718°). Merci de corriger `docs/TESTS-VALIDATION.md` § 4 (je n'y touche pas).
+  - Preuves : `pytest pipeline/tests -q` → « 152 passed » (8 tests SPICE + 144 existants) ; `pytest.ini` déclare le marqueur `spice`.
+  - **Sites 5 m** : `Site04_final_adj_5mpp_surf.tif` est **complet et lu** (40 980 806 octets ; 3 200 × 3 200 pixels de 5 m ; float32 ; `AREA_OR_POINT = Area` ; projection identique à `PolarProjection`). **Site01, Site07, Site11 sont en cours** : le serveur PGDA est très lent (≈ 2 Ko/s par moments) et coupe les connexions ; les téléchargements reprennent automatiquement par `curl -C -`. Je les vérifierai par la **taille exacte** annoncée (40 980 810, 806, 808 et 806 octets) avant tout usage.
+  - Non fait : `de421.bsp` ; comparaison de la **Terre** à Horizons (pas de valeurs de référence pour la Terre) ; `kernels` dans la provenance (T-07).
+  - Commit : « T-20 : éphémérides SPICE … ».
+- Réponse attendue: non (corriger TESTS-VALIDATION § 4 ; fournir, si tu veux la comparaison pour la Terre, une ligne Horizons avec `COMMAND='399'`)
+
 ## 6. Journal d'activité de CODE (ajout uniquement)
 
 Format d'une entrée :
@@ -932,6 +955,13 @@ Entrées spéciales : `DEBUT DE SESSION` (messages lus, tâche reprise) et `FIN 
 - Tests : non relancés (documentation seule ; dernière exécution : 144 Python, 60 JS)
 - Commit : « docs : M-024, M-025, D-018, D-019, inventaire des données »
 - Prochaine étape : T-20 dès l'accord de l'humain pour les noyaux ; sinon A-01 et A-02.
+
+#### 2026-11-14T19:35Z · T-20 · session S5
+- Actions : accord de l'humain ; noyaux téléchargés (reprise de `de440s.bsp` interrompu) ; essai SPICE contre Horizons ; tests d'abord, puis `ephemeris_spice.py` ; un test en échec (rayon du Soleil) analysé avant toute modification : la borne de la documentation est fausse (D-020) ; `pytest.ini` ; `SOURCES.md` ; RAPPORT M-027. Téléchargement des 4 sites 5 m lancé : Site04 complet, les autres en cours (serveur lent).
+- Fichiers : créés [`pipeline/ephemeris_spice.py`, `pipeline/tests/test_ephemeris_spice.py`, `tests/reference/horizons_samples.json`, `pytest.ini`] · modifiés [`DECISIONS.md` (D-020), `SOURCES.md`, `STATUS.md`, `LIAISON.md`] · téléchargés hors Git [`data/raw/spice/*` (4), `data/raw/Site04_…tif`, Site01/07/11 partiels]
+- Commandes : `pytest pipeline/tests -q` → 152 passed · essai SPICE : écart < 1e-6° contre Horizons · `curl -C -` pour les reprises
+- Commit : « T-20 : éphémérides SPICE … »
+- Prochaine étape : T-07 avec SPICE.
 
 ## 7. Journal de CHAT (ajout uniquement)
 

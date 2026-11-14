@@ -1,0 +1,16 @@
+{
+  "description": "Valeurs de référence JPL Horizons pour valider les éphémérides SPICE (T-24, TESTS-VALIDATION § 6.1). Relevées par CHAT le 2026-11-14 (docs/INVENTAIRE-DONNEES.md § 3.3), à ne pas modifier à la main.",
+  "source": "NASA/JPL Horizons System, https://ssd.jpl.nasa.gov/api/horizons.api (documentation : https://ssd-api.jpl.nasa.gov/doc/horizons.html)",
+  "consulted_utc": "2026-11-14",
+  "parameters": "COMMAND='10' (Soleil), EPHEM_TYPE='OBSERVER', CENTER='coord@301', SITE_COORD='129.5,-89.67,0', STEP_SIZE='1 h', QUANTITIES='4' (azimut et élévation apparents) ; source DE441, repère MEAN_ME, Lune sphère 1 737,4 km, sans réfraction, direction du centre, avec temps de lumière, déviation de lumière et aberration.",
+  "site": { "lat_deg": -89.67, "lon_deg": 129.5, "height_m": 0.0 },
+  "body": "sun",
+  "measured_max_deg": 0.000001,
+  "tolerance_deg": 0.00001,
+  "tolerance_note": "Écart maximal MESURÉ entre SPICE (DE440s, LT+S) et Horizons (DE441) sur ces 3 points : < 1e-6° (affichage à 6 décimales identique). La tolérance du test (1e-5°) est 10 fois cet écart ; elle ne vaut que pour ces 3 points et sera revue en T-24 sur 3 sites et 3 dates.",
+  "samples": [
+    { "utc": "2027-03-14T06:00:00", "az_deg": 334.390842, "el_deg": -0.535050 },
+    { "utc": "2027-03-14T07:00:00", "az_deg": 333.883055, "el_deg": -0.537365 },
+    { "utc": "2027-03-14T08:00:00", "az_deg": 333.375278, "el_deg": -0.539705 }
+  ]
+}
