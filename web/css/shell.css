@@ -128,6 +128,12 @@
 .atlas-actions { margin: var(--s-3) 0; }
 [data-scene="atlas"] .view3d canvas { cursor: grab; }
 
+/* --- Lecture animée et sélecteur de projection (A-06) --- */
+.playback { display: flex; flex-wrap: wrap; gap: var(--s-2) var(--s-3); align-items: center; }
+.speed-btn[aria-pressed="true"], .proj-btn[aria-pressed="true"] { background: var(--text); color: var(--bg-0); font-weight: 600; }
+.proj-seg { margin-bottom: var(--s-2); flex-wrap: wrap; }
+.timebar .hint { flex-basis: 100%; margin: 0; }
+
 /* --- Cartes 2D de l'Atlas (A-05) : le canvas occupe la zone libre entre barre du haut, dock et tiroir ; la carte du monde garde son rapport 2:1 --- */
 .scene-map canvas { position: absolute; top: 96px; left: var(--s-3); width: calc(100% - 2 * var(--s-3)); height: calc(100% - 220px); display: block; cursor: crosshair; }
 .scene-map[data-scene="world"] canvas { height: auto; aspect-ratio: 2 / 1; max-height: calc(100% - 220px); top: 50%; transform: translateY(-50%); }

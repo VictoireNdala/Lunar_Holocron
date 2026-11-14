@@ -215,7 +215,18 @@
             <button type="button" class="btn" data-step-h="1" data-i18n="time.plusHour"></button>
             <button type="button" class="btn" data-step-h="24" data-i18n="time.plusDay"></button>
           </div>
+          <div class="playback">
+            <button type="button" class="btn primary" id="play-toggle" aria-pressed="false" data-i18n="time.play"></button>
+            <div class="seg" role="group" data-i18n-aria="time.speed">
+              <button type="button" class="btn speed-btn" data-speed="1" aria-pressed="false">×1</button>
+              <button type="button" class="btn speed-btn" data-speed="60" aria-pressed="false">×60</button>
+              <button type="button" class="btn speed-btn" data-speed="3600" aria-pressed="true">×3600</button>
+              <button type="button" class="btn speed-btn" data-speed="86400" aria-pressed="false">×86 400</button>
+            </div>
+            <button type="button" class="btn" id="time-now" data-i18n="time.now"></button>
+          </div>
           <p id="time-current" class="current"></p>
+          <p id="time-note" class="hint" role="status" hidden></p>
           <p id="time-hint" class="visually-hidden" data-i18n="time.hint"></p>
           <p id="time-warning" class="warning" role="status" hidden></p>
         </section>
@@ -225,6 +236,12 @@
       <aside class="drawer" data-view-panel="atlas world south north" hidden>
         <section class="card glass" aria-labelledby="layers-heading" data-panel="layers" data-panel-view="atlas world south north" data-panel-title="atlas.layers">
           <h2 id="layers-heading" data-i18n="atlas.layers"></h2>
+          <div class="seg proj-seg" role="group" data-i18n-aria="atlas.proj.label">
+            <button type="button" class="btn proj-btn" data-proj-view="atlas" aria-pressed="false" data-i18n="atlas.proj.globe"></button>
+            <button type="button" class="btn proj-btn" data-proj-view="world" aria-pressed="false" data-i18n="atlas.proj.world"></button>
+            <button type="button" class="btn proj-btn" data-proj-view="south" aria-pressed="false" data-i18n="atlas.proj.south"></button>
+            <button type="button" class="btn proj-btn" data-proj-view="north" aria-pressed="false" data-i18n="atlas.proj.north"></button>
+          </div>
           <label class="check"><input id="layer-terminator" type="checkbox" checked><span class="swatch swatch-sun" aria-hidden="true"></span><span data-i18n="atlas.terminator"></span></label>
           <label class="check"><input id="layer-earth" type="checkbox" checked><span class="swatch swatch-earth" aria-hidden="true"></span><span data-i18n="atlas.earthZone"></span></label>
           <label class="check"><input id="layer-graticule" type="checkbox"><span data-i18n="atlas.graticule"></span></label>

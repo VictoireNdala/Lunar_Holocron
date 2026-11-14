@@ -125,6 +125,12 @@ export function createAtlasPanel(store, source, openSite) {
     /** Démarre le globe au premier affichage (three.js chargé à la demande). */
     show() { starting ??= start(); return starting; },
     ensureSites, ensureGlobal, subPoints, layerState,
+    /** Période couverte par global.json ({ startMs, endMs }), ou null tant qu'il n'est pas chargé. */
+    timeRange() {
+      if (!globalDoc) return null;
+      const startMs = Date.parse(globalDoc.time.t0_utc);
+      return { startMs, endMs: startMs + (globalDoc.time.n - 1) * globalDoc.time.step_s * 1000 };
+    },
     /** Réagit aux changements d'état (instant, langue). */
     update(changed) {
       if (changed.includes('tMs')) pushTime();

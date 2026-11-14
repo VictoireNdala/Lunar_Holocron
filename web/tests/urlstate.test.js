@@ -31,3 +31,11 @@ test('valeurs invalides ignorées sans erreur', () => {
 test('les valeurs valides sont gardées même si d\'autres sont invalides', () => {
   assert.deepEqual(decode('#a=demo-a&thr=foo&w=7'), { siteIdA: 'demo-a', windowDays: 7 });
 });
+
+test('alias proj= (ATLAS § 4) : désigne la vue d\'Atlas ; view= l\'emporte ; valeur inconnue ignorée', () => {
+  assert.deepEqual(decode('#proj=globe'), { view: 'atlas' });
+  assert.deepEqual(decode('#proj=south&t=2027-03-14T06:00Z'), { view: 'south', tMs: T });
+  assert.deepEqual(decode('#view=north&proj=world'), { view: 'north' });
+  assert.deepEqual(decode('#proj=toString'), {});
+  assert.deepEqual(decode('#proj=mars'), {});
+});

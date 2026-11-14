@@ -7,6 +7,7 @@ const SITE_ID = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 const TIME = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})Z$/;
 const LANGS = Object.freeze(['fr', 'en', 'sw']);
 const WINDOWS = Object.freeze(['7', '30', '365', 'all']);
+const PROJ_VIEWS = Object.freeze({ globe: 'atlas', world: 'world', south: 'south', north: 'north' });
 
 /** Instant (ms UTC) → « AAAA-MM-JJTHH:MMZ » (tronqué à la minute). */
 function formatTime(tMs) {
@@ -50,6 +51,8 @@ export function decode(hash) {
   const get = (k) => { try { return params.get(k); } catch { return null; } };
   const view = get('view');
   if (VIEWS.includes(view)) out.view = view;
+  const proj = get('proj'); // alias de ATLAS § 4 : `proj=globe|world|south|north` désigne la vue d'Atlas correspondante
+  if (!out.view && Object.hasOwn(PROJ_VIEWS, proj)) out.view = PROJ_VIEWS[proj];
   const a = get('a');
   if (a && SITE_ID.test(a)) out.siteIdA = a;
   const b = get('b');

@@ -2,6 +2,7 @@
 import { bodyStateAt, createDataSource, DataError, siteTimeRange } from './data.js';
 import { formatNumber, formatUtc, getLang, setLang, t } from './i18n.js';
 import { createPanel3d } from './panel3d.js';
+import { createPlayback, snapNow } from './playback.js';
 import { createStore } from './store.js';
 import { createAtlasPanel } from './ui/atlaspanel.js';
 import { createMapPanel } from './ui/mappanel.js';
@@ -37,6 +38,9 @@ const panel3d = createPanel3d(store);
 const shell = createShell(store);
 const panorama = createPanoramaPanel(store);
 const panels = createPanels();
+/** Période couverte : celle du site affiché (même période pour tous), à défaut celle de global.json. */
+const coveredRange = () => (site ? siteTimeRange(site) : atlas.timeRange());
+const playback = createPlayback({ store, getRange: coveredRange, clock: () => performance.now(), schedule: (fn) => requestAnimationFrame(fn), cancel: (h) => cancelAnimationFrame(h) });
 let index = null;
 let site = null;
 
@@ -151,6 +155,21 @@ function renderHonesty() {
   $('honesty-note').textContent = t(synthetic ? 'honesty.syntheticNote' : 'honesty.realNote');
 }
 
+/** Boutons de lecture, de vitesse et sélecteur de projection : reflètent l'état commun. */
+function renderPlayback() {
+  const { playing, speed, view } = store.get();
+  $('play-toggle').setAttribute('aria-pressed', String(playing));
+  $('play-toggle').textContent = t(playing ? 'time.pause' : 'time.play');
+  for (const btn of document.querySelectorAll('.speed-btn')) btn.setAttribute('aria-pressed', String(Number(btn.dataset.speed) === speed));
+  for (const btn of document.querySelectorAll('.proj-btn')) btn.setAttribute('aria-pressed', String(btn.dataset.projView === view));
+}
+
+/** Message sous la barre de temps (« maintenant » hors période, fin de lecture) ; vide = masqué. */
+function showTimeNote(text) {
+  $('time-note').textContent = text ?? '';
+  $('time-note').hidden = !text;
+}
+
 /** Démarre la vue Atlas demandée (globe ou carte 2D) ; chargement paresseux. */
 function showAtlasView() {
   const view = store.get().view;
@@ -165,6 +184,7 @@ function renderAll() {
   const entry = index && site ? index.sites.find((s) => s.id === site.id) : null;
   shell.render(store.get(), entry ? siteName(entry) : null, Boolean(site));
   panels.refresh();
+  renderPlayback();
   showAtlasView();
   if (!index) return;
   renderSiteSelect();
@@ -226,6 +246,15 @@ function bindControls() {
   for (const btn of document.querySelectorAll('[data-step-h]')) {
     btn.addEventListener('click', () => store.set({ tMs: store.get().tMs + Number(btn.dataset.stepH) * HOUR_MS }));
   }
+  $('play-toggle').addEventListener('click', () => { showTimeNote(null); playback.toggle(); });
+  for (const btn of document.querySelectorAll('.speed-btn')) btn.addEventListener('click', () => playback.setSpeed(Number(btn.dataset.speed)));
+  for (const btn of document.querySelectorAll('.proj-btn')) btn.addEventListener('click', () => store.set({ view: btn.dataset.projView }));
+  $('time-now').addEventListener('click', () => {
+    const range = coveredRange();
+    const snap = snapNow(Date.now(), range);
+    if (snap.outside) showTimeNote(t('time.nowOutside', { start: formatUtc(range.startMs), end: formatUtc(range.endMs) }));
+    else { showTimeNote(null); store.set({ tMs: snap.tMs }); }
+  });
   window.addEventListener('hashchange', () => store.set(decode(window.location.hash)));
 }
 
@@ -233,6 +262,7 @@ function bindControls() {
 store.subscribe((state, changed) => {
   if (changed.includes('lang')) setLang(state.lang);
   window.history.replaceState(null, '', encode(state));
+  if (changed.includes('playing') && !state.playing && coveredRange() && state.tMs >= coveredRange().endMs) showTimeNote(t('time.ended'));
   if (changed.includes('siteIdA')) {
     if (changed.includes('view')) renderAll(); // bascule de vue immédiate ; le site se charge ensuite
     loadSiteA();

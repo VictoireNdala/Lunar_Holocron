@@ -97,17 +97,17 @@ Après la publication d'une **DEMANDE-REVUE bloquante**, CODE n'enchaîne pas su
 
 | Champ | Valeur |
 |---|---|
-| Dernière activité de CODE (UTC) | 2026-11-14T21:25Z |
+| Dernière activité de CODE (UTC) | 2026-11-14T21:45Z |
 | Session | S4 |
-| Tâche en cours | A-01 à A-05 faits (M-031, M-032) ; prochaine : A-06 (onglets, URL, lecture animée) |
+| Tâche en cours | A-01 à A-06 faits (M-031 à M-033) ; prochaine : S-05 (liens profonds) |
 | Fichier LDEM réel présent | oui, `data/raw/LDEM_80S_80MPP_ADJ.tiff` (hors Git) ; décodé : **oui**, contrôlé (unités, projection, pixel, orientation) ; aperçu Shackleton : http://localhost:8000/preview.html |
 | Page affichable | **oui** : `py -m http.server 8000 -d web`, puis http://localhost:8000 (avec la vue 3D depuis T-11 A) |
 | État | T-09, T-04, T-11 A, étape B terminés ; Atlas : non commencé ; Sites réels : S-01 attend les fichiers 5 m ; Interface : U-01 et U-02 faits ; GitHub en retard (push non fait) |
-| Dernier commit | `24c5b66` (A-05) ; tag `pre-event-base` sur `a79f658` (dernier commit du 13 nov.) |
-| Tests (dernière exécution) | pytest : 215 passés ; node : 85 passés |
+| Dernier commit | A-06 (voir journal) ; tag `pre-event-base` sur `a79f658` (dernier commit du 13 nov.) |
+| Tests (dernière exécution) | pytest : 215 passés ; node : 95 passés |
 | Dépôt propre (`git status`) | oui (après le commit de journal) |
 | Bloquants | Aucun côté code. Données NASA non reçues (J4). |
-| Messages CODE→CHAT en attente de réponse | 5 (M-022 T-06, M-028 T-05, M-029 T-07, M-031 Atlas, M-032 cartes 2D : revues non bloquantes ; M-031 attend aussi la décision Q-013) |
+| Messages CODE→CHAT en attente de réponse | 6 (M-022 T-06, M-028 T-05, M-029 T-07, M-031 Atlas, M-032 cartes 2D, M-033 lecture : revues non bloquantes ; M-031 attend aussi la décision Q-013) |
 | Messages CHAT→CODE non lus | 0 (M-024, M-025 lus) |
 
 ## 4. Boîte CHAT → CODE
@@ -877,6 +877,21 @@ Ajouter les nouveaux messages à la suite, du plus ancien au plus récent.
   - Commit : « A-05 : cartes 2D (monde, pôle Sud, pôle Nord) » (`24c5b66`).
 - Réponse attendue: non bloquante ; avis sur le zoom polaire (limite de latitude réglable) bienvenu.
 
+### M-033 · CODE→CHAT · RAPPORT · réf: A-06, D-022 · priorité: NORMALE
+- Date (UTC): 2026-11-14T21:45Z
+- Statut: OUVERT
+- Réponse à: M-016
+- Objet: A-06 : sélecteur de projection, lecture animée, « maintenant » ; correctif de la page blanche (cache)
+- Corps:
+  - **Lecture** (`web/js/playback.js`, pur + contrôleur à horloge injectable) : boutons Lecture/Pause, vitesses ×1, ×60, ×3600, ×86 400, « Maintenant » (instant réel arrondi à la minute **si** dans la période couverte, sinon message), arrêt borné en fin de période (jamais d'extrapolation). Le temps simulé suit le **temps réel mesuré** (pas le nombre d'images), mise à jour toutes les 100 ms réelles. Même barre de temps pour l'Atlas et la vue de site.
+  - **Projection** : sélecteur Globe · Monde · Pôle Sud · Pôle Nord dans le panneau de l'Atlas (en plus du rail). **Écart à ATLAS § 4, D-022 (provisoire)** : la projection est portée par `view=` ; `proj=globe|world|south|north` est accepté en entrée comme alias.
+  - **Preuves** : `node --test "web/tests/**/*.test.js"` → « tests 95, pass 95 » dont 8 de `playback` : 10 s à ×3600 → +10 h ±1 % (images à 60 Hz **et** à 5 Hz), les 4 vitesses sur 20 s ±1 %, pause, fin de période, écart plafonné, « maintenant » ; alias `proj=` testé. **Page réelle** (Edge piloté par CDP, vrais clics) : 5,80 s réelles à ×3600 → 2027-03-14 11:49 UTC (attendu 11:48), pause qui tient, « Maintenant » → 2026-11-14 21:31 UTC, sélecteur → `#view=world`, scène visible.
+  - **Défaut trouvé en vérifiant** : la pause perdait la fin de l'intervalle en cours (jusqu'à ~1 s sur un Edge sans GPU : 5 h 17 min au lieu de 5 h 59 min) ; elle rend maintenant le temps écoulé (test ajouté). Précision : le retard de la lecture est < 1 pas de mise à jour (100 ms), donc le critère « ±1 % » de ATLAS § 4 n'est tenu que sur ≥ 10 s ; sur 5 s il dépasserait 1 % (mon premier test l'a montré).
+  - **Correctif de la page blanche** (signalée par l'humain dans Chrome) : cause = modules JS en cache périmé ; `py -m pipeline.tools.serve` (sans cache) et message de secours si l'application ne démarre pas (journal 21:25).
+  - **Limites constatées** : (1) la lecture à ×86 400 n'a pas été regardée en animation, seulement mesurée ; (2) à haute vitesse, la vue 3D et le panorama se redessinent à chaque mise à jour : fluidité sur une vraie machine **non mesurée** ; (3) mobile non testé ; (4) pas de raccourci clavier (espace) pour lecture/pause ; (5) le zoom du pôle Sud (M-032) n'est pas fait.
+  - Commit : « A-06 : lecture animée, sélecteur de projection, alias proj= ».
+- Réponse attendue: non bloquante ; confirmer D-022 (écart à ATLAS § 4).
+
 ## 6. Journal d'activité de CODE (ajout uniquement)
 
 Format d'une entrée :
@@ -1113,6 +1128,13 @@ Entrées spéciales : `DEBUT DE SESSION` (messages lus, tâche reprise) et `FIN 
 - Corrections : (1) `pipeline/tools/serve.py` (`py -m pipeline.tools.serve`) : serveur local avec `Cache-Control: no-store` (en-tête vérifié avec curl) ; (2) filet de sécurité dans `web/index.html` : si `main.js` n'a pas démarré après 4 s, message bilingue statique « Rechargez sans cache (Ctrl+Maj+R) » au lieu d'une page blanche (vérifié sur capture) ; (3) README mis à jour. La commande `py -m http.server` de CLAUDE.md reste valable ; je propose à l'humain/CHAT d'y substituer `serve` (CLAUDE.md non modifié par CODE).
 - Commandes : `node --test` → 85 pass · `pytest` → 215 passed
 - Prochaine étape : A-06.
+
+#### 2026-11-14T21:45Z · A-06, LECTURE ET PROJECTION · session S5
+- Actions : `playback.js` et ses tests (horloge simulée) ; boutons de lecture, vitesses, « maintenant » ; sélecteur de projection ; alias `proj=` ; `timeRange()` de l'Atlas ; vérification dans Edge piloté par CDP (vrais clics) ; défaut de la pause corrigé ; D-022 ; RAPPORT M-033.
+- Fichiers : créés [`web/js/playback.js`, `web/tests/playback.test.js`] · modifiés [`web/index.html`, `web/css/shell.css`, `web/js/{main,i18n,urlstate}.js`, `web/js/ui/atlaspanel.js`, `web/tests/urlstate.test.js`, `DECISIONS.md`, `STATUS.md`]
+- Commandes : `node --test "web/tests/**/*.test.js"` → 95 pass · page réelle pilotée par CDP (lecture, pause, maintenant, projection)
+- Commit : « A-06 : lecture animée, sélecteur de projection, alias proj= »
+- Prochaine étape : S-05 (liens profonds, avant S-03).
 
 ## 7. Journal de CHAT (ajout uniquement)
 
