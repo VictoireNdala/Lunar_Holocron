@@ -5,7 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Lunar Holocron</title>
   <link rel="icon" href="data:,">
-  <link rel="stylesheet" href="./css/main.css">
+  <link rel="stylesheet" href="./css/tokens.css">
+  <link rel="stylesheet" href="./css/base.css">
+  <link rel="stylesheet" href="./css/components.css">
   <!-- Outil de développement : aperçu du relief réel (données locales non versionnées, web/data/local/). -->
   <script type="importmap">
     {
@@ -18,8 +20,7 @@
   <script type="module" src="./js/preview.js"></script>
 </head>
 <body>
-  <div class="banner banner-real" role="status" data-i18n="preview.chip"></div>
-  <header class="header">
+  <header class="header glass glass-blur">
     <div class="brand">
       <h1 data-i18n="preview.title"></h1>
       <p class="tagline"><a href="./index.html" data-i18n="preview.back"></a></p>
@@ -32,9 +33,15 @@
       </div>
     </div>
   </header>
+  <div class="honesty">
+    <button type="button" id="honesty-chip" class="chip chip-real" aria-expanded="false" aria-controls="honesty-note">
+      <span class="chip-dot" aria-hidden="true"></span><span data-i18n="preview.chip"></span><span class="chip-caret" aria-hidden="true">▾</span>
+    </button>
+    <p id="honesty-note" class="chip-note glass" data-i18n="preview.chipNote" hidden></p>
+  </div>
   <div id="error" class="error" role="alert" hidden><strong data-i18n="error.title"></strong><p id="error-text"></p></div>
   <main class="panel">
-    <section class="card card-wide">
+    <section class="card card-wide glass">
       <div class="toolbar">
         <div class="seg" role="group" data-i18n-aria="view3d.mode">
           <button type="button" class="btn mode-btn" data-mode="overview" aria-pressed="true" data-i18n="view3d.overview"></button>

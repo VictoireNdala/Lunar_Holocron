@@ -1,0 +1,73 @@
+/* Jetons de l'interface (docs/UI-DESIGN.md § 4, D-017). Les contrastes sont calculés par
+   tests/reference/contrast_tokens.py (pas à l'œil) ; les valeurs corrigées par le calcul sont signalées. */
+
+@font-face {
+  font-family: "Inter Variable";
+  src: url("../vendor/fonts/inter-latin-wght-normal.woff2") format("woff2-variations");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("../vendor/fonts/jetbrains-mono-latin-400-normal.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("../vendor/fonts/jetbrains-mono-latin-600-normal.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  color-scheme: dark;
+
+  /* Fonds */
+  --bg-0: #06080c;               /* scène */
+  --bg-1: #0b0f16;               /* panneau plein */
+  --bg-2: #121925;               /* champ, bouton */
+  --glass: rgba(14, 19, 28, 0.62);
+  --glass-blur: 16px;
+
+  /* Traits : --line est décoratif ; --line-strong délimite les contrôles (≥ 3:1, WCAG 1.4.11) */
+  --line: rgba(255, 255, 255, 0.08);
+  --line-hover: rgba(255, 255, 255, 0.14);
+  --line-strong: #5d6878;
+
+  /* Texte */
+  --text: #e9eef5;
+  --text-2: #9aa6b6;
+  --text-3: #7d8899;             /* corrigé : #6b7686 donnait < 4,5:1 sur --bg-1 (voir le tableau de contrastes) */
+
+  /* Accents : chaque corps a une couleur ET une forme (disque / disque cerclé) */
+  --sun: #ffd479;
+  --earth: #5aa9ff;
+  --ok: #3ddc97;
+  --warn: #ff9f43;
+  --err: #ff6b6b;
+  --focus: var(--earth);
+
+  /* Formes et espaces */
+  --r-field: 10px;
+  --r-panel: 16px;
+  --s-1: 4px; --s-2: 8px; --s-3: 12px; --s-4: 16px; --s-6: 24px; --s-8: 32px;
+  --shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+
+  /* Typographie */
+  --font-ui: "Inter Variable", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  --fs-12: 12px; --fs-13: 13px; --fs-14: 14px; --fs-16: 16px; --fs-20: 20px; --fs-28: 28px; --fs-44: 44px;
+
+  /* Mouvement */
+  --t-fast: 150ms;
+  --t-base: 220ms;
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --t-fast: 0ms; --t-base: 0ms; }
+}

@@ -48,6 +48,11 @@ On reprend des **idées de fonctionnalité**, pas du code ni des textes. Tout é
 | Pillow | Aperçus d'images uniquement | MIT-CMU (HPND) — à relever | 13.0.0 (≥ 10.0) |
 | jsonschema, pytest | Validation, tests | MIT | jsonschema 4.26.0 (≥ 4.20), pytest 9.2.0 (≥ 8.0) |
 | Playwright | Test de fumée | Apache-2.0 | à noter (T-15) |
+| Police **Inter** (variable, sous-ensemble latin) — paquet npm `@fontsource-variable/inter@5.3.0` | Texte de l'interface (U-01) | **SIL Open Font License 1.1** (lue : `web/vendor/fonts/LICENSE-Inter.txt`, « Copyright 2016 The Inter Project Authors ») | 5.3.0 ; `inter-latin-wght-normal.woff2` SHA-256 `3100E775E8616CD2611BEECFA23A4263D7037586789B43F035236A2E6FBD4C62` |
+| Police **JetBrains Mono** (400 et 600, latin) — paquet npm `@fontsource/jetbrains-mono@5.3.0` | Valeurs numériques (U-01) | **SIL Open Font License 1.1** (lue : `web/vendor/fonts/LICENSE-JetBrainsMono.txt`, « Copyright 2020 The JetBrains Mono Project Authors ») | 5.3.0 ; SHA-256 400 : `14425BA9C695763C1547F48A206B7AA60350A33AE23DE09F0407877F3FCD89EB`, 600 : `400C6BFDA18D5D14ACAD1C15D6DCB9F8E13C015E7286317E0B9A482539BEF147` |
+| 21st.dev (catalogue de composants React) | **Modèles d'interaction seulement** (UI-DESIGN § 2) ; aucun code ni fichier copié | sans objet | cité |
+
+Remarque de sécurité (2026-11-14) : l'environnement de la machine de construction définit `NODE_TLS_REJECT_UNAUTHORIZED=0` (vérification TLS de Node/npm désactivée). Les polices ont été téléchargées dans ces conditions ; seuls des fichiers `woff2` et leurs licences ont été copiés (aucun code exécutable).
 
 Empreintes SHA-256 des fichiers three.js copiés dans `web/vendor/three/` :
 `three.module.js` `CE1FA418DE16A19495A9F72495580E3015D7745C296D3CE0485897F902DDEDFB` ·

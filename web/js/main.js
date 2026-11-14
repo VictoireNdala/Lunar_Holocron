@@ -126,16 +126,21 @@ function renderBodies() {
   }
 }
 
-/** Bannière permanente si des données synthétiques sont chargées (prudence : visible tant que rien n'est chargé). */
-function renderBanner() {
+/**
+ * Pastille d'honnêteté (UI-DESIGN § 5.5) : toujours visible, jamais masquable ; elle dit si les données sont fictives.
+ * Prudence : « démonstration » tant que rien n'est chargé.
+ */
+function renderHonesty() {
   const synthetic = !index || index.synthetic || Boolean(site?.synthetic);
-  $('banner').hidden = !synthetic;
+  $('honesty-chip').classList.toggle('chip-real', !synthetic);
+  $('honesty-label').textContent = t(synthetic ? 'honesty.synthetic' : 'honesty.real');
+  $('honesty-note').textContent = t(synthetic ? 'honesty.syntheticNote' : 'honesty.realNote');
 }
 
 /** Rendu complet du panneau. */
 function renderAll() {
   applyStaticTexts();
-  renderBanner();
+  renderHonesty();
   if (!index) return;
   renderSiteSelect();
   if (!site) return;
@@ -176,6 +181,11 @@ function parseTimeInput(text) {
 /** Branche les contrôles de la page sur le store. */
 function bindControls() {
   $('site-select').addEventListener('change', (e) => store.set({ siteIdA: e.target.value }));
+  $('honesty-chip').addEventListener('click', () => {
+    const open = $('honesty-chip').getAttribute('aria-expanded') !== 'true';
+    $('honesty-chip').setAttribute('aria-expanded', String(open));
+    $('honesty-note').hidden = !open;
+  });
   for (const btn of document.querySelectorAll('.lang-btn')) btn.addEventListener('click', () => store.set({ lang: btn.dataset.lang }));
   $('time-form').addEventListener('submit', (e) => {
     e.preventDefault();

@@ -4,10 +4,10 @@
 
 **Dernière mise à jour** : 2026-11-12 (T-09 terminé ; T-02 accepté par CHAT, M-008)
 **Phase** : J1 (pipeline) et J2 (interface) en parallèle
-**Prochaine tâche** : U-01, U-02 (refonte de l'interface), puis T-06, T-10, A-01 à A-04, S-01, S-02… (ordre de M-016, M-017, M-018).
+**Prochaine tâche** : U-02 (coque : rail, barre flottante, plein écran), puis T-06, T-10, A-01 à A-04, S-01, S-02… (ordre de M-016, M-017, M-018).
 **Fichier LDEM réel présent** : oui, `data/raw/LDEM_80S_80MPP_ADJ.tiff` (189 Mo, hors Git) ; **décodé : oui** (rasterio) ; unités (m), projection, convention de pixel et orientation **contrôlées** (2026-11-14, voir `SOURCES.md`).
 **Aperçu du relief réel** : `py -m pipeline.tools.crop_real_dem --id shackleton --lat -89.67 --lon 129.5`, puis http://localhost:8000/preview.html (données locales non versionnées).
-**Atlas** : non commencé. **Sites réels** : S-01 en attente des fichiers 5 m (4 × 39,1 Mo, à télécharger par l'humain). **Interface** : U-01 à faire.
+**Atlas** : non commencé. **Sites réels** : S-01 en attente des fichiers 5 m (4 × 39,1 Mo, à télécharger par l'humain). **Interface** : U-01 terminé ; U-02 à faire.
 **Page affichable** : **oui** — `py -m http.server 8000 -d web`, puis ouvrir http://localhost:8000 (jeu d'exemple, aucun relief dessiné). Capture : `docs/captures/t09-page-fr.png`.
 
 ## Tableau d'avancement

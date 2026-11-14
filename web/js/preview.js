@@ -76,6 +76,11 @@ async function start() {
   for (const b of document.querySelectorAll('.mode-btn')) {
     b.addEventListener('click', () => { mode = b.dataset.mode; view?.setViewMode(mode, { azDeg: 0, observerHeight: 2 }); applyTexts(); });
   }
+  $('honesty-chip').addEventListener('click', () => {
+    const open = $('honesty-chip').getAttribute('aria-expanded') !== 'true';
+    $('honesty-chip').setAttribute('aria-expanded', String(open));
+    $('honesty-note').hidden = !open;
+  });
   $('exag').addEventListener('input', () => { view?.setExaggeration(Number($('exag').value)); applyTexts(); });
   $('preview-select').addEventListener('change', (e) => show(e.target.value).catch(showError));
   try {
