@@ -4,7 +4,7 @@
 
 **Dernière mise à jour** : 2026-11-12 (T-09 terminé ; T-02 accepté par CHAT, M-008)
 **Phase** : J1 (pipeline) et J2 (interface) en parallèle
-**Prochaine tâche** : T-10 (panorama, dans le nouveau style), puis A-01 à A-04, S-01, S-02… (ordre de M-016, M-017, M-018).
+**Prochaine tâche** : A-01 (textures NASA SVS, licence à lire) et A-02 (fonctions pures de l'Atlas), puis `ephemeris_demo`, A-03, A-04 ; S-01 dès que les fichiers 5 m sont là (ordre de M-016, M-017, M-018).
 **Fichier LDEM réel présent** : oui, `data/raw/LDEM_80S_80MPP_ADJ.tiff` (189 Mo, hors Git) ; **décodé : oui** (rasterio) ; unités (m), projection, convention de pixel et orientation **contrôlées** (2026-11-14, voir `SOURCES.md`).
 **Aperçu du relief réel** : `py -m pipeline.tools.crop_real_dem --id shackleton --lat -89.67 --lon 129.5`, puis http://localhost:8000/preview.html (données locales non versionnées).
 **Atlas** : non commencé. **Sites réels** : S-01 en attente des fichiers 5 m (4 × 39,1 Mo, à télécharger par l'humain). **Interface** : U-01 et U-02 terminés (coque : rail, barre flottante, scène plein écran, `view=`) ; U-03 à faire (avec T-12).
@@ -24,7 +24,7 @@
 | T-07 | Éphémérides de démonstration et export | à faire | |
 | T-08 | Génération de bout en bout + fichier d'or | à faire | |
 | T-09 | Chargement, état, i18n, squelette | terminé | `node --test "web/tests/**/*.test.js"` → 33 pass ; Edge sans interface sur http://127.0.0.1:8000 → page rendue, valeurs = JSON, 0 message console, requêtes toutes locales |
-| T-10 | Panorama 360° | à faire | |
+| T-10 | Panorama 360° | terminé (jeu d'exemple) | `node --test` → 60 pass (9 de projection écran) ; captures `docs/captures/t10-panorama-1440-{fr,en}.png` cohérentes avec le tableau des lectures et la vue 3D |
 | T-11 | Vue 3D du terrain | étape A terminée (jeu d'exemple) ; test d'ombre de `demo-a` après T-07/T-08 | `node --test` → 41 pass ; Edge (SwiftShader) : vue d'ensemble et vue au sol rendues ; 20 reconstructions → 3 géométries / 3 textures stables ; 20 vues libérées → 0 canvas restant |
 | T-12 | Barre de temps et frise | à faire | |
 | T-13 | Verdicts, lectures, indicateurs | à faire | |

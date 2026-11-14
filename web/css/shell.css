@@ -60,10 +60,22 @@
 }
 .drawer .card { flex: none; }
 .drawer .upcoming { text-align: left; }
-.timebar {
+/* Bloc du bas : panorama puis barre de temps, à gauche du tiroir. */
+.dock {
   position: absolute; left: var(--s-3); right: calc(380px + var(--s-3) * 2); bottom: var(--s-3);
-  display: flex; flex-wrap: wrap; gap: var(--s-3) var(--s-4); align-items: center; padding: var(--s-3) var(--s-4);
+  display: flex; flex-direction: column; gap: var(--s-3); pointer-events: none;
 }
+.dock > * { pointer-events: auto; }
+.timebar { display: flex; flex-wrap: wrap; gap: var(--s-3) var(--s-4); align-items: center; padding: var(--s-3) var(--s-4); }
+.panorama { padding: var(--s-3) var(--s-4); }
+.pano-head { display: flex; flex-wrap: wrap; gap: var(--s-2) var(--s-3); align-items: center; margin-bottom: var(--s-2); }
+.pano-head h2 { margin: 0 var(--s-2) 0 0; }
+.pano-head .seg .btn { min-height: 32px; padding: 4px 10px; display: inline-flex; align-items: center; }
+.pano-meta { margin-left: auto; color: var(--text-2); font-size: var(--fs-12); }
+.pano-canvas { display: block; width: 100%; height: 190px; border-radius: 10px; border: 1px solid var(--line); cursor: grab; touch-action: pan-y; }
+.pano-canvas:active { cursor: grabbing; }
+.pano-foot { display: flex; flex-wrap: wrap; gap: var(--s-3); margin-top: var(--s-2); font-size: var(--fs-12); color: var(--text-2); min-height: 18px; }
+.panorama .hint { margin-top: var(--s-1); font-size: var(--fs-12); }
 .timebar .time-form { align-items: center; }
 .timebar .steps { margin-top: 0; }
 .timebar .current { margin-top: 0; font-size: var(--fs-14); color: var(--text-2); }
@@ -108,7 +120,8 @@
   #main { position: static; }
   #panel-a { display: flex; flex-direction: column-reverse; }
   .drawer { position: static; width: auto; overflow: visible; padding: var(--s-3); }
-  .timebar { position: static; margin: var(--s-3) var(--s-3) 0; }
+  .dock { position: static; margin: var(--s-3) var(--s-3) 0; }
+  .pano-canvas { height: 160px; }
   .empty-view { position: static; transform: none; width: auto; margin: var(--s-4) var(--s-3); }
   .stage .footer { position: static; max-width: none; padding: var(--s-4) var(--s-3); text-shadow: none; }
 }

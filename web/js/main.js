@@ -3,6 +3,7 @@ import { bodyStateAt, createDataSource, DataError, siteTimeRange } from './data.
 import { formatNumber, formatUtc, getLang, setLang, t } from './i18n.js';
 import { createPanel3d } from './panel3d.js';
 import { createStore } from './store.js';
+import { createPanoramaPanel } from './ui/panoramapanel.js';
 import { createShell } from './ui/shell.js';
 import { decode, encode } from './urlstate.js';
 
@@ -25,6 +26,7 @@ const source = createDataSource(dataRoot());
 const store = createStore(decode(window.location.hash));
 const panel3d = createPanel3d(store);
 const shell = createShell(store);
+const panorama = createPanoramaPanel(store);
 let index = null;
 let site = null;
 
@@ -162,6 +164,7 @@ async function loadSiteA() {
     site = loaded;
     $('error').hidden = true;
     renderAll();
+    panorama.show(site);
     const terrain = await source.loadTerrain(id);
     if (store.get().siteIdA === id) await panel3d.show(site, terrain);
   } catch (err) {
@@ -212,7 +215,7 @@ store.subscribe((state, changed) => {
   window.history.replaceState(null, '', encode(state));
   if (changed.includes('siteIdA')) { loadSiteA(); return; }
   renderAll();
-  if (site) panel3d.update(changed);
+  if (site) { panel3d.update(changed); panorama.update(changed); }
 });
 
 /** Démarrage : langue, index, site initial. */

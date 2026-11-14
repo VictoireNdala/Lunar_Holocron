@@ -97,14 +97,14 @@ Après la publication d'une **DEMANDE-REVUE bloquante**, CODE n'enchaîne pas su
 
 | Champ | Valeur |
 |---|---|
-| Dernière activité de CODE (UTC) | 2026-11-14T11:15Z |
+| Dernière activité de CODE (UTC) | 2026-11-14T11:30Z |
 | Session | S4 |
-| Tâche en cours | T-06 terminé (M-022, revue demandée) ; prochaine : T-10 (panorama) |
+| Tâche en cours | T-10 terminé (M-023) ; prochaine : A-01, A-02 |
 | Fichier LDEM réel présent | oui, `data/raw/LDEM_80S_80MPP_ADJ.tiff` (hors Git) ; décodé : **oui**, contrôlé (unités, projection, pixel, orientation) ; aperçu Shackleton : http://localhost:8000/preview.html |
 | Page affichable | **oui** : `py -m http.server 8000 -d web`, puis http://localhost:8000 (avec la vue 3D depuis T-11 A) |
 | État | T-09, T-04, T-11 A, étape B terminés ; Atlas : non commencé ; Sites réels : S-01 attend les fichiers 5 m ; Interface : U-01 et U-02 faits ; GitHub en retard (push non fait) |
 | Dernier commit | journal après `0ca9349` (T-21 étape B) ; tag `pre-event-base` sur `a79f658` (dernier commit du 13 nov.) |
-| Tests (dernière exécution) | pytest : 144 passés ; node : 51 passés |
+| Tests (dernière exécution) | pytest : 144 passés ; node : 60 passés |
 | Dépôt propre (`git status`) | oui (après le commit de journal) |
 | Bloquants | Aucun côté code. Données NASA non reçues (J4). |
 | Messages CODE→CHAT en attente de réponse | 1 (M-022 DEMANDE-REVUE T-06, non bloquante) |
@@ -322,7 +322,7 @@ Index : M-001 INSTRUCTION (démarrage) · M-002 INFO (fonctionnement du canal) �
 
 ## 5. Boîte CODE → CHAT
 
-Index : M-003 RAPPORT (T-00) · M-004 RAPPORT (T-01) · M-006 DEMANDE-REVUE (T-02) · M-007 RAPPORT (T-03) · M-009 INFO (GitHub, tag) · M-011 RAPPORT (T-09, page affichable) · M-012 RAPPORT (T-04) · M-013 QUESTION (Q-011, site demo-a) · M-015 RAPPORT (T-11 étape A, vue 3D) · M-019 RAPPORT (étape B, MNT réel, Shackleton) · M-020 RAPPORT (U-01) · M-021 RAPPORT (U-02) · M-022 DEMANDE-REVUE (T-06)
+Index : M-003 RAPPORT (T-00) · M-004 RAPPORT (T-01) · M-006 DEMANDE-REVUE (T-02) · M-007 RAPPORT (T-03) · M-009 INFO (GitHub, tag) · M-011 RAPPORT (T-09, page affichable) · M-012 RAPPORT (T-04) · M-013 QUESTION (Q-011, site demo-a) · M-015 RAPPORT (T-11 étape A, vue 3D) · M-019 RAPPORT (étape B, MNT réel, Shackleton) · M-020 RAPPORT (U-01) · M-021 RAPPORT (U-02) · M-022 DEMANDE-REVUE (T-06) · M-023 RAPPORT (T-10)
 
 Ajouter les nouveaux messages à la suite, du plus ancien au plus récent.
 
@@ -651,6 +651,33 @@ Ajouter les nouveaux messages à la suite, du plus ancien au plus récent.
   - Commit : « T-06 : … ».
 - Réponse attendue: oui — relecture (formules, points 1 à 3) ; non bloquante pour T-10.
 
+### M-023 · CODE→CHAT · RAPPORT · réf: T-10 · priorité: NORMALE
+- Date (UTC): 2026-11-14T11:30Z
+- Statut: OUVERT
+- Réponse à: M-016, M-018
+- Objet: T-10 terminé — panorama 360° (jeu d'exemple), construit dans le nouveau style
+- Corps:
+  - **Adresse** : http://localhost:8000/#view=site. Le panorama est en bas à gauche, au-dessus de la barre de temps.
+  - **Fait** :
+    - `web/js/panorama.js` : fonctions pures `makeView`, `relativeAzDeg` (écart dans (−180, 180]), `toScreen` et `fromScreen`, `compassTicks` (tous les 10° et tous les 45°), `verticalExaggeration`, `bodyRadiusPx`, ainsi que `renderPanorama` (Canvas 2D) ;
+    - `web/js/ui/panoramapanel.js` : la carte de la page.
+  - **Contenu (INTERFACE § 5)** :
+    - silhouette = `horizonAt` du masque, avec bouclage ; hachures sur les azimuts `truncated` ; horizon géométrique en tirets ;
+    - boussole tous les 10°, avec N, NE… localisés (O et NO en français) ;
+    - Soleil (disque ambre avec halo) et Terre (disque bleu cerclé), **dessinés avant le relief, qui passe donc devant** ;
+    - rayon à l'échelle ou 5 px au minimum, avec « Disques agrandis… » quand c'est le cas ; trace sur ±24 h en pointillés, limitée à la période ; flèche sur le bord, avec l'azimut, pour un corps hors fenêtre ;
+    - lecture au survol (azimut et horizon) ; glisser ou ← → pour tourner, molette pour le zoom vertical ; boutons ◀ ▶, « centrer sur le Soleil ou la Terre » et 360° ; échelle verticale affichée ;
+    - `panoramaCenterAz` (dans `store`) est **partagé avec la caméra 3D au sol** ; au premier affichage, le panorama est centré sur le Soleil.
+  - **Vérification de T-10** (« un corps à (az, el) connus apparaît aux pixels attendus ») : `web/tests/panorama.test.js`, 9 tests.
+    - Centre (0°, 6°) → (450, 80) ; (45°, 14°) → (900, 0) ; 315° → x = 0 ; bouclage 350° → x = 350 ; hors fenêtre signalé avec son côté ; `fromScreen` est bien l'inverse de `toScreen` ; vue 360° ; graduations ; échelle ×1 et ×5 ; rayon 0,95° → 9,5 px, 0,267° → 5 px « élargi ».
+    - Contrôle visuel : à 2027-03-12 18:00 UTC, la Terre (az 4,5°, él. 2,5°) est à gauche du Soleil (az 8,7°, él. 1,2°) dans le panorama **et** dans la vue 3D ; à 2027-03-14 06:00 UTC, la Terre (−1,28°) est cachée par le relief.
+  - **Écart à INTERFACE § 5** : le haut de la fenêtre verticale n'est pas fixé à 14°. Il vaut max(relief, élévations des corps) + 2°, borné à [4°, 14°]. Près du pôle, tout se joue sur quelques degrés : avec 14°, la silhouette tenait sur 3 pixels (capture relue). Le zoom à la molette reste libre entre 4° et 40°. **À valider.**
+  - **Honnêteté** : le masque du jeu d'exemple est fait main. Le panorama est un **test de la projection écran**, pas une vérité lunaire (M-010 § 4), et la pastille « Données de démonstration » reste affichée.
+  - Preuves : `node --test` → 60 pass ; `pytest` → 144 passed ; captures `docs/captures/t10-panorama-1440-fr.png` et `-en.png`.
+  - Non testé : glisser, molette et clavier dans un vrai navigateur ; la vue mobile du panorama n'a pas été capturée.
+  - Commit : « T-10 : panorama 360° ».
+- Réponse attendue: non (relecture des captures et de l'écart de fenêtre verticale bienvenue)
+
 ## 6. Journal d'activité de CODE (ajout uniquement)
 
 Format d'une entrée :
@@ -820,6 +847,13 @@ Entrées spéciales : `DEBUT DE SESSION` (messages lus, tâche reprise) et `FIN 
 - Commandes : `pytest` → 144 passed · `node --test` → 51 pass · `pipeline.validate web/data/sample` → OK
 - Commit : « T-06 : … »
 - Prochaine étape : T-10 (panorama).
+
+#### 2026-11-14T11:30Z · T-10 · session S4
+- Actions : tests de la projection écran d'abord (un attendu corrigé : 11 graduations, pas 10) ; `panorama.js` ; carte `ui/panoramapanel.js` ; bloc du bas (panorama et barre de temps) ; deux corrections après relecture des captures (relief peu contrasté, fenêtre verticale trop haute) ; RAPPORT M-023.
+- Fichiers : créés [`web/js/panorama.js`, `web/js/ui/panoramapanel.js`, `web/tests/panorama.test.js`, `docs/captures/t10-panorama-1440-{fr,en}.png`] · modifiés [`web/index.html`, `web/css/shell.css`, `web/js/{main,i18n}.js`, `STATUS.md`]
+- Commandes : `node --test` → 60 pass · `pytest` → 144 passed
+- Commit : « T-10 : panorama 360° »
+- Prochaine étape : A-01 (textures), A-02 (fonctions pures de l'Atlas).
 
 ## 7. Journal de CHAT (ajout uniquement)
 

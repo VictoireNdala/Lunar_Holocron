@@ -145,6 +145,25 @@
           <p class="upcoming" data-i18n="upcoming"></p>
         </aside>
 
+        <div class="dock">
+        <section class="panorama glass" aria-labelledby="pano-heading">
+          <div class="pano-head">
+            <h2 id="pano-heading" data-i18n="pano.heading"></h2>
+            <div class="seg" role="group" data-i18n-aria="pano.controls">
+              <button type="button" class="btn" id="pano-left" data-i18n-aria="pano.left">◀</button>
+              <button type="button" class="btn" id="pano-right" data-i18n-aria="pano.right">▶</button>
+            </div>
+            <div class="seg" role="group" data-i18n-aria="pano.center">
+              <button type="button" class="btn" id="pano-sun"><span class="icon icon-sun" aria-hidden="true"></span><span data-i18n="body.sun"></span></button>
+              <button type="button" class="btn" id="pano-earth"><span class="icon icon-earth" aria-hidden="true"></span><span data-i18n="body.earth"></span></button>
+              <button type="button" class="btn mode-btn" id="pano-full" aria-pressed="false" data-i18n="pano.full"></button>
+            </div>
+            <span id="pano-scale" class="pano-meta num"></span>
+          </div>
+          <canvas id="pano-canvas" class="pano-canvas" tabindex="0" role="img"></canvas>
+          <p class="pano-foot"><span id="pano-readout" class="num" aria-live="polite"></span> <span id="pano-enlarged"></span></p>
+          <p class="hint" data-i18n="pano.legend"></p>
+        </section>
         <section class="timebar glass" aria-labelledby="time-heading">
           <h2 id="time-heading" class="visually-hidden" data-i18n="time.heading"></h2>
           <form id="time-form" class="time-form" novalidate>
@@ -164,6 +183,7 @@
           <p id="time-hint" class="visually-hidden" data-i18n="time.hint"></p>
           <p id="time-warning" class="warning" role="status" hidden></p>
         </section>
+        </div>
       </div>
 
       <!-- Vues pas encore construites : état « à venir » honnête (UI-DESIGN § 3.3). -->
