@@ -33,6 +33,7 @@
       <li><a class="rail-item" data-view="atlas" href="#view=atlas"><svg class="ico" aria-hidden="true"><use href="./vendor/icons/sprite.svg#i-globe"></use></svg><span class="rail-label" data-i18n="nav.atlas"></span></a></li>
       <li><a class="rail-item" data-view="world" href="#view=world"><svg class="ico" aria-hidden="true"><use href="./vendor/icons/sprite.svg#i-map"></use></svg><span class="rail-label" data-i18n="nav.world"></span></a></li>
       <li><a class="rail-item" data-view="south" href="#view=south"><svg class="ico" aria-hidden="true"><use href="./vendor/icons/sprite.svg#i-compass"></use></svg><span class="rail-label" data-i18n="nav.south"></span></a></li>
+      <li><a class="rail-item" data-view="north" href="#view=north"><svg class="ico" aria-hidden="true"><use href="./vendor/icons/sprite.svg#i-compass"></use></svg><span class="rail-label" data-i18n="nav.north"></span></a></li>
       <li><a class="rail-item" data-view="site" href="#view=site"><svg class="ico" aria-hidden="true"><use href="./vendor/icons/sprite.svg#i-mountain"></use></svg><span class="rail-label" data-i18n="nav.site"></span></a></li>
       <li><a class="rail-item" data-view="method" href="#view=method"><svg class="ico" aria-hidden="true"><use href="./vendor/icons/sprite.svg#i-book-open"></use></svg><span class="rail-label" data-i18n="nav.method"></span></a></li>
     </ul>
@@ -47,6 +48,18 @@
     <div id="atlas-scene" class="scene" data-scene="atlas" hidden>
       <div id="globe" class="view3d"></div>
       <div id="globe-tip" class="globe-tip" role="tooltip" hidden></div>
+    </div>
+    <div class="scene scene-map" data-scene="world" hidden>
+      <canvas class="map-canvas" role="img" data-i18n-aria="map.aria.world"></canvas>
+      <div class="globe-tip" role="tooltip" hidden></div>
+    </div>
+    <div class="scene scene-map" data-scene="south" hidden>
+      <canvas class="map-canvas" role="img" data-i18n-aria="map.aria.south"></canvas>
+      <div class="globe-tip" role="tooltip" hidden></div>
+    </div>
+    <div class="scene scene-map" data-scene="north" hidden>
+      <canvas class="map-canvas" role="img" data-i18n-aria="map.aria.north"></canvas>
+      <div class="globe-tip" role="tooltip" hidden></div>
     </div>
 
     <header class="topbar glass glass-blur">
@@ -156,7 +169,7 @@
       </div>
 
       <!-- Panorama (vue de site) et barre de temps : commune à la vue de site et à l'Atlas (une seule horloge, ATLAS § 4). -->
-        <div class="dock" data-view-panel="site atlas" data-needs-site hidden>
+        <div class="dock" data-view-panel="site atlas world south north" data-needs-site hidden>
         <section class="panorama glass" aria-labelledby="pano-heading" data-panel="panorama" data-panel-view="site" data-view-only="site" data-panel-title="pano.heading">
           <div class="pano-head">
             <h2 id="pano-heading" data-i18n="pano.heading"></h2>
@@ -175,7 +188,7 @@
           <p class="pano-foot"><span id="pano-readout" class="num" aria-live="polite"></span> <span id="pano-enlarged"></span></p>
           <p class="hint" data-i18n="pano.legend"></p>
         </section>
-        <section class="timebar glass" aria-labelledby="time-heading" data-panel="time" data-panel-view="site atlas" data-panel-title="time.heading">
+        <section class="timebar glass" aria-labelledby="time-heading" data-panel="time" data-panel-view="site atlas world south north" data-panel-title="time.heading">
           <h2 id="time-heading" class="visually-hidden" data-i18n="time.heading"></h2>
           <form id="time-form" class="time-form" novalidate>
             <label class="field inline">
@@ -197,31 +210,24 @@
         </div>
 
       <!-- Vues pas encore construites : état « à venir » honnête (UI-DESIGN § 3.3). -->
-      <aside class="drawer" data-view-panel="atlas" hidden>
-        <section class="card glass" aria-labelledby="layers-heading" data-panel="layers" data-panel-view="atlas" data-panel-title="atlas.layers">
+      <aside class="drawer" data-view-panel="atlas world south north" hidden>
+        <section class="card glass" aria-labelledby="layers-heading" data-panel="layers" data-panel-view="atlas world south north" data-panel-title="atlas.layers">
           <h2 id="layers-heading" data-i18n="atlas.layers"></h2>
           <label class="check"><input id="layer-terminator" type="checkbox" checked><span class="swatch swatch-sun" aria-hidden="true"></span><span data-i18n="atlas.terminator"></span></label>
           <label class="check"><input id="layer-earth" type="checkbox" checked><span class="swatch swatch-earth" aria-hidden="true"></span><span data-i18n="atlas.earthZone"></span></label>
           <label class="check"><input id="layer-graticule" type="checkbox"><span data-i18n="atlas.graticule"></span></label>
           <label class="check"><input id="layer-sites" type="checkbox" checked><span data-i18n="atlas.sites"></span></label>
-          <div class="toolbar atlas-actions">
+          <div class="toolbar atlas-actions" data-atlas-only>
             <button type="button" class="btn" id="globe-home" data-i18n="atlas.home"></button>
             <button type="button" class="btn" id="globe-south" data-i18n="atlas.south"></button>
           </div>
           <dl class="facts" id="atlas-facts"></dl>
           <p id="atlas-texture-note" class="warning" role="status" hidden></p>
+          <p id="atlas-kind-note" class="hint"></p>
           <p class="hint" data-i18n="atlas.note"></p>
           <p class="hint" id="atlas-credit"></p>
         </section>
       </aside>
-      <section class="empty-view glass" data-view-panel="world" hidden>
-        <h2 data-i18n="nav.world"></h2><p data-i18n="empty.world"></p>
-        <a class="btn primary" href="#view=site" data-goto="site" data-i18n="empty.toSite"></a>
-      </section>
-      <section class="empty-view glass" data-view-panel="south" hidden>
-        <h2 data-i18n="nav.south"></h2><p data-i18n="empty.south"></p>
-        <a class="btn primary" href="./preview.html" data-i18n="empty.toPreview"></a>
-      </section>
       <section class="empty-view glass" data-view-panel="method" hidden>
         <h2 data-i18n="nav.method"></h2><p data-i18n="empty.method"></p>
         <a class="btn primary" href="#view=site" data-goto="site" data-i18n="empty.toSite"></a>

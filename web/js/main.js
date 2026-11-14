@@ -4,6 +4,7 @@ import { formatNumber, formatUtc, getLang, setLang, t } from './i18n.js';
 import { createPanel3d } from './panel3d.js';
 import { createStore } from './store.js';
 import { createAtlasPanel } from './ui/atlaspanel.js';
+import { createMapPanel } from './ui/mappanel.js';
 import { createPanoramaPanel } from './ui/panoramapanel.js';
 import { createPanels } from './ui/panels.js';
 import { createShell } from './ui/shell.js';
@@ -28,7 +29,9 @@ const source = createDataSource(dataRoot());
 const initialState = decode(window.location.hash);
 if (!initialState.view && !initialState.siteIdA) initialState.view = 'atlas'; // ATLAS § 7 : sans site dans l'URL, on s'ouvre sur l'Atlas
 const store = createStore(initialState);
-const atlas = createAtlasPanel(store, source, (id) => store.set({ siteIdA: id, view: 'site' }));
+const openSite = (id) => store.set({ siteIdA: id, view: 'site' });
+const atlas = createAtlasPanel(store, source, openSite);
+const maps = createMapPanel(store, atlas, openSite);
 const panel3d = createPanel3d(store);
 const shell = createShell(store);
 const panorama = createPanoramaPanel(store);
@@ -147,6 +150,13 @@ function renderHonesty() {
   $('honesty-note').textContent = t(synthetic ? 'honesty.syntheticNote' : 'honesty.realNote');
 }
 
+/** Démarre la vue Atlas demandée (globe ou carte 2D) ; chargement paresseux. */
+function showAtlasView() {
+  const view = store.get().view;
+  if (view === 'atlas') atlas.show();
+  else if (['world', 'south', 'north'].includes(view)) maps.show(view);
+}
+
 /** Rendu complet du panneau. */
 function renderAll() {
   applyStaticTexts();
@@ -154,7 +164,7 @@ function renderAll() {
   const entry = index && site ? index.sites.find((s) => s.id === site.id) : null;
   shell.render(store.get(), entry ? siteName(entry) : null, Boolean(site));
   panels.refresh();
-  if (store.get().view === 'atlas') atlas.show();
+  showAtlasView();
   if (!index) return;
   renderSiteSelect();
   if (!site) return;
@@ -229,6 +239,7 @@ store.subscribe((state, changed) => {
   }
   renderAll();
   atlas.update(changed);
+  maps.update(changed);
   if (site) { panel3d.update(changed); panorama.update(changed); }
 });
 
@@ -243,7 +254,7 @@ async function start() {
     showError(err);
     return;
   }
-  if (store.get().view === 'atlas') atlas.show();
+  showAtlasView();
   const requested = store.get().siteIdA;
   const siteIdA = index.sites.some((s) => s.id === requested) ? requested : index.sites[0].id;
   if (siteIdA !== requested) store.set({ siteIdA });

@@ -1,42 +1,48 @@
-// Vue « Atlas » (A-04) : relie le globe (atlas/globe.js) à l'horloge commune (store.tMs), aux sites de l'index et à global.json.
-// Aucun verdict de visibilité ici : horizon plat seulement (D-015). Hors ligne : texture locale ; sans elle, repli gris avec message.
-import { createDataSource, DataError, globalSeries } from '../data.js';
+// Vues « Atlas » (A-04, A-05) : globe 3D et cartes 2D partagent les mêmes données (sites de l'index, global.json), la même horloge
+// (store.tMs) et le même panneau de couches. Aucun verdict de visibilité ici : horizon plat seulement (D-015).
+// Hors ligne : texture locale ; sans elle, repli gris avec message.
+import { DataError, globalSeries } from '../data.js';
 import { interpolateSubPoint } from '../atlas/sphere.js';
 import { formatNumber, getLang, t } from '../i18n.js';
 
-const TEXTURE_URL = 'assets/moon/lroc_color_2k.jpg';
+export const TEXTURE_URL = 'assets/moon/lroc_color_2k.jpg';
 const $ = (id) => document.getElementById(id);
 
-/** Crée la vue ; `source` est la source de données (index, global) ; `openSite(id)` ouvre la vue de site. */
+/** Crée la vue ; `source` = source de données ; `openSite(id)` ouvre la vue de site. Renvoie l'API partagée avec les cartes 2D. */
 export function createAtlasPanel(store, source, openSite) {
   let globe = null;
   let globalDoc = null;
   let sites = [];
   let starting = null;
+  let globalPromise = null;
+  let sitesPromise = null;
   let failure = null;
   let latLon = null;
 
-  const tip = () => $('globe-tip');
+  const layerState = () => ({ terminator: $('layer-terminator').checked, earthZone: $('layer-earth').checked, graticule: $('layer-graticule').checked, sites: $('layer-sites').checked });
+
+  /** Points sub-solaire et sub-terrestre à l'instant donné, ou null tant que global.json n'est pas chargé. */
+  function subPoints(tMs) {
+    if (!globalDoc) return null;
+    return { sun: interpolateSubPoint(globalSeries(globalDoc, 'sun'), tMs), earth: interpolateSubPoint(globalSeries(globalDoc, 'earth'), tMs) };
+  }
 
   function renderFacts() {
-    const dl = $('atlas-facts');
     const { tMs } = store.get();
     const rows = [];
-    if (globalDoc) {
+    const sp = subPoints(tMs);
+    if (sp) {
       for (const body of ['sun', 'earth']) {
-        const p = interpolateSubPoint({ ...globalSeries(globalDoc, body) }, tMs);
+        const p = sp[body];
         rows.push([t(`atlas.sub.${body}`), `${formatNumber(p.latDeg, 2)}° ; ${formatNumber(p.lonDeg, 2)}°${p.inRange ? '' : ` (${t('atlas.outOfRange')})`}`]);
       }
     }
     rows.push([t('atlas.cursor'), latLon ? `${formatNumber(latLon.latDeg, 2)}° ; ${formatNumber(latLon.lonDeg, 2)}°` : '—']);
-    dl.replaceChildren(...rows.flatMap(([k, v]) => [Object.assign(document.createElement('dt'), { textContent: k }), Object.assign(document.createElement('dd'), { textContent: v })]));
+    $('atlas-facts').replaceChildren(...rows.flatMap(([k, v]) => [Object.assign(document.createElement('dt'), { textContent: k }), Object.assign(document.createElement('dd'), { textContent: v })]));
     $('atlas-credit').textContent = t('atlas.credit');
-  }
-
-  function pushTime() {
-    if (!globe || !globalDoc) return;
-    const { tMs } = store.get();
-    globe.setSubPoints(interpolateSubPoint(globalSeries(globalDoc, 'sun'), tMs), interpolateSubPoint(globalSeries(globalDoc, 'earth'), tMs));
+    const view = document.body.dataset.view;
+    $('atlas-kind-note').textContent = ['world', 'south', 'north'].includes(view) ? t(`atlas.kindNote.${view}`) : '';
+    for (const el of document.querySelectorAll('[data-atlas-only]')) el.hidden = view !== 'atlas';
   }
 
   function renderStatus() {
@@ -46,18 +52,43 @@ export function createAtlasPanel(store, source, openSite) {
     note.hidden = !text;
   }
 
+  function pushTime() {
+    const sp = subPoints(store.get().tMs);
+    if (globe && sp) globe.setSubPoints(sp.sun, sp.earth);
+  }
+
   function showTip(info) {
-    const el = tip();
+    const el = $('globe-tip');
     latLon = info.latLon;
     if (info.site) {
       el.textContent = `${info.site.name} · ${formatNumber(info.site.latDeg, 3)}° ; ${formatNumber(info.site.lonDeg, 3)}°${info.site.synthetic ? ` · ${t('atlas.fictitious')}` : ''}`;
-      el.style.left = `${info.x - el.parentElement.getBoundingClientRect().left + 12}px`;
-      el.style.top = `${info.y - el.parentElement.getBoundingClientRect().top + 12}px`;
+      const box = el.parentElement.getBoundingClientRect();
+      el.style.left = `${info.x - box.left + 12}px`;
+      el.style.top = `${info.y - box.top + 12}px`;
       el.hidden = false;
     } else {
       el.hidden = true;
     }
     renderFacts();
+  }
+
+  /** Sites de l'index au format de l'Atlas ; mis en cache. */
+  function ensureSites() {
+    sitesPromise ??= source.loadIndex().then((index) => {
+      sites = index.sites.map((s) => ({ id: s.id, name: s.name, latDeg: s.lat_deg, lonDeg: s.lon_deg, tier: s.tier ?? 99, synthetic: s.synthetic }));
+      return sites;
+    }).catch(() => sites);
+    return sitesPromise;
+  }
+
+  /** global.json ; mis en cache ; son absence est signalée sans bloquer le reste de l'Atlas. */
+  function ensureGlobal() {
+    globalPromise ??= source.loadGlobal().then((doc) => { globalDoc = doc; return doc; }).catch((err) => {
+      failure = err instanceof DataError ? 'atlas.noGlobal' : 'atlas.noGlobal';
+      renderStatus();
+      return null;
+    });
+    return globalPromise;
   }
 
   async function start() {
@@ -75,16 +106,9 @@ export function createAtlasPanel(store, source, openSite) {
       renderStatus();
       return;
     }
-    try {
-      const index = await source.loadIndex();
-      sites = index.sites.map((s) => ({ id: s.id, name: s.name[getLang()] ?? s.name.en, latDeg: s.lat_deg, lonDeg: s.lon_deg, tier: s.tier ?? 99, synthetic: s.synthetic }));
-      globe.setSites(sites);
-    } catch { /* l'index est déjà signalé par la page */ }
-    try {
-      globalDoc = await source.loadGlobal();
-    } catch (err) {
-      failure = err instanceof DataError ? 'atlas.noGlobal' : 'atlas.noGlobal';
-    }
+    globe.setLayers(layerState());
+    globe.setSites((await ensureSites()).map((s) => ({ ...s, name: s.name[getLang()] ?? s.name.en })));
+    await ensureGlobal();
     pushTime();
     renderStatus();
     renderFacts();
@@ -99,15 +123,17 @@ export function createAtlasPanel(store, source, openSite) {
 
   return {
     /** Démarre le globe au premier affichage (three.js chargé à la demande). */
-    show() {
-      starting ??= start();
-      return starting;
-    },
+    show() { starting ??= start(); return starting; },
+    ensureSites, ensureGlobal, subPoints, layerState,
     /** Réagit aux changements d'état (instant, langue). */
     update(changed) {
       if (changed.includes('tMs')) pushTime();
-      if (changed.includes('lang') && globe) { globe.setSites(sites.map((s) => s)); }
+      if (changed.includes('lang') && globe) globe.setSites(sites.map((s) => ({ ...s, name: s.name[getLang()] ?? s.name.en })));
       renderFacts();
     },
+    /** Lecture lat/lon sous le curseur (cartes 2D). */
+    setCursor(ll) { latLon = ll; renderFacts(); },
+    setStatus(key) { failure = key; renderStatus(); },
+    renderFacts,
   };
 }
