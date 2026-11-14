@@ -1,0 +1,58 @@
+{
+  "sites": [
+    {
+      "center": {
+        "lat_deg": -89.4632,
+        "lon_deg": -137.4896,
+        "source": "centre de l'emprise du GeoTIFF Site01_final_adj_5mpp_surf.tif (3 200 px × 5 m = 16 km), lu le 2026-11-14"
+      },
+      "dem": {
+        "citation": "Barker et al. 2021, Planet. Space Sci. 203, 105119, https://doi.org/10.1016/j.pss.2020.105119",
+        "file": "Site01_final_adj_5mpp_surf.tif",
+        "license_note": "aucune licence indiquée sur les pages PGDA (lues le 2026-11-14) ; citation demandée, voir SOURCES.md",
+        "pixel_registration": "Area",
+        "product": "Site01 5 m (PGDA 78, LOLA)",
+        "resolution_m": 5.0,
+        "sha256": "3BA7B97CB00A2BCF21189C3AEB535F65AFC21207154AB9F0D43C5BDC1F7E747E",
+        "source": "https://pgda.gsfc.nasa.gov/data/LOLA_5mpp/"
+      },
+      "ephemeris_synthetic": true,
+      "id": "site01-connecting-ridge",
+      "label_en": "Connecting ridge (Site01)",
+      "label_fr": "Crête de liaison (Site01)",
+      "lola_priority_site": true,
+      "nasa_2024_region": null,
+      "pgda_id": "Site01",
+      "terrain_real": true,
+      "tier": 1,
+      "verified": false
+    },
+    {
+      "center": {
+        "lat_deg": -89.7668,
+        "lon_deg": -171.8699,
+        "source": "centre de l'emprise du GeoTIFF Site04_final_adj_5mpp_surf.tif (3 200 px × 5 m = 16 km), lu le 2026-11-14"
+      },
+      "dem": {
+        "citation": "Barker et al. 2021, Planet. Space Sci. 203, 105119, https://doi.org/10.1016/j.pss.2020.105119",
+        "file": "Site04_final_adj_5mpp_surf.tif",
+        "license_note": "aucune licence indiquée sur les pages PGDA (lues le 2026-11-14) ; citation demandée, voir SOURCES.md",
+        "pixel_registration": "Area",
+        "product": "Site04 5 m (PGDA 78, LOLA)",
+        "resolution_m": 5.0,
+        "sha256": "38FF70DBDF2F066C2CFA94A646C3A59D653CE7F6B4528B15FC1B43EE397CE758",
+        "source": "https://pgda.gsfc.nasa.gov/data/LOLA_5mpp/"
+      },
+      "ephemeris_synthetic": true,
+      "id": "site04-shackleton-rim",
+      "label_en": "Shackleton rim (Site04)",
+      "label_fr": "Rebord de Shackleton (Site04)",
+      "lola_priority_site": true,
+      "nasa_2024_region": null,
+      "pgda_id": "Site04",
+      "terrain_real": true,
+      "tier": 1,
+      "verified": false
+    }
+  ]
+}
