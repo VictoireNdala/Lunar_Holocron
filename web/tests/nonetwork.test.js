@@ -34,3 +34,18 @@ test('l\'importmap ne pointe que vers des fichiers locaux de vendor/', () => {
   assert.deepEqual(Object.keys(imports).sort(), ['three', 'three/addons/']);
   for (const target of Object.values(imports)) assert.match(target, /^\.\/vendor\/three\//);
 });
+
+test('les seules adresses https:// de web/js/ sont dans links.js (D-019)', () => {
+  const targets = [...files('js/', '.js'), ...files('js/ui/', '.js'), ...files('js/atlas/', '.js')];
+  for (const path of targets) {
+    const text = readFileSync(WEB_DIR + path, 'utf8');
+    const external = (text.match(/https?:\/\/(?!localhost)[^\s'"`)]+/g) ?? []);
+    if (path === 'js/links.js') assert.ok(external.length >= 2, 'links.js doit porter les deux adresses');
+    else assert.deepEqual(external, [], `${path} contient une adresse externe`);
+  }
+});
+
+test('index.html ne contient aucun lien externe écrit en dur (les liens sont posés par links.js au clic)', () => {
+  const html = readFileSync(WEB_DIR + 'index.html', 'utf8');
+  assert.doesNotMatch(html, /https?:\/\/(?!localhost)/);
+});

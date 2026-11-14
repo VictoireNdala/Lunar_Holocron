@@ -42,6 +42,7 @@ Noyaux retenus (noms exacts des dossiers NAIF au 2026-11-14 ; tailles = celles d
 |---|---|---|
 | Lunar QuickMap (LROC / ASU) — TerrainShadows, Compute Visibility, boussole, panoramas | Vue des ombres selon la date, visibilité depuis un point, panorama au sol | cité |
 | NASA Moon Trek — outil de ligne de vue, angle solaire | Verdict de ligne de vue, lecture de l'angle du Soleil | cité |
+| Liens profonds vers Quickmap (`https://quickmap.lroc.im-ldi.com/`) et Moon Trek (`https://trek.nasa.gov/moon/`), S-05 / D-019 | Deux liens `<a>` ouverts par un clic ; **rien n'est chargé** depuis ces sites (aucun fetch, iframe ni image). Adresses relevées par CHAT le 14/11/2026, **non rouvertes par CODE** ; le centrage par paramètres n'est **pas vérifié** (`centered: false`). **Crédits affichés écrits de mémoire (« LROC QuickMap (ASU / LROC, NASA) », « NASA Moon Trek ») : à remplacer par le texte exact lu sur leurs pages** | cité, crédit à vérifier |
 | NASA SVS 4930 (vidéos d'éclairement du pôle Sud, 2023-2030) | Lecture animée de la frise | cité |
 | NASA Ames Celestial Mapping System | Idée de trace du Soleil et de la Terre dans le ciel | cité |
 | Documents Artemis sur les critères de sélection de sites | Pastilles de conformité (pente, distance au pôle, visibilité Terre) | cité |

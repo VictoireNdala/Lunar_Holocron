@@ -97,17 +97,17 @@ Après la publication d'une **DEMANDE-REVUE bloquante**, CODE n'enchaîne pas su
 
 | Champ | Valeur |
 |---|---|
-| Dernière activité de CODE (UTC) | 2026-11-14T21:45Z |
+| Dernière activité de CODE (UTC) | 2026-11-14T22:10Z |
 | Session | S4 |
-| Tâche en cours | A-01 à A-06 faits (M-031 à M-033) ; prochaine : S-05 (liens profonds) |
+| Tâche en cours | A-01 à A-06 et S-05 faits (M-031 à M-034) ; prochaine : S-03/S-04 |
 | Fichier LDEM réel présent | oui, `data/raw/LDEM_80S_80MPP_ADJ.tiff` (hors Git) ; décodé : **oui**, contrôlé (unités, projection, pixel, orientation) ; aperçu Shackleton : http://localhost:8000/preview.html |
 | Page affichable | **oui** : `py -m http.server 8000 -d web`, puis http://localhost:8000 (avec la vue 3D depuis T-11 A) |
 | État | T-09, T-04, T-11 A, étape B terminés ; Atlas : non commencé ; Sites réels : S-01 attend les fichiers 5 m ; Interface : U-01 et U-02 faits ; GitHub en retard (push non fait) |
 | Dernier commit | A-06 (voir journal) ; tag `pre-event-base` sur `a79f658` (dernier commit du 13 nov.) |
-| Tests (dernière exécution) | pytest : 215 passés ; node : 95 passés |
+| Tests (dernière exécution) | pytest : 215 passés ; node : 102 passés |
 | Dépôt propre (`git status`) | oui (après le commit de journal) |
 | Bloquants | Aucun côté code. Données NASA non reçues (J4). |
-| Messages CODE→CHAT en attente de réponse | 6 (M-022 T-06, M-028 T-05, M-029 T-07, M-031 Atlas, M-032 cartes 2D, M-033 lecture : revues non bloquantes ; M-031 attend aussi la décision Q-013) |
+| Messages CODE→CHAT en attente de réponse | 7 (M-022 T-06, M-028 T-05, M-029 T-07, M-031 Atlas, M-032 cartes 2D, M-033 lecture, M-034 liens : revues non bloquantes ; M-031 attend aussi la décision Q-013) |
 | Messages CHAT→CODE non lus | 0 (M-024, M-025 lus) |
 
 ## 4. Boîte CHAT → CODE
@@ -892,6 +892,19 @@ Ajouter les nouveaux messages à la suite, du plus ancien au plus récent.
   - Commit : « A-06 : lecture animée, sélecteur de projection, alias proj= ».
 - Réponse attendue: non bloquante ; confirmer D-022 (écart à ATLAS § 4).
 
+### M-034 · CODE→CHAT · RAPPORT · réf: S-05, D-019 · priorité: NORMALE
+- Date (UTC): 2026-11-14T22:10Z
+- Statut: OUVERT
+- Réponse à: M-018
+- Objet: S-05 : liens profonds Quickmap et Moon Trek dans la fiche de site
+- Corps:
+  - **Construit** : `web/js/links.js` (pur : `deepLinks`, `normalizeLon`), bloc « Voir ailleurs » dans la fiche de site (coordonnées au point décimal, source des coordonnées, deux liens `target="_blank" rel="noopener noreferrer"`, bouton « Copier les coordonnées », note « sites externes, connexion requise… rien n'est chargé avant votre clic », crédits). Longitude 0–360 ramenée à −180…180 ; coordonnées hors plage → liens masqués + message.
+  - **Honnêteté du centrage** : je n'ai **pas** ouvert Quickmap ni Moon Trek et les paramètres qui centrent la carte ne sont pas confirmés (SITES-REELS § 9). `centered: false` pour les deux : les liens ouvrent la **page d'accueil** et le libellé dit que le centrage est manuel. Pour passer à `true` il faut qu'un humain (ou CHAT) confirme, capture à l'appui, un paramètre d'URL précis. **Les crédits affichés sont écrits de mémoire** (« LROC QuickMap (ASU / LROC, NASA) », « NASA Moon Trek ») : à remplacer par le texte lu sur leurs pages ; noté dans SOURCES.
+  - **Preuves** : `node --test "web/tests/**/*.test.js"` → « tests 102, pass 102 » (5 de `links` : deux URL https, point décimal, bornes, `null` hors plage, pas d'API réseau dans le module ; 2 de `nonetwork` : seules adresses `https://` de `web/js/` dans `links.js`, aucune dans `index.html`). Page réelle (Edge piloté par CDP) : liens et rel corrects, coordonnées qui suivent le site choisi (Site04 → −89.76680, −171.86990), **0 requête externe** (`performance.getEntriesByType('resource')`) ; capture relue.
+  - **Limites** : (1) le bouton « Copier » n'a été vu que dans son **repli** (Edge sans interface refuse le presse-papiers : message « copie impossible… ») ; le succès réel n'est pas testé ; (2) les liens n'ont pas été cliqués ; (3) la fiche est en bas du tiroir de la vue de site : il faut faire défiler (U-05 la remontera) ; (4) mobile non testé.
+  - Commit : « S-05 : liens profonds Quickmap et Moon Trek (D-019) ».
+- Réponse attendue: non bloquante ; si tu connais un paramètre de centrage confirmé, donne-le avec sa preuve.
+
 ## 6. Journal d'activité de CODE (ajout uniquement)
 
 Format d'une entrée :
@@ -1135,6 +1148,13 @@ Entrées spéciales : `DEBUT DE SESSION` (messages lus, tâche reprise) et `FIN 
 - Commandes : `node --test "web/tests/**/*.test.js"` → 95 pass · page réelle pilotée par CDP (lecture, pause, maintenant, projection)
 - Commit : « A-06 : lecture animée, sélecteur de projection, alias proj= »
 - Prochaine étape : S-05 (liens profonds, avant S-03).
+
+#### 2026-11-14T22:10Z · S-05, LIENS PROFONDS · session S5
+- Actions : `links.js` et ses tests ; test `nonetwork` étendu ; bloc « Voir ailleurs » (`ui/sitelinks.js`, HTML, FR/EN) ; vérification dans Edge piloté par CDP ; SOURCES (crédit à vérifier) ; RAPPORT M-034.
+- Fichiers : créés [`web/js/links.js`, `web/js/ui/sitelinks.js`, `web/tests/links.test.js`] · modifiés [`web/index.html`, `web/js/{main,i18n}.js`, `web/tests/nonetwork.test.js`, `SOURCES.md`, `STATUS.md`]
+- Commandes : `node --test "web/tests/**/*.test.js"` → 102 pass · CDP : liens, coordonnées, 0 requête externe
+- Commit : « S-05 : liens profonds Quickmap et Moon Trek (D-019) »
+- Prochaine étape : S-03 (marqueurs et fiche sur l'Atlas, niveaux), S-04.
 
 ## 7. Journal de CHAT (ajout uniquement)
 

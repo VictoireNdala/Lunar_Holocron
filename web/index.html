@@ -175,6 +175,20 @@
             <dl id="site-info" class="facts"></dl>
             <h3 data-i18n="prov.heading"></h3>
             <dl id="site-provenance" class="facts"></dl>
+            <div id="links-block" hidden>
+              <h3 data-i18n="links.heading"></h3>
+              <p id="links-coords" class="num"></p>
+              <p id="links-source" class="hint"></p>
+              <p id="links-invalid" class="warning" role="status" data-i18n="links.invalid" hidden></p>
+              <div id="links-actions" class="toolbar">
+                <a id="link-quickmap" class="btn" target="_blank" rel="noopener noreferrer" data-i18n="links.quickmap"></a>
+                <a id="link-trek" class="btn" target="_blank" rel="noopener noreferrer" data-i18n="links.trek"></a>
+                <button type="button" class="btn" id="links-copy" data-i18n="links.copy"></button>
+              </div>
+              <p id="links-status" class="hint" role="status" hidden></p>
+              <p id="links-note" class="hint"></p>
+              <p class="hint" data-i18n="links.credit"></p>
+            </div>
           </section>
         </aside>
 

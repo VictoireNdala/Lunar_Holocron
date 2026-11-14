@@ -8,6 +8,7 @@ import { createAtlasPanel } from './ui/atlaspanel.js';
 import { createMapPanel } from './ui/mappanel.js';
 import { createPanoramaPanel } from './ui/panoramapanel.js';
 import { createPanels } from './ui/panels.js';
+import { createSiteLinks } from './ui/sitelinks.js';
 import { createShell } from './ui/shell.js';
 import { decode, encode } from './urlstate.js';
 
@@ -38,6 +39,7 @@ const panel3d = createPanel3d(store);
 const shell = createShell(store);
 const panorama = createPanoramaPanel(store);
 const panels = createPanels();
+const siteLinks = createSiteLinks();
 /** Période couverte : celle du site affiché (même période pour tous), à défaut celle de global.json. */
 const coveredRange = () => (site ? siteTimeRange(site) : atlas.timeRange());
 const playback = createPlayback({ store, getRange: coveredRange, clock: () => performance.now(), schedule: (fn) => requestAnimationFrame(fn), cancel: (h) => cancelAnimationFrame(h) });
@@ -117,6 +119,7 @@ function renderSiteInfo() {
   ];
   if (prov.note) pairs.push([t('prov.note'), prov.note]);
   fillFacts($('site-provenance'), pairs);
+  siteLinks.render(site);
 }
 
 /** Champ de date, instant affiché, avertissement hors période. */
