@@ -8,8 +8,8 @@ import { createShell } from './ui/shell.js';
 import { decode, encode } from './urlstate.js';
 
 const HOUR_MS = 3600 * 1000;
-// Jeu de données par défaut : l'exemple fait main, jusqu'à ce que le pipeline produise web/data/ (T-08).
-const DEFAULT_DATA_ROOT = 'data/sample/';
+// Données par défaut : sorties du pipeline (web/data/, `py -m pipeline.cli build`). L'exemple fait main reste en `?data=data/sample/`.
+const DEFAULT_DATA_ROOT = 'data/';
 const DATA_ROOT_PATTERN = /^(?:[a-z0-9_-]+\/)+$/;
 const TIME_INPUT_PATTERN = /^(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2})$/;
 const BODIES = ['sun', 'earth'];
@@ -134,7 +134,8 @@ function renderBodies() {
  * Prudence : « démonstration » tant que rien n'est chargé.
  */
 function renderHonesty() {
-  const synthetic = !index || index.synthetic || Boolean(site?.synthetic);
+  // Le site affiché décide ; en attendant son chargement, l'index (prudence : « démonstration » si rien n'est chargé).
+  const synthetic = site ? Boolean(site.synthetic) : !index || index.synthetic;
   $('honesty-chip').classList.toggle('chip-real', !synthetic);
   $('honesty-label').textContent = t(synthetic ? 'honesty.synthetic' : 'honesty.real');
   $('honesty-note').textContent = t(synthetic ? 'honesty.syntheticNote' : 'honesty.realNote');

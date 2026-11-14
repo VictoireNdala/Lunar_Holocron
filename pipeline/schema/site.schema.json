@@ -10,6 +10,8 @@
     "id": { "$ref": "#/$defs/site_id" },
     "name": { "$ref": "#/$defs/name" },
     "synthetic": { "type": "boolean" },
+    "terrain_real": { "type": "boolean" },
+    "ephemeris_synthetic": { "type": "boolean" },
     "location": {
       "type": "object",
       "required": ["lat_deg", "lon_deg", "ground_height_m", "observer_height_m", "frame", "r_ref_m"],

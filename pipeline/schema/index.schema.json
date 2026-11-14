@@ -30,6 +30,12 @@
           "lon_deg": { "type": "number", "minimum": -180, "maximum": 180 },
           "synthetic": { "type": "boolean" },
           "verified": { "type": "boolean" },
+          "terrain_real": { "type": "boolean" },
+          "ephemeris_synthetic": { "type": "boolean" },
+          "tier": { "type": "integer", "minimum": 1 },
+          "lola_priority_site": { "type": "boolean" },
+          "nasa_2024_region": { "type": ["string", "null"] },
+          "pgda_id": { "type": "string" },
           "site_file": { "type": "string", "pattern": "^sites/[a-z0-9]+(-[a-z0-9]+)*\\.json$" },
           "terrain_file": { "type": "string", "pattern": "^terrain/[a-z0-9]+(-[a-z0-9]+)*\\.json$" }
         }

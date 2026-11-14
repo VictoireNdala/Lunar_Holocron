@@ -1,0 +1,23 @@
+{
+  "description": "Sites de DÉMONSTRATION (fictifs, synthetic: true). Les sites réels sont dans config/sites_real.json. Le terrain synthétique est centré sur `dem_center` ; D-014 : demo-a est sur le rebord du cratère (4 km au sud de son centre).",
+  "sites": [
+    {
+      "id": "demo-a", "name": { "fr": "Site de démonstration A (rebord de cratère)", "en": "Demo site A (crater rim)" },
+      "lat_deg": -89.0, "lon_deg": 0.0, "synthetic": true, "verified": true,
+      "terrain": { "kind": "crater", "seed": 1, "dem_center_from_site": { "az_deg": 0.0, "dist_m": 4000.0 } },
+      "note": "Cratère de 8 km de diamètre, rebord à +900 m, dorsale au nord ; site 4 km au sud du centre (D-014)."
+    },
+    {
+      "id": "demo-b", "name": { "fr": "Site de démonstration B (massif à l'est)", "en": "Demo site B (massif to the east)" },
+      "lat_deg": -87.5, "lon_deg": 45.0, "synthetic": true, "verified": true,
+      "terrain": { "kind": "massif", "seed": 2, "dem_center_from_site": { "az_deg": 0.0, "dist_m": 0.0 } },
+      "note": "Plateau avec un massif de 1,8 km de haut à 12 km à l'est."
+    },
+    {
+      "id": "demo-c", "name": { "fr": "Site de démonstration C (terrain peu accidenté)", "en": "Demo site C (gentle terrain)" },
+      "lat_deg": -88.3, "lon_deg": -120.0, "synthetic": true, "verified": true,
+      "terrain": { "kind": "flat", "seed": 3, "dem_center_from_site": { "az_deg": 0.0, "dist_m": 0.0 } },
+      "note": "Cas « horizon bas »."
+    }
+  ]
+}

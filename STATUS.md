@@ -5,7 +5,8 @@
 **Dernière mise à jour** : 2026-11-12 (T-09 terminé ; T-02 accepté par CHAT, M-008)
 **Phase** : J1 (pipeline) et J2 (interface) en parallèle
 **T-20 : terminé** (2026-11-14) : noyaux SPICE téléchargés (accord de l'humain), `pipeline/ephemeris_spice.py`, 8 tests (marqueur `spice`) ; Soleil vu de (−89,67 ; 129,5) identique à Horizons à moins de 1e-6° sur 3 points ; `pytest` → 152 passed. Borne du rayon solaire corrigée (D-020).
-**Prochaine tâche** (M-024) : T-07 avec SPICE (séries de site, global) → comparaison Horizons sur 3 sites et 3 dates (T-24 début) → S-01/S-02 (niveau 1 : Site04 reçu ; Site01, 07, 11 en cours de téléchargement, serveur lent) → T-05/T-08 → A-01 à A-04 ; S-05 (liens profonds) après S-02, avant S-03 (M-025).
+**Données réelles dans l'application (2026-11-14)** : `web/data/` contient 4 sites réels (niveau 1 : Site01, Site04, Site07, Site11 ; relief LOLA 5 m + 80 m, Soleil et Terre par SPICE) et 3 sites de démonstration. L'interface charge `data/` par défaut ; l'exemple fait main reste en `?data=data/sample/`. Le « site » réel est le **centre de l'emprise du MNT**, pas un point d'alunissage choisi.
+**Prochaine tâche** (M-024) : comparaison Horizons sur 3 sites et 3 dates, Terre comprise (début de T-24) → fichier d'or T-08 (relecture humaine) → A-01 à A-04 (Atlas) ; S-02 (outil de découpe : en grande partie couvert par `pipeline.cli build`), S-05 (liens profonds) avant S-03 (M-025).
 **Fichier LDEM réel présent** : oui, `data/raw/LDEM_80S_80MPP_ADJ.tiff` (189 Mo, hors Git) ; **décodé : oui** (rasterio) ; unités (m), projection, convention de pixel et orientation **contrôlées** (2026-11-14, voir `SOURCES.md`).
 **Aperçu du relief réel** : `py -m pipeline.tools.crop_real_dem --id shackleton --lat -89.67 --lon 129.5`, puis http://localhost:8000/preview.html (données locales non versionnées).
 **Atlas** : non commencé. **Sites réels** : S-01 en attente des fichiers 5 m (4 × 39,1 Mo, à télécharger par l'humain). **Interface** : U-01 et U-02 terminés (coque : rail, barre flottante, scène plein écran, `view=`) ; U-03 à faire (avec T-12).
@@ -22,8 +23,8 @@
 | T-04 | MNT synthétique et interface `Dem` | terminé (question Q-011 ouverte) | `pytest pipeline/tests -q` → 104 passed ; grille 20 m ±25 km : 13,2 s ; 120 m ±155 km : 13,8 s |
 | T-05 | Masque d'horizon | terminé — **revue CHAT demandée (M-028)** | `pytest pipeline/tests -q` → 172 passed (17 tests d'horizon) ; masque réel de Site04 (5 m + 80 m) en 0,9 s ; 0 azimut tronqué |
 | T-06 | Visibilité partagée et indicateurs | terminé — **revue CHAT demandée (M-022)** | `pytest` → 144 passed ; `node --test` → 51 pass ; mêmes valeurs d'or (`visible_fraction.json`, `horizon_at.json`) en Python et en JS ; `validate web/data/sample` → OK avec recalcul des KPI (§ 7.6) |
-| T-07 | Éphémérides de démonstration et export | à faire | |
-| T-08 | Génération de bout en bout + fichier d'or | à faire | |
+| T-07 | Éphémérides de démonstration et export | terminé (avec SPICE) — **revue CHAT demandée (M-029)** | `pytest pipeline/tests -q` → 191 passed ; `py -m pipeline.cli build` → 7 sites en 118 s, `validate web/data` → OK ; deux exécutions identiques octet pour octet (test, configuration réduite) |
+| T-08 | Génération de bout en bout + fichier d'or | **partiel** : `web/data/` produit et validé, test de bout en bout fait ; **fichier d'or `body_state_cases.json` à faire** (relecture humaine requise) | |
 | T-09 | Chargement, état, i18n, squelette | terminé | `node --test "web/tests/**/*.test.js"` → 33 pass ; Edge sans interface sur http://127.0.0.1:8000 → page rendue, valeurs = JSON, 0 message console, requêtes toutes locales |
 | T-10 | Panorama 360° | terminé (jeu d'exemple) | `node --test` → 60 pass (9 de projection écran) ; captures `docs/captures/t10-panorama-1440-{fr,en}.png` cohérentes avec le tableau des lectures et la vue 3D |
 | T-11 | Vue 3D du terrain | étape A terminée (jeu d'exemple) ; test d'ombre de `demo-a` après T-07/T-08 | `node --test` → 41 pass ; Edge (SwiftShader) : vue d'ensemble et vue au sol rendues ; 20 reconstructions → 3 géométries / 3 textures stables ; 20 vues libérées → 0 canvas restant |

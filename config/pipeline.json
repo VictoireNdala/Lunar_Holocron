@@ -1,0 +1,14 @@
+{
+  "period": { "start_utc": "2026-01-01T00:00:00Z", "end_utc": "2030-12-31T23:00:00Z", "step_s": 3600 },
+  "horizon": {
+    "az_step_deg": 1.0,
+    "near_max_km": 25.0,
+    "far_max_km": 150.0,
+    "near_step_m": 20.0,
+    "far_step_m": 120.0,
+    "observer_height_m": 2.0
+  },
+  "terrain": { "size_m": 20000.0, "n": 257 },
+  "ephemeris": { "engine": "demo-analytic" },
+  "build_utc": "2026-11-14T00:00:00Z"
+}

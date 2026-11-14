@@ -1,4 +1,4 @@
-# Contrat de données (version 1.0)
+# Contrat de données (version 1.1)
 
 C'est la **seule interface** entre le pipeline et l'application. Toute modification passe par le processus décrit à la fin.
 Le schéma exécutable est `pipeline/schema/site.schema.json` (à écrire en T-01 d'après ce document). Ce document fait foi en cas de doute.
@@ -179,6 +179,14 @@ Pourcentage sur les échantillons du mois. Sert à la carte de chaleur et au con
 4. Cohérence : `index.json` ne référence que des fichiers existants ; `id` identique partout.
 5. `synthetic` : si `provenance.dem.product == "SYNTHETIC"` ou `provenance.ephemeris.engine == "demo-analytic"`, alors `synthetic` **doit** être `true`.
 6. Les indicateurs `kpis` sont **recalculables** à partir des séries : `validate` les recalcule et compare (tolérance 1e-9).
+
+## 7 bis. Version 1.1 : champs optionnels (D-021)
+
+Ajoutés sans rien retirer (l'interface ignore les champs inconnus ; un fichier 1.0 reste valide) :
+- `sites/<id>.json` et chaque entrée de `index.json` : **`terrain_real`** (le relief vient d'un MNT réel) et **`ephemeris_synthetic`** (les positions du Soleil et de la Terre sont fictives). Deux drapeaux distincts, pour ne pas mentir par omission (D-016). Règle : `synthetic` = `ephemeris_synthetic` OU NON `terrain_real` ; `ephemeris_synthetic` est vrai si et seulement si `provenance.ephemeris.engine == "demo-analytic"`.
+- Entrée d'index : **`tier`** (entier, ordre de construction, D-016), **`lola_priority_site`** (booléen) et **`nasa_2024_region`** (texte ou `null`) (D-018), **`pgda_id`** (texte).
+- `provenance.dem` peut porter `citation` et `filled_nodes`.
+- **Seuil « any »** : `is_visible(f, 'any')` dépend de la fraction visible `f` (> 0), pas de l'écart d'élévation `d` : pour `d` à peine supérieur à `-r`, `f` peut s'arrondir à 0 en double précision (sans effet pratique).
 
 ## 8. Évolution du contrat
 

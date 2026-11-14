@@ -99,6 +99,18 @@ def test_real_site_with_real_provenance_is_accepted() -> None:
     assert validate.validate_site(make_site(synthetic=False)) == []
 
 
+def test_v11_flags_consistency() -> None:
+    """Contrat 1.1 : synthetic = (ephemeris_synthetic ou relief non réel) ; drapeaux cohérents avec le moteur d'éphémérides."""
+    site = make_site(synthetic=False)
+    site.update({"schema_version": "1.1", "terrain_real": True, "ephemeris_synthetic": False})
+    assert validate.validate_site(site) == []
+    site["terrain_real"] = False  # relief fictif mais synthetic faux
+    assert "synthetic" in _joined(validate.validate_site(site))
+    site = make_site(synthetic=False)
+    site.update({"terrain_real": True, "ephemeris_synthetic": True})  # moteur spice mais drapeau « fictif »
+    assert "ephemeris_synthetic" in _joined(validate.validate_site(site))
+
+
 def test_index_root_synthetic_must_reflect_sites() -> None:
     """Racine synthetic=false alors qu'un site est synthétique : refusé ; l'inverse aussi."""
     index = make_index()

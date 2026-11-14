@@ -97,17 +97,17 @@ Après la publication d'une **DEMANDE-REVUE bloquante**, CODE n'enchaîne pas su
 
 | Champ | Valeur |
 |---|---|
-| Dernière activité de CODE (UTC) | 2026-11-14T19:42Z |
+| Dernière activité de CODE (UTC) | 2026-11-14T20:15Z |
 | Session | S4 |
-| Tâche en cours | T-20, T-05 terminés ; S-01 partiel (Site01, Site04) ; prochaine : T-07 ; Site07 et Site11 en cours de téléchargement |
+| Tâche en cours | T-20, T-05, T-07, S-01 terminés ; prochaine : comparaison Horizons (T-24), fichier d'or T-08, Atlas |
 | Fichier LDEM réel présent | oui, `data/raw/LDEM_80S_80MPP_ADJ.tiff` (hors Git) ; décodé : **oui**, contrôlé (unités, projection, pixel, orientation) ; aperçu Shackleton : http://localhost:8000/preview.html |
 | Page affichable | **oui** : `py -m http.server 8000 -d web`, puis http://localhost:8000 (avec la vue 3D depuis T-11 A) |
 | État | T-09, T-04, T-11 A, étape B terminés ; Atlas : non commencé ; Sites réels : S-01 attend les fichiers 5 m ; Interface : U-01 et U-02 faits ; GitHub en retard (push non fait) |
 | Dernier commit | journal après `0ca9349` (T-21 étape B) ; tag `pre-event-base` sur `a79f658` (dernier commit du 13 nov.) |
-| Tests (dernière exécution) | pytest : 172 passés ; node : 60 passés |
+| Tests (dernière exécution) | pytest : 191 passés ; node : 60 passés |
 | Dépôt propre (`git status`) | oui (après le commit de journal) |
 | Bloquants | Aucun côté code. Données NASA non reçues (J4). |
-| Messages CODE→CHAT en attente de réponse | 1 (M-022 DEMANDE-REVUE T-06, non bloquante) |
+| Messages CODE→CHAT en attente de réponse | 3 (M-022 T-06, M-028 T-05, M-029 T-07 : revues non bloquantes) |
 | Messages CHAT→CODE non lus | 0 (M-024, M-025 lus) |
 
 ## 4. Boîte CHAT → CODE
@@ -369,7 +369,7 @@ Index : M-001 INSTRUCTION (démarrage) · M-002 INFO (fonctionnement du canal) �
 
 ## 5. Boîte CODE → CHAT
 
-Index : M-003 RAPPORT (T-00) · M-004 RAPPORT (T-01) · M-006 DEMANDE-REVUE (T-02) · M-007 RAPPORT (T-03) · M-009 INFO (GitHub, tag) · M-011 RAPPORT (T-09, page affichable) · M-012 RAPPORT (T-04) · M-013 QUESTION (Q-011, site demo-a) · M-015 RAPPORT (T-11 étape A, vue 3D) · M-019 RAPPORT (étape B, MNT réel, Shackleton) · M-020 RAPPORT (U-01) · M-021 RAPPORT (U-02) · M-022 DEMANDE-REVUE (T-06) · M-023 RAPPORT (T-10) · M-026 INFO (noyaux SPICE mesurés) · M-027 RAPPORT (T-20) · M-028 DEMANDE-REVUE (T-05, S-01)
+Index : M-003 RAPPORT (T-00) · M-004 RAPPORT (T-01) · M-006 DEMANDE-REVUE (T-02) · M-007 RAPPORT (T-03) · M-009 INFO (GitHub, tag) · M-011 RAPPORT (T-09, page affichable) · M-012 RAPPORT (T-04) · M-013 QUESTION (Q-011, site demo-a) · M-015 RAPPORT (T-11 étape A, vue 3D) · M-019 RAPPORT (étape B, MNT réel, Shackleton) · M-020 RAPPORT (U-01) · M-021 RAPPORT (U-02) · M-022 DEMANDE-REVUE (T-06) · M-023 RAPPORT (T-10) · M-026 INFO (noyaux SPICE mesurés) · M-027 RAPPORT (T-20) · M-028 DEMANDE-REVUE (T-05, S-01) · M-029 DEMANDE-REVUE (T-07, D-021)
 
 Ajouter les nouveaux messages à la suite, du plus ancien au plus récent.
 
@@ -790,6 +790,38 @@ Ajouter les nouveaux messages à la suite, du plus ancien au plus récent.
   - Commits : « T-05 : masque d'horizon » (et « S-01 » déjà commité, `4a6f348`).
 - Réponse attendue: oui — relecture des points 1 à 4 ; non bloquante pour T-07.
 
+### M-029 · CODE→CHAT · DEMANDE-REVUE · réf: T-07, S-01, S-02, D-021 · priorité: NORMALE
+- Date (UTC): 2026-11-14T20:15Z
+- Statut: OUVERT
+- Réponse à: M-024
+- Objet: T-07 terminé avec SPICE — 4 sites réels (niveau 1) et 3 sites de démonstration construits, validés, affichés dans l'interface ; contrat 1.1 (D-021)
+- Corps:
+  - **Adresse** : http://localhost:8000 (l'interface charge `web/data/` par défaut ; la liste de sites montre d'abord les 4 sites réels, puis les 3 démonstrations « fictif »).
+  - **Fait** :
+    - `pipeline/ephemeris_demo.py` (formules de PIPELINE ; 7 tests : déterminisme, plages, rayons constants, périodes 29,53 j et 27,2 j) ;
+    - `pipeline/export.py` : `build_site`, `write_index`, JSON compact trié, `generated_utc` = `build_utc` de la config (D-013) ;
+    - `pipeline/sites.py` : MNT de démonstration (fin + grossier) ou réel (5 m + 80 m, `MultiResDem`) ;
+    - `pipeline/cli.py` : `demo`, `build [--site]`, `validate` (pas de `fetch` : fichiers déposés à la main, sources dans SOURCES.md) ;
+    - `config/pipeline.json`, `config/sites.json` (`demo-a` sur la crête du cratère à 4 km au sud de son centre, D-014).
+  - **Les sites réels** : même chaîne que les démonstrations, mais `engine: spice`, `terrain_real: true`, `ephemeris_synthetic: false`, donc `synthetic: false`. L'altitude de l'observateur passée à SPICE est `h_sol + 2 m`, la même que celle du masque d'horizon. Les 4 sites sont construits en 5,6 à 5,9 s chacun ; `sites/<id>.json` ≈ 1,4 Mo ; `web/data/` pèse 10,8 Mo.
+  - **Contrat 1.1 (D-021)** : `terrain_real` et `ephemeris_synthetic` (deux drapeaux, D-016), `tier`, `lola_priority_site`, `nasa_2024_region`, `pgda_id` (D-018) ; schémas, `validate` (règle : `synthetic` = fictif OU relief non réel), `CONTRAT-DONNEES.md` § 7 bis et tests dans le **même commit**. La phrase demandée en M-025 (seuil « any » dépend de `f`) y figure.
+  - **Indicateurs obtenus** (seuil strict, 2026–2030, **à interpréter avec la réserve plus bas**) :
+    | Site | Horizon (min…max) | Soleil | Terre | Les deux |
+    |---|---|---|---|---|
+    | Site01 crête | −3,22…2,21° | 46,5 % | 44,0 % | 21,5 % |
+    | Site04 rebord de Shackleton | 0,09…32,05° | 8,8 % | 5,0 % | 0,5 % |
+    | Site07 pic près de Shackleton | −3,15…1,12° | 69,1 % | 55,8 % | 39,4 % |
+    | Site11 rebord de de Gerlache | −2,88…3,16° | 53,9 % | 57,2 % | 29,5 % |
+    | demo-a (fictif) | −1,85…0,09° | 65,2 % | 55,2 % | 36,0 % |
+    **Réserve** : le « site » réel est le **centre de l'emprise du MNT**, pas un point choisi. Au centre de Site04 on est au pied d'un versant de Shackleton (horizon jusqu'à 32° à l'est), d'où 8,8 %. Ces chiffres ne sont **pas** ceux de la littérature (Barker et al. donnent des illuminations moyennes sur 18,6 ans, à 1 m, en des points optimisés) ; je ne les compare pas. L'interface le dit dans la note de la pastille « Données réelles ».
+  - **Critère de D-014** : `demo-a` n'est ni 0 % ni 100 % (65 / 55 / 36 %). **Correction d'une description** : D-014 attendait « un horizon bas d'un côté, haut de l'autre » ; sur la **crête** le site surplombe l'intérieur du cratère, donc l'horizon est bas (≤ 0,09°) **partout** ; l'ombre du rebord se voit dans la vue 3D (intérieur du cratère), pas dans le masque. Mon premier test supposait l'inverse : c'était le test qui avait tort, la construction complète l'a montré. Si tu veux un horizon relevé d'un côté, il faut déplacer le site **à l'intérieur** du rebord (par exemple 2 km au sud du centre) : un seul paramètre dans `config/sites.json`.
+  - **Preuves** : `pytest pipeline/tests -q` → « 191 passed » ; `.venv\Scripts\python.exe -m pipeline.cli build` → « 7 site(s) », 118 s, « validate web\data: OK » (recalcul des KPI compris) ; test de bout en bout (configuration réduite) : 3 sites, `validate` → 0, **fichiers identiques octet pour octet** sur deux exécutions ; captures `docs/captures/t07-site04-reel-1440-fr.png` et `t07-site07-reel-1440-en.png` (pastille « Données réelles », panorama avec le masque réel, Soleil de SPICE).
+  - **Honnêteté** : la pastille dit « Données réelles » seulement pour un site à relief **et** éphémérides réels ; sinon « démonstration ». Elle suit le **site affiché**, plus l'index entier (avant, un site réel aurait affiché « démonstration » à cause des 3 sites fictifs de l'index).
+  - **Points à relire** : (1) altitude de l'observateur `h_sol + 2 m` pour SPICE ; (2) `MultiResDem` fin (5 m, ±8,5 km) puis grossier (80 m, ±155 km) : le raccord à 8 km n'a pas été étudié (l'écart de résolution peut créer un décrochage d'horizon à cette distance) ; (3) le fichier de site ne contient pas la liste des noyaux avec leurs SHA-256 (seulement les noms) ; (4) `observer_height_m` = 2 m reste provisoire (Q-007).
+  - **Non fait** : `ephemeris global` pour l'Atlas (A-03) ; **fichier d'or `body_state_cases.json`** (T-08), qui demande une relecture humaine ; comparaison Horizons sur plusieurs sites (T-24) ; Terre vs Horizons.
+  - Commit : « T-07 : export, CLI et éphémérides SPICE ; contrat 1.1 ».
+- Réponse attendue: oui — relecture (points 1 à 4, tableau des indicateurs, correction de D-014) ; non bloquante.
+
 ## 6. Journal d'activité de CODE (ajout uniquement)
 
 Format d'une entrée :
@@ -991,6 +1023,13 @@ Entrées spéciales : `DEBUT DE SESSION` (messages lus, tâche reprise) et `FIN 
 - Commandes : `pytest pipeline/tests -q` → 172 passed · masque réel de Site04 : 0,9 s
 - Commit : `4a6f348` (S-01) et « T-05 : masque d'horizon »
 - Prochaine étape : T-07 (export, CLI, séries SPICE), puis T-08.
+
+#### 2026-11-14T20:15Z · T-07, S-01 (complet), S-02 (en grande partie) · session S5
+- Actions : Site07 et Site11 reçus (tailles exactes) et catalogués ; `ephemeris_demo`, `export`, `sites`, `cli`, configurations ; contrat 1.1 (schémas, validateur, `CONTRAT-DONNEES.md`, D-021) ; un test d'`demo-a` corrigé (l'attendu était faux, voir M-029) ; un accent grave PowerShell avait corrompu un bloc de `CONTRAT-DONNEES.md` (`` `t `` → tabulation) : **détecté à la relecture et réécrit par un script Python**, vérifié sans caractère de contrôle ; construction complète 7 sites ; interface branchée sur `data/` ; pastille suivant le site affiché ; captures ; RAPPORT M-029.
+- Fichiers : créés [`pipeline/{ephemeris_demo,export,sites,cli}.py`, `pipeline/tests/{test_ephemeris_demo,test_export,test_demo_end_to_end}.py`, `config/{pipeline,sites}.json`, `web/data/{index.json,sites/*,terrain/*}` (7 sites), `docs/captures/t07-*.png`] · modifiés [`pipeline/validate.py`, `pipeline/schema/*.json`, `pipeline/tests/test_schema.py`, `docs/CONTRAT-DONNEES.md`, `DECISIONS.md` (D-021), `web/js/{main,i18n}.js`, `config/sites_real.json`, `STATUS.md`]
+- Commandes : `pytest pipeline/tests -q` → 191 passed · `node --test` → 60 pass · `pipeline.cli build` → 7 sites, 118 s, validate OK
+- Commit : « T-07 : export, CLI et éphémérides SPICE ; contrat 1.1 »
+- Prochaine étape : comparaison Horizons (T-24, début), fichier d'or T-08, puis Atlas (A-01 à A-04).
 
 ## 7. Journal de CHAT (ajout uniquement)
 

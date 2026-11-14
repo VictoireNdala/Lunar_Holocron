@@ -126,6 +126,12 @@ def _site_cross_checks(doc: dict[str, Any]) -> list[str]:
     prov = doc["provenance"]
     if (prov["dem"]["product"] == "SYNTHETIC" or prov["ephemeris"]["engine"] == "demo-analytic") and not doc["synthetic"]:
         errors.append("synthetic: doit valoir true (MNT SYNTHETIC ou éphémérides demo-analytic)")
+    if "terrain_real" in doc and "ephemeris_synthetic" in doc:  # contrat 1.1 : synthetic = relief fictif OU éphémérides fictives
+        expected = doc["ephemeris_synthetic"] or not doc["terrain_real"]
+        if doc["synthetic"] != expected:
+            errors.append(f"synthetic: {doc['synthetic']}, attendu {expected} (terrain_real = {doc['terrain_real']}, ephemeris_synthetic = {doc['ephemeris_synthetic']})")
+        if doc["ephemeris_synthetic"] != (prov["ephemeris"]["engine"] == "demo-analytic"):
+            errors.append("ephemeris_synthetic: incohérent avec provenance.ephemeris.engine")
     start = _parse_utc(doc["time"]["start_utc"])
     end = start + timedelta(seconds=doc["time"]["step_s"] * (count - 1))
     window = doc["kpis"]["window"]
