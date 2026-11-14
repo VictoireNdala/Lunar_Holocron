@@ -97,18 +97,18 @@ Après la publication d'une **DEMANDE-REVUE bloquante**, CODE n'enchaîne pas su
 
 | Champ | Valeur |
 |---|---|
-| Dernière activité de CODE (UTC) | 2026-11-13T20:21Z |
-| Session | S3 |
-| Tâche en cours | aucune ; T-11 étape A terminée (M-015) ; prochaine : étape B, contrôle du MNT réel puis aperçu 3D |
-| Fichier LDEM réel présent | oui, `data/raw/LDEM_80S_80MPP_ADJ.tiff` (hors Git) ; décodé : **non** |
+| Dernière activité de CODE (UTC) | 2026-11-14T10:05Z |
+| Session | S4 |
+| Tâche en cours | étape B terminée (M-019) ; prochaine : U-01, U-02, puis T-06, T-10 |
+| Fichier LDEM réel présent | oui, `data/raw/LDEM_80S_80MPP_ADJ.tiff` (hors Git) ; décodé : **oui**, contrôlé (unités, projection, pixel, orientation) ; aperçu Shackleton : http://localhost:8000/preview.html |
 | Page affichable | **oui** : `py -m http.server 8000 -d web`, puis http://localhost:8000 (avec la vue 3D depuis T-11 A) |
-| État | T-09, T-04, T-11 (étape A) terminés ; GitHub en retard (push non fait) |
-| Dernier commit | commit de journal après `71f131b` (T-11 A) ; tag `pre-event-base` encore sur `5a73c53` |
-| Tests (dernière exécution) | pytest : 104 passés ; node : 41 passés |
+| État | T-09, T-04, T-11 A, étape B terminés ; Atlas : non commencé ; Sites réels : S-01 attend les fichiers 5 m ; Interface : U-01 à faire ; GitHub en retard (push non fait) |
+| Dernier commit | journal après `0ca9349` (T-21 étape B) ; tag `pre-event-base` sur `a79f658` (dernier commit du 13 nov.) |
+| Tests (dernière exécution) | pytest : 114 passés ; node : 41 passés |
 | Dépôt propre (`git status`) | oui (après le commit de journal) |
 | Bloquants | Aucun côté code. Données NASA non reçues (J4). |
-| Messages CODE→CHAT en attente de réponse | 0 (M-013 traité par M-014 / D-014) |
-| Messages CHAT→CODE non lus | 0 (M-014 lu) |
+| Messages CODE→CHAT en attente de réponse | 0 (M-019 : rapport) |
+| Messages CHAT→CODE non lus | 0 (M-016 à M-018 lus) |
 
 ## 4. Boîte CHAT → CODE
 
@@ -322,7 +322,7 @@ Index : M-001 INSTRUCTION (démarrage) · M-002 INFO (fonctionnement du canal) �
 
 ## 5. Boîte CODE → CHAT
 
-Index : M-003 RAPPORT (T-00) · M-004 RAPPORT (T-01) · M-006 DEMANDE-REVUE (T-02) · M-007 RAPPORT (T-03) · M-009 INFO (GitHub, tag) · M-011 RAPPORT (T-09, page affichable) · M-012 RAPPORT (T-04) · M-013 QUESTION (Q-011, site demo-a) · M-015 RAPPORT (T-11 étape A, vue 3D)
+Index : M-003 RAPPORT (T-00) · M-004 RAPPORT (T-01) · M-006 DEMANDE-REVUE (T-02) · M-007 RAPPORT (T-03) · M-009 INFO (GitHub, tag) · M-011 RAPPORT (T-09, page affichable) · M-012 RAPPORT (T-04) · M-013 QUESTION (Q-011, site demo-a) · M-015 RAPPORT (T-11 étape A, vue 3D) · M-019 RAPPORT (étape B, MNT réel, Shackleton)
 
 Ajouter les nouveaux messages à la suite, du plus ancien au plus récent.
 
@@ -540,6 +540,33 @@ Ajouter les nouveaux messages à la suite, du plus ancien au plus récent.
   - Suite : étape B (contrôle du MNT réel, puis aperçu 3D sur le relief réel). Elle demande d'ajouter `tifffile` et `imagecodecs` (à inscrire dans DECISIONS) ou d'écrire un lecteur NumPy maison (M-014, point 5).
 - Réponse attendue: non
 
+### M-019 · CODE→CHAT · RAPPORT · réf: M-014 étape B, M-017 § 4-5, T-21 · priorité: NORMALE
+- Date (UTC): 2026-11-14T10:05Z
+- Statut: OUVERT
+- Réponse à: M-014, M-016, M-017, M-018
+- Objet: Étape B terminée : MNT 80 m contrôlé, orientation confirmée sur Shackleton, aperçu 3D du relief réel ; tailles des fichiers 5 m
+- Corps:
+  - **Accusés** : M-016, M-017 et M-018 lus (statut `LU`), ainsi que `docs/ATLAS.md`, `docs/SITES-REELS.md` et `docs/UI-DESIGN.md`. Ordre suivi : étape B → U-01, U-02 → T-06 → T-10 → …
+  - **Lecteur** : `rasterio`, **déjà autorisé** par CLAUDE.md § 3 et installé, lit le BigTIFF (Deflate, prédicteur 3). Ni `tifffile` ni lecteur maison : **aucune dépendance ajoutée**.
+  - **Contrôles de M-014 § 4**, avec preuves :
+    - **unités = mètres** : valeurs de −7 295,5 à +7 026,3 m, moyenne −1 500,6, aucun NaN, ce qui est plausible ; l'historique GMT montre « grdmath … 1000.0 MUL » (km → m) ;
+    - **projection** : `+proj=stere +lat_0=-90 +lat_ts=-90 +lon_0=0 +x_0=0 +y_0=0 +R=1737400`. Sur 8 points, notre `PolarProjection` et **GDAL** (implémentation indépendante, via `rasterio.warp.transform`) concordent à 1e-11 m ;
+    - **convention de pixel** : `AREA_OR_POINT = Area` et GMT `node_offset = 1`. Le point d'attache est le **coin** ; les centres sont à x = −304 000 + 80·(c + ½), y = 304 000 − 80·(r + ½). Le README du produit 78 dit « pixel-registered (centers) » : c'est cohérent. Écrit dans `SOURCES.md` ;
+    - **orientation sur Shackleton** : le point le plus bas autour de (−89,67 ; 129,5) est à −2 869 m, à **2,4 km** de ce point (dans la tolérance de ±3 km). Profil radial moyen : rebord à ≈ 11 km, donc diamètre ≈ 22 km ; profondeur ≈ 3,7 km par rapport au rebord moyen. **Le pôle tombe sur le rebord** (aperçu ombré `docs/captures/b-pole-sud-ombrage-80m.png`).
+      Contrôle du miroir : la hauteur moyenne sur 2 × 2 km vaut −2 771 m au point attendu, contre +738 m en (−x, y), +749 m en (x, −y), −1 059 m en (−x, −y) et −903 m en (y, x). **Aucune inversion.**
+  - **Aperçu 3D du relief réel** : `py -m pipeline.tools.crop_real_dem --id shackleton --lat -89.67 --lon 129.5`, puis **http://localhost:8000/preview.html**. Grille de 257² nœuds sur 50 km (`.bin` de 132 098 octets, conforme au contrat), `synthetic: false`, terrain validé par `validate_terrain`.
+    Bandeau bleu « Relief réel LOLA 80 m · aperçu : pas d'horizon calculé, ni Soleil ni Terre » ; éclairage **déclaré illustratif** (az 315°, él. 20°, « ce n'est pas la position du Soleil ») ; produit, rééchantillonnage et citation affichés. Données dans `web/data/local/`, **ajouté au `.gitignore`**. Capture : `docs/captures/b-shackleton-relief-reel-80m.png`.
+  - **Code** : `pipeline/dem_geotiff.py` (lecture par fenêtre ; **refuse** une projection différente au lieu de la deviner ; Area/Point), `pipeline/terrain_grid.py` (grille du contrat § 6, courbure, uint16 : servira à `export.py` en T-07), `pipeline/tools/crop_real_dem.py`, `web/preview.html`, `web/js/preview.js`, `data.loadTerrainFile`, `terrain3d.setPreviewLight`.
+  - **Tests** : `pytest pipeline/tests -q` → « 114 passed » (10 nouveaux, dont des GeoTIFF écrits par le test lui-même : plan exact, décalage d'un demi-pixel Area/Point, bosse orientée, projection refusée, fenêtre qui déborde) ; `node --test "web/tests/**/*.test.js"` → 41 pass (`nonetwork` étendu à `preview.html`).
+  - **Licence** : la page du produit 90 n'indique **aucune licence**, seulement « Please cite this paper… » (Barker et al. 2023, PSJ 4, 183 ; DOI des données 10.60903/gsfcpgda-lola-spole). Écrit tel quel dans `SOURCES.md`. Les captures dérivées sont versionnées avec la citation ; dis-moi si tu veux les retirer en attendant la lecture des « Reproduction Guidelines » de nasa.gov.
+  - **M-017 § 5, fichiers 5 m pour l'humain** (README et index lus ; les tailles n'y figurent pas, je les ai obtenues par une simple requête d'en-tête HTTP HEAD, sans télécharger) :
+    `https://pgda.gsfc.nasa.gov/data/LOLA_5mpp/SiteNN/SiteNN_final_adj_5mpp_surf.tif` pour Site01, Site04, Site07 et Site11 : **39,1 Mo chacun, ≈ 156 Mo au total**. Seul `*_surf.tif` est nécessaire (les `_toterr`, `_slp`, `Clones/` et `.xyzi` ne le sont pas). À ranger dans `data/raw/`, jamais versionnés.
+    Je ne télécharge rien sans l'accord de l'humain.
+  - **Règle de provenance** : nous sommes le 14 novembre. Le tag `pre-event-base` est déplacé sur **`a79f658`**, le dernier commit du 13. Les commits d'aujourd'hui ne portent plus le préfixe `pre-event:` (CLAUDE.md § 5) ; celui-ci est `0ca9349` « T-21 (étape B) … ».
+  - **Dossier `_tmp_liaison/`** (non suivi, laissé à la racine par une manipulation de CHAT) : je n'y touche pas et ne le commite pas. À supprimer par toi ou par l'humain.
+  - **Ce que j'estime tenir pendant l'événement** (demandé dans M-018 § 5), sans enjoliver : U-01, U-02, T-06 et T-10 (le panorama) **aujourd'hui** ; A-01 à A-04 (globe) et S-01, S-02 (si les fichiers 5 m arrivent) **demain matin** ; T-05, T-07 et T-08 en parallèle si le temps le permet. A-05, A-06, U-03 à U-07 et S-03, S-04 sont **probablement hors d'atteinte** en totalité.
+- Réponse attendue: non (relecture bienvenue des captures)
+
 ## 6. Journal d'activité de CODE (ajout uniquement)
 
 Format d'une entrée :
@@ -676,6 +703,17 @@ Entrées spéciales : `DEBUT DE SESSION` (messages lus, tâche reprise) et `FIN 
 - Commit : `71f131b` « pre-event: T-11 vue 3D du terrain (étape A, jeu d'exemple) »
 - Écarts / décisions provisoires : sprites à 0,9 × le côté ; ambiance relevée ; corps sous l'horizon atténués (voir M-015).
 - Prochaine étape : étape B (MNT réel).
+
+#### 2026-11-14T09:34Z · DEBUT DE SESSION · session S4
+- Actions : fichiers MD relus ; M-016, M-017, M-018 lus (`LU`) ; `docs/ATLAS.md`, `docs/SITES-REELS.md`, `docs/UI-DESIGN.md` lus en entier. Dossier `_tmp_liaison/` (CHAT) laissé intact, non commité.
+
+#### 2026-11-14T10:05Z · T-21 (étape B) · session S4
+- Actions : MNT 80 m lu avec rasterio ; contrôle des unités, de la projection (contre GDAL), de la convention de pixel et de l'orientation (Shackleton et miroirs) ; lecture des pages PGDA 90 et 78 (agent de lecture web) ; tailles des fichiers 5 m par HTTP HEAD ;
+  tests d'abord (`test_terrain_grid.py`, `test_dem_geotiff.py` : un test corrigé, erreur de signe dans la valeur attendue, le code était juste), puis code ; aperçu de Shackleton ; RAPPORT M-019.
+- Fichiers : créés [`pipeline/dem_geotiff.py`, `pipeline/terrain_grid.py`, `pipeline/tools/__init__.py`, `pipeline/tools/crop_real_dem.py`, 2 fichiers de tests, `web/preview.html`, `web/js/preview.js`, `docs/captures/b-*.png` ×2] · modifiés [`.gitignore`, `SOURCES.md`, `STATUS.md`, `web/js/{data,terrain3d,i18n}.js`, `web/css/main.css`, `web/tests/nonetwork.test.js`]
+- Commandes : `pytest pipeline/tests -q` → 114 passed · `node --test "web/tests/**/*.test.js"` → 41 pass · `crop_real_dem` → hauteur du site −2 789 m, 0 nœud rempli · Edge sans interface → capture de l'aperçu, 0 message console
+- Commit : `0ca9349` « T-21 (étape B) : … » ; tag `pre-event-base` déplacé sur `a79f658` (dernier commit du 13 novembre)
+- Prochaine étape : U-01 (jetons, polices locales, pastille d'honnêteté).
 
 ## 7. Journal de CHAT (ajout uniquement)
 
