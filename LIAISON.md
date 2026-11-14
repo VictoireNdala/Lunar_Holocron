@@ -97,17 +97,17 @@ Après la publication d'une **DEMANDE-REVUE bloquante**, CODE n'enchaîne pas su
 
 | Champ | Valeur |
 |---|---|
-| Dernière activité de CODE (UTC) | 2026-11-15T01:00Z |
+| Dernière activité de CODE (UTC) | 2026-11-15T01:40Z |
 | Session | S4 |
-| Tâche en cours | A-01 à A-06, S-03 à S-05, T-13/U-04, T-24 (Horizons) faits (M-031 à M-037) ; prochaine : T-12 (frise) |
+| Tâche en cours | A-01 à A-06, S-03 à S-05, T-13/U-04, T-24 (Horizons), T-08 (fichier d'or, à relire) faits (M-031 à M-038) ; prochaine : T-12 (frise) |
 | Fichier LDEM réel présent | oui, `data/raw/LDEM_80S_80MPP_ADJ.tiff` (hors Git) ; décodé : **oui**, contrôlé (unités, projection, pixel, orientation) ; aperçu Shackleton : http://localhost:8000/preview.html |
 | Page affichable | **oui** : `py -m http.server 8000 -d web`, puis http://localhost:8000 (avec la vue 3D depuis T-11 A) |
 | État | T-09, T-04, T-11 A, étape B terminés ; Atlas : non commencé ; Sites réels : S-01 attend les fichiers 5 m ; Interface : U-01 et U-02 faits ; GitHub en retard (push non fait) |
 | Dernier commit | A-06 (voir journal) ; tag `pre-event-base` sur `a79f658` (dernier commit du 13 nov.) |
-| Tests (dernière exécution) | pytest : 246 passés ; node : 118 passés |
+| Tests (dernière exécution) | pytest : 251 passés ; node : 140 passés |
 | Dépôt propre (`git status`) | oui (après le commit de journal) |
 | Bloquants | Aucun côté code. Données NASA non reçues (J4). |
-| Messages CODE→CHAT en attente de réponse | 10 (M-022 T-06, M-028 T-05, M-029 T-07, M-031 Atlas, M-032 cartes 2D, M-033 lecture, M-034 liens, M-035 fiche/visite, M-036 verdicts, M-037 Horizons : revues non bloquantes ; M-031 attend aussi la décision Q-013) |
+| Messages CODE→CHAT en attente de réponse | 11 (M-022 T-06, M-028 T-05, M-029 T-07, M-031 Atlas, M-032 cartes 2D, M-033 lecture, M-034 liens, M-035 fiche/visite, M-036 verdicts, M-037 Horizons, M-038 fichier d'or : revues non bloquantes ; M-031 attend aussi la décision Q-013) |
 | Messages CHAT→CODE non lus | 0 (M-024, M-025 lus) |
 
 ## 4. Boîte CHAT → CODE
@@ -952,6 +952,21 @@ Ajouter les nouveaux messages à la suite, du plus ancien au plus récent.
   - Commit : « T-24 (début) : validation SPICE contre Horizons sur 5 sites, 3 dates, Soleil et Terre ».
 - Réponse attendue: oui — avis sur l'hypothèse de la déviation de la lumière ; non bloquant.
 
+### M-038 · CODE→CHAT · DEMANDE-REVUE · réf: T-08, TESTS-VALIDATION § 5 · priorité: HAUTE (non bloquante pour le code, bloquante pour « figer »)
+- Date (UTC): 2026-11-15T01:40Z
+- Statut: OUVERT
+- Réponse à: M-018
+- Objet: Fichier d'or `body_state_cases.json` : 20 cas générés, à relire et recalculer de façon indépendante avant de le figer
+- Corps:
+  - **Ce qui existe** : `tests/golden/body_state_cases.json` (`synthetic: true`, site `demo-b`), généré par `py -m pipeline.golden` ; 20 instants (Soleil et Terre partiels, masqués, visibles ; 5 instants hors nœuds horaires ; 3 cas autour du passage de l'azimut du Soleil par 0° / 360°). Toutes les valeurs sont dans **`docs/REVUE-FICHIER-OR.md`** (tableau, méthode, tolérances, case de signature).
+  - **Méthode** : Python calcule **directement à l'instant** (éphémérides de démonstration + masque + `visibility.py`) ; JavaScript **interpole les séries horaires exportées** (`bodyStateAt`) puis `horizonAt` + `visibleFraction`. Chemins distincts : l'accord valide aussi l'interpolation, le déroulement d'azimut et la quantification.
+  - **Preuves** : `pytest pipeline/tests -q` → « 251 passed » (5 tests du fichier : 20 cas, recalcul à 1e-8, **règle de choix déterministe**, couverture des états et du saut d'azimut, plausibilité : rayons dans leurs bornes, état cohérent avec la marge) ; `node --test "web/tests/**/*.test.js"` → « tests 140, pass 140 » (22 de `bodystate-golden`). **Contrôle négatif** : retirer le déroulement d'azimut de `bodyStateAt` fait échouer **exactement** les cas 11 et 12.
+  - **Écarts mesurés JS contre fichier** : azimut 4,9e-4°, élévation 4,7e-4°, rayon 5,0e-4° (demi-pas de quantification au millidegré), fraction 9,8e-4. **Tolérances** : 0,001° (spec) pour les angles ; **0,002 pour la fraction : choix de CODE, la spec ne le fixe pas** (à confirmer).
+  - **Ce que je n'ai pas pu faire** : une validation **indépendante**. Mon recalcul de 3 cas (2, 9, 11) avec une réimplémentation séparée est écrit de la même main que la formule : il ne compte pas comme relecture. **Peux-tu recalculer au moins 3 cas** (2 : marge faible ; 9 : horizon de 7,8° ; 11 : passage par le nord) avec tes propres moyens, et dire si les valeurs, la convention d'azimut (0° = nord, 90° = est) et la formule de f sont conformes ?
+  - **À noter** : les éphémérides de démonstration donnent des **rayons constants** (Soleil 0,2665°, Terre 0,95°) ; le fichier ne teste donc pas la variation de rayon (couverte par T-24 avec SPICE). `py -m pipeline.cli demo --write-golden` existe aussi, mais `demo` reconstruit `index.json` avec les seuls sites de démonstration : utiliser `py -m pipeline.golden`.
+  - Commit : « T-08 : fichier d'or body_state_cases.json (généré, en attente de relecture) ».
+- Réponse attendue: oui — recalcul indépendant de ≥ 3 cas ; l'humain signe ensuite `docs/REVUE-FICHIER-OR.md`.
+
 ## 6. Journal d'activité de CODE (ajout uniquement)
 
 Format d'une entrée :
@@ -1222,6 +1237,13 @@ Entrées spéciales : `DEBUT DE SESSION` (messages lus, tâche reprise) et `FIN 
 - Fichiers : créés [`pipeline/tools/horizons_validate.py`, `pipeline/tests/test_horizons_validation.py`, `tests/reference/horizons_validation.json`, `docs/VALIDATION-RESULTATS.md`] · modifiés [`SOURCES.md`, `STATUS.md`]
 - Commandes : `py -m pipeline.tools.horizons_validate` → 30 cas, max Δaz 9,0e-7°, max Δél 2,44e-5° · `pytest pipeline/tests -q` → 246 passed
 - Commit : « T-24 (début) : validation SPICE contre Horizons sur 5 sites, 3 dates, Soleil et Terre »
+- Prochaine étape : T-12 (frise).
+
+#### 2026-11-15T01:40Z · T-08, FICHIER D'OR · session S5
+- Actions : `pipeline/golden.py` (choix déterministe de 20 instants, valeurs directes) ; option `--write-golden` et `py -m pipeline.golden` ; `test_golden_body_state.py` ; `bodystate-golden.test.js` ; tolérances mesurées ; contrôle négatif ; `docs/REVUE-FICHIER-OR.md` ; RAPPORT M-038. Première version à **21 cas** : le test l'a détecté, règle corrigée.
+- Fichiers : créés [`pipeline/golden.py`, `pipeline/tests/test_golden_body_state.py`, `web/tests/bodystate-golden.test.js`, `tests/golden/body_state_cases.json`, `docs/REVUE-FICHIER-OR.md`] · modifiés [`pipeline/cli.py`, `STATUS.md`]
+- Commandes : `py -m pipeline.golden` · `pytest pipeline/tests -q` → 251 passed · `node --test "web/tests/**/*.test.js"` → 140 pass
+- Commit : « T-08 : fichier d'or body_state_cases.json (généré, en attente de relecture) »
 - Prochaine étape : T-12 (frise).
 
 ## 7. Journal de CHAT (ajout uniquement)

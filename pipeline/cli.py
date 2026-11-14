@@ -12,7 +12,7 @@ import sys
 import time
 from pathlib import Path
 
-from pipeline import validate
+from pipeline import golden, validate
 from pipeline.export import PipelineConfig, SiteSpec, build_site, write_index
 from pipeline.ephemeris_spice import kernels_available
 from pipeline.global_state import build_global, write_global
@@ -20,6 +20,7 @@ from pipeline.sites import demo_specs, real_specs
 
 CONFIG_DIR = Path("config")
 DEFAULT_OUT = Path("web/data")
+GOLDEN_PATH = Path("tests/golden/body_state_cases.json")
 
 
 def _build(specs: list[SiteSpec], cfg: PipelineConfig, out: Path) -> list[dict]:
@@ -49,6 +50,8 @@ def main(argv: list[str] | None = None) -> int:
         s.add_argument("--config", type=Path, default=CONFIG_DIR / "pipeline.json")
         if name == "build":
             s.add_argument("--site", action="append", help="identifiant à construire (répétable) ; défaut : tous")
+        else:
+            s.add_argument("--write-golden", action="store_true", help="écrit aussi tests/golden/body_state_cases.json (à relire par un humain avant de le figer)")
     v = sub.add_parser("validate", help="valide un dossier de données (contrat § 7)")
     v.add_argument("data_dir", nargs="?", type=Path, default=DEFAULT_OUT)
     args = p.parse_args(argv)
@@ -80,6 +83,8 @@ def main(argv: list[str] | None = None) -> int:
     engine = "spice" if args.command == "build" and kernels_available(cfg.kernel_dir) else "demo-analytic"
     write_global(build_global(cfg, engine), args.out)
     print(f"  global.json (Atlas) : moteur {engine}")
+    if args.command == "demo" and args.write_golden:
+        print(f"  fichier d'or écrit : {golden.write_golden(args.out, GOLDEN_PATH)} (À RELIRE)")
     print(f"terminé en {time.perf_counter() - t0:.0f} s ; validation :")
     return validate.main([str(args.out)])
 
