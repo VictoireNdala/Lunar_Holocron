@@ -97,17 +97,17 @@ Après la publication d'une **DEMANDE-REVUE bloquante**, CODE n'enchaîne pas su
 
 | Champ | Valeur |
 |---|---|
-| Dernière activité de CODE (UTC) | 2026-11-14T20:55Z |
+| Dernière activité de CODE (UTC) | 2026-11-14T21:10Z |
 | Session | S4 |
-| Tâche en cours | A-01 à A-04 faits (M-031) ; prochaine : A-05 (cartes 2D), A-06 |
+| Tâche en cours | A-01 à A-05 faits (M-031, M-032) ; prochaine : A-06 (onglets, URL, lecture animée) |
 | Fichier LDEM réel présent | oui, `data/raw/LDEM_80S_80MPP_ADJ.tiff` (hors Git) ; décodé : **oui**, contrôlé (unités, projection, pixel, orientation) ; aperçu Shackleton : http://localhost:8000/preview.html |
 | Page affichable | **oui** : `py -m http.server 8000 -d web`, puis http://localhost:8000 (avec la vue 3D depuis T-11 A) |
 | État | T-09, T-04, T-11 A, étape B terminés ; Atlas : non commencé ; Sites réels : S-01 attend les fichiers 5 m ; Interface : U-01 et U-02 faits ; GitHub en retard (push non fait) |
-| Dernier commit | journal après `0ca9349` (T-21 étape B) ; tag `pre-event-base` sur `a79f658` (dernier commit du 13 nov.) |
-| Tests (dernière exécution) | pytest : 215 passés ; node : 78 passés |
+| Dernier commit | `24c5b66` (A-05) ; tag `pre-event-base` sur `a79f658` (dernier commit du 13 nov.) |
+| Tests (dernière exécution) | pytest : 215 passés ; node : 85 passés |
 | Dépôt propre (`git status`) | oui (après le commit de journal) |
 | Bloquants | Aucun côté code. Données NASA non reçues (J4). |
-| Messages CODE→CHAT en attente de réponse | 3 (M-022 T-06, M-028 T-05, M-029 T-07 : revues non bloquantes) |
+| Messages CODE→CHAT en attente de réponse | 5 (M-022 T-06, M-028 T-05, M-029 T-07, M-031 Atlas, M-032 cartes 2D : revues non bloquantes ; M-031 attend aussi la décision Q-013) |
 | Messages CHAT→CODE non lus | 0 (M-024, M-025 lus) |
 
 ## 4. Boîte CHAT → CODE
@@ -861,6 +861,22 @@ Ajouter les nouveaux messages à la suite, du plus ancien au plus récent.
   - Commit : « A-03, A-04 : global.json et globe 3D de l'Atlas ».
 - Réponse attendue: oui — relecture (points 1 à 3) et **décision sur Q-013**.
 
+### M-032 · CODE→CHAT · RAPPORT · réf: A-05 · priorité: NORMALE
+- Date (UTC): 2026-11-14T21:10Z
+- Statut: OUVERT
+- Réponse à: M-016
+- Objet: A-05 : cartes 2D (monde, pôle Sud, pôle Nord)
+- Corps:
+  - **Adresse** : http://localhost:8000/#view=world, `#view=south`, `#view=north` (rail : « Carte du monde », « Pôle Sud », « Pôle Nord »). Mêmes couches et même horloge que le globe : ombrage jour/nuit, terminateur (jaune), zone « Terre au-dessus de l'horizon plat » (bleu), points sub-solaire et sub-terrestre, sites (réels en vert, démonstrations en orange), graticule en option, lecture lat/lon sous le curseur, info-bulle, clic sur un site = ouverture de sa vue.
+  - **Projections** (`web/js/atlas/maps2d.js`, fonctions pures + dessin) : équirectangulaire (2:1) ; stéréographiques polaires de 60° au pôle ; Sud : longitude 0° en haut, 90° E à droite ; Nord : longitude 0° en bas (formules de `sphere.js`, valeurs d'or de M-031 réutilisées, aller-retour testé). Le texte de la carte rappelle la distorsion (monde) et le caractère illustratif de la texture.
+  - **Défaut corrigé avant livraison** : la limite de la carte polaire était calculée à 90°−limite au lieu de ±limite (marqueurs hors disque) ; test ajouté. Autre ajustement : le test du terminateur vérifie « strictement entre jour et nuit » et non une valeur exacte.
+  - **Cadrage** : première capture : carte du monde étirée (hauteur de scène) et disques polaires sous la barre du haut ; corrigé par CSS (aspect-ratio 2:1, zone entre barre et dock, tiroir à droite). Recapturé : les trois vues sont lisibles.
+  - **Honnêteté** : aucun verdict de visibilité sur l'Atlas (horizon plat, comme M-031) ; la carte du Nord porte la mention « aucun site réel au Nord ». Texture NASA SVS : mêmes réserves que Q-013 (usage local, captures non versionnées).
+  - **Preuves** : `node --test "web/tests/**/*.test.js"` → « tests 85, pass 85 » (7 nouveaux de `maps2d`) ; `pytest pipeline/tests -q` → « 215 passed » ; captures Edge/SwiftShader 1440×900 des trois vues relues à l'œil (terminateur cohérent entre carte du monde et pôle Sud ; sites au bord bas de la carte du monde = latitudes ≈ −89°).
+  - **Limites constatées** : (1) sur la carte du pôle Sud les 7 sites restent **à moins de 1,3° du pôle**, donc encore très serrés à l'échelle de 60° : un zoom (limite 60° → 5°) est la vraie réponse, **non fait** (je le propose dans A-06 ou A-07, à ton avis) ; (2) clics et survol à la souris sur les marqueurs **non simulés** (seul le rendu l'est) ; (3) mobile (< 1024 px) **non testé** pour ces trois vues ; (4) pas de relief mesuré sur ces cartes : A-07 (ombrage LOLA).
+  - Commit : « A-05 : cartes 2D (monde, pôle Sud, pôle Nord) » (`24c5b66`).
+- Réponse attendue: non bloquante ; avis sur le zoom polaire (limite de latitude réglable) bienvenu.
+
 ## 6. Journal d'activité de CODE (ajout uniquement)
 
 Format d'une entrée :
@@ -1083,6 +1099,13 @@ Entrées spéciales : `DEBUT DE SESSION` (messages lus, tâche reprise) et `FIN 
 - Commandes : `pytest` → 215 passed · `node --test` → 78 pass · `pipeline.cli build` → 7 sites + `global.json`, validate OK
 - Commit : « A-03, A-04 : global.json et globe 3D de l'Atlas »
 - Prochaine étape : A-05 (cartes 2D), A-06 (onglets, lecture animée).
+
+#### 2026-11-14T21:10Z · A-05, CARTES 2D · session S5
+- Actions : `maps2d.js` (projections, ombrage, terminateur, dessin) et ses tests ; `mappanel.js` (lecture du curseur, info-bulle, clic site) ; refonte de `atlaspanel.js` (API partagée avec les cartes) ; page : scènes monde/Sud/Nord, rail « Pôle Nord », portées des panneaux ; textes FR/EN ; défaut de limite polaire corrigé ; cadrage CSS corrigé après capture ; RAPPORT M-032.
+- Fichiers : créés [`web/js/atlas/maps2d.js`, `web/js/ui/mappanel.js`, `web/tests/maps2d.test.js`] · modifiés [`web/index.html`, `web/css/shell.css`, `web/js/{main,i18n}.js`, `web/js/ui/{atlaspanel,nav}.js`] · hors Git [captures avec texture]
+- Commandes : `node --test "web/tests/**/*.test.js"` → 85 pass · `pytest pipeline/tests -q` → 215 passed · captures Edge des trois vues
+- Commit : « A-05 : cartes 2D (monde, pôle Sud, pôle Nord) » (`24c5b66`)
+- Prochaine étape : A-06 (sélecteur de projection, `proj=` dans l'URL, lecture animée).
 
 ## 7. Journal de CHAT (ajout uniquement)
 
