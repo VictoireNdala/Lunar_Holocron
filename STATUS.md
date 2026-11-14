@@ -6,10 +6,10 @@
 **Phase** : J1 (pipeline) et J2 (interface) en parallèle
 **T-20 : terminé** (2026-11-14) : noyaux SPICE téléchargés (accord de l'humain), `pipeline/ephemeris_spice.py`, 8 tests (marqueur `spice`) ; Soleil vu de (−89,67 ; 129,5) identique à Horizons à moins de 1e-6° sur 3 points ; `pytest` → 152 passed. Borne du rayon solaire corrigée (D-020).
 **Données réelles dans l'application (2026-11-14)** : `web/data/` contient 4 sites réels (niveau 1 : Site01, Site04, Site07, Site11 ; relief LOLA 5 m + 80 m, Soleil et Terre par SPICE) et 3 sites de démonstration. L'interface charge `data/` par défaut ; l'exemple fait main reste en `?data=data/sample/`. Le « site » réel est le **centre de l'emprise du MNT**, pas un point d'alunissage choisi.
-**Prochaine tâche** (M-024) : comparaison Horizons sur 3 sites et 3 dates, Terre comprise (début de T-24) → fichier d'or T-08 (relecture humaine) → A-01 à A-04 (Atlas) ; S-02 (outil de découpe : en grande partie couvert par `pipeline.cli build`), S-05 (liens profonds) avant S-03 (M-025).
+**Prochaine tâche** : A-05 (carte mondiale 2D, pôles Sud et Nord 2D : les marqueurs des sites se superposent sur le globe), A-06 (lecture animée, onglets) ; comparaison Horizons sur plusieurs sites (T-24, début) ; fichier d'or T-08 (relecture humaine) ; S-05 (liens profonds) avant S-03.
 **Fichier LDEM réel présent** : oui, `data/raw/LDEM_80S_80MPP_ADJ.tiff` (189 Mo, hors Git) ; **décodé : oui** (rasterio) ; unités (m), projection, convention de pixel et orientation **contrôlées** (2026-11-14, voir `SOURCES.md`).
 **Aperçu du relief réel** : `py -m pipeline.tools.crop_real_dem --id shackleton --lat -89.67 --lon 129.5`, puis http://localhost:8000/preview.html (données locales non versionnées).
-**Atlas** : non commencé. **Sites réels** : S-01 en attente des fichiers 5 m (4 × 39,1 Mo, à télécharger par l'humain). **Interface** : U-01 et U-02 terminés (coque : rail, barre flottante, scène plein écran, `view=`) ; U-03 à faire (avec T-12).
+**Atlas** : A-01 (textures, **usage local, Q-013**), A-02 (fonctions pures), A-03 (`global.json`) et A-04 (globe 3D) **faits** ; A-05 (cartes 2D) et A-06 (onglets, lecture) à faire. **Sites réels** : S-01 fait (4 sites du niveau 1), S-02 couvert par `pipeline.cli build`. **Interface** : U-01, U-02, panneaux repliables faits ; U-03 à U-07 à faire.
 **Page affichable** : **oui** — `py -m http.server 8000 -d web`, puis ouvrir http://localhost:8000 (jeu d'exemple, aucun relief dessiné). Capture : `docs/captures/t09-page-fr.png`.
 
 ## Tableau d'avancement
@@ -27,7 +27,7 @@
 | T-08 | Génération de bout en bout + fichier d'or | **partiel** : `web/data/` produit et validé, test de bout en bout fait ; **fichier d'or `body_state_cases.json` à faire** (relecture humaine requise) | |
 | T-09 | Chargement, état, i18n, squelette | terminé | `node --test "web/tests/**/*.test.js"` → 33 pass ; Edge sans interface sur http://127.0.0.1:8000 → page rendue, valeurs = JSON, 0 message console, requêtes toutes locales |
 | T-10 | Panorama 360° | terminé (jeu d'exemple) | `node --test` → 60 pass (9 de projection écran) ; captures `docs/captures/t10-panorama-1440-{fr,en}.png` cohérentes avec le tableau des lectures et la vue 3D |
-| T-11 | Vue 3D du terrain | étape A terminée (jeu d'exemple) ; test d'ombre de `demo-a` après T-07/T-08 | `node --test` → 41 pass ; Edge (SwiftShader) : vue d'ensemble et vue au sol rendues ; 20 reconstructions → 3 géométries / 3 textures stables ; 20 vues libérées → 0 canvas restant |
+| T-11 | Vue 3D du terrain | étapes A et B terminées (jeu d'exemple) ; test d'ombre de `demo-a` après T-07/T-08 | `node --test` → 41 pass ; Edge (SwiftShader) : vue d'ensemble et vue au sol rendues ; 20 reconstructions → 3 géométries / 3 textures stables ; 20 vues libérées → 0 canvas restant |
 | T-12 | Barre de temps et frise | à faire | |
 | T-13 | Verdicts, lectures, indicateurs | à faire | |
 | T-14 | Carte polaire, A/B, page méthode, README | à faire | |

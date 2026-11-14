@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "lunar-holocron/global.schema.json",
+  "title": "global.json — points sub-solaire et sub-terrestre (docs/ATLAS.md § 3.3, contrat 1.1)",
+  "description": "Les contrôles croisés (longueurs = time.n, synthetic cohérent avec le moteur) sont faits par pipeline/validate.py.",
+  "type": "object",
+  "required": ["schema_version", "synthetic", "provenance", "time", "sun", "earth"],
+  "properties": {
+    "schema_version": { "type": "string", "pattern": "^1\\.[0-9]+$" },
+    "synthetic": { "type": "boolean" },
+    "provenance": {
+      "type": "object",
+      "required": ["ephemeris", "pipeline_version", "generated_utc"],
+      "properties": {
+        "ephemeris": {
+          "type": "object",
+          "required": ["engine", "kernels", "abcorr"],
+          "properties": {
+            "engine": { "enum": ["demo-analytic", "spice"] },
+            "kernels": { "type": "array", "items": { "type": "string" } },
+            "abcorr": { "type": ["string", "null"] },
+            "frame": { "type": "string" }
+          }
+        },
+        "pipeline_version": { "type": "string", "minLength": 1 },
+        "generated_utc": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$" }
+      }
+    },
+    "time": {
+      "type": "object",
+      "required": ["t0_utc", "step_s", "n"],
+      "properties": {
+        "t0_utc": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$" },
+        "step_s": { "type": "integer", "minimum": 1 },
+        "n": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "sun": { "$ref": "#/$defs/sub_point" },
+    "earth": { "$ref": "#/$defs/sub_point" }
+  },
+  "$defs": {
+    "sub_point": {
+      "type": "object",
+      "required": ["lat_mdeg", "lon_mdeg", "radius_mdeg"],
+      "properties": {
+        "lat_mdeg": { "type": "array", "items": { "type": "integer", "minimum": -90000, "maximum": 90000 } },
+        "lon_mdeg": { "type": "array", "items": { "type": "integer", "minimum": -180000, "maximum": 179999 } },
+        "radius_mdeg": { "type": "array", "items": { "type": "integer", "minimum": 1 } }
+      }
+    }
+  }
+}

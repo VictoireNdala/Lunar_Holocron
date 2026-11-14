@@ -217,6 +217,23 @@ def validate_terrain(doc: Any) -> list[str]:
     return errors
 
 
+def validate_global(doc: Any) -> list[str]:
+    """Valide global.json : schéma, longueurs = time.n, synthetic cohérent avec le moteur d'éphémérides."""
+    errors = check_schema_version(doc) or _schema_errors("global", doc)
+    if errors:
+        return errors
+    n = doc["time"]["n"]
+    for body in ("sun", "earth"):
+        for key in ("lat_mdeg", "lon_mdeg", "radius_mdeg"):
+            got = len(doc[body][key])
+            if got != n:
+                errors.append(f"{body}.{key}: longueur {got}, attendu time.n = {n}")
+    engine = doc["provenance"]["ephemeris"]["engine"]
+    if doc["synthetic"] != (engine == "demo-analytic"):
+        errors.append(f"synthetic: {doc['synthetic']} incohérent avec provenance.ephemeris.engine = {engine!r}")
+    return errors
+
+
 def _load_json(path: Path, label: str) -> tuple[Any, list[str]]:
     """Lit un JSON ; renvoie (document, erreurs) sans lever d'exception."""
     if not path.is_file():
@@ -279,6 +296,9 @@ def validate_data_dir(root: Path) -> list[str]:
         return errors
     for entry in index["sites"]:
         errors += _check_entry(root, entry)
+    if (root / "global.json").is_file():  # fichier facultatif de l'Atlas (A-03)
+        doc, errs = _load_json(root / "global.json", "global.json")
+        errors += errs + [f"global.json: {e}" for e in (validate_global(doc) if doc is not None else [])]
     return errors
 
 

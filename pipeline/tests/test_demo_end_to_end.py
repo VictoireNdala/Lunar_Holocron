@@ -56,7 +56,7 @@ def test_two_runs_are_byte_identical(small_config: Path, tmp_path: Path) -> None
     for name in ("a", "b"):
         assert _run(tmp_path / name, small_config) == 0
     files = sorted(p.relative_to(tmp_path / "a") for p in (tmp_path / "a").rglob("*") if p.is_file())
-    assert len(files) == 1 + 3 * 3  # index + (site, terrain json, terrain bin) × 3
+    assert len(files) == 1 + 1 + 3 * 3  # index + global.json (Atlas) + (site, terrain json, terrain bin) × 3
     for rel in files:
         assert (tmp_path / "a" / rel).read_bytes() == (tmp_path / "b" / rel).read_bytes(), str(rel)
 
@@ -76,6 +76,15 @@ def test_demo_a_is_on_the_crater_rim(small_config: Path, tmp_path: Path) -> None
     meta = json.loads((out / "terrain" / "demo-a.json").read_text(encoding="utf-8"))
     assert meta["z"]["min_m"] < -300.0  # l'intérieur du cratère est bien plus bas que le site (z = 0)
     assert len(z) == 2 * 33 * 33
+
+
+def test_partial_build_keeps_other_sites_in_index(small_config: Path, tmp_path: Path) -> None:
+    """Régression : `build --site X` ne doit pas retirer les autres sites de l'index (défaut découvert le 14 nov.)."""
+    out = tmp_path / "out"
+    assert _run(out, small_config) == 0
+    assert cli.main(["build", "--site", "demo-b", "--out", str(out), "--config", str(small_config)]) == 0
+    ids = [s["id"] for s in json.loads((out / "index.json").read_text(encoding="utf-8"))["sites"]]
+    assert ids == ["demo-a", "demo-b", "demo-c"]
 
 
 def test_unknown_site_is_an_error(small_config: Path, tmp_path: Path) -> None:

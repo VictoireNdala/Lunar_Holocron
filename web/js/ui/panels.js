@@ -4,7 +4,7 @@
 import { t } from '../i18n.js';
 
 /** Panneaux de la vue de site, dans l'ordre canonique (identifiant = attribut `data-panel`). */
-export const PANEL_IDS = Object.freeze(['view3d', 'bodies', 'site', 'panorama', 'time']);
+export const PANEL_IDS = Object.freeze(['view3d', 'bodies', 'site', 'panorama', 'time', 'layers']);
 const STORAGE_HIDDEN = 'lh.panels.hidden';
 const STORAGE_RESTORE = 'lh.panels.restore';
 
@@ -27,14 +27,21 @@ export function togglePanel(hidden, id) {
   return PANEL_IDS.filter((x) => next.includes(x));
 }
 
-/** Vrai si les cinq panneaux sont repliés. */
-export function isSceneOnly(hidden) {
-  return PANEL_IDS.every((id) => hidden.includes(id));
+/** Vrai si tous les panneaux de la portée (par défaut : tous) sont repliés. */
+export function isSceneOnly(hidden, scope = PANEL_IDS) {
+  return scope.length > 0 && scope.every((id) => hidden.includes(id));
 }
 
-/** Bascule « scène seule » : cache tout (en retenant l'état à restaurer) ou restaure l'état retenu. */
-export function toggleSceneOnly(hidden, restore) {
-  return isSceneOnly(hidden) ? { hidden: parseHidden(serializeHidden(restore)), restore: [] } : { hidden: [...PANEL_IDS], restore: [...hidden] };
+/**
+ * Bascule « scène seule » pour les panneaux de la portée (ceux de la vue courante) : cache tout en retenant l'état à restaurer,
+ * ou restaure l'état retenu. Les panneaux des autres vues ne sont pas touchés.
+ */
+export function toggleSceneOnly(hidden, restore, scope = PANEL_IDS) {
+  if (isSceneOnly(hidden, scope)) {
+    const back = restore.filter((id) => scope.includes(id));
+    return { hidden: PANEL_IDS.filter((id) => (scope.includes(id) ? back.includes(id) : hidden.includes(id))), restore: [] };
+  }
+  return { hidden: PANEL_IDS.filter((id) => hidden.includes(id) || scope.includes(id)), restore: PANEL_IDS.filter((id) => hidden.includes(id) && scope.includes(id)) };
 }
 
 function read(key) {
@@ -54,6 +61,9 @@ export function createPanels() {
   const panels = new Map([...document.querySelectorAll('[data-panel]')].map((el) => [el.dataset.panel, el]));
   const tray = $('tray');
   const sceneBtn = $('scene-only');
+  const viewOf = () => document.body.dataset.view || 'site';
+  // Panneaux de la vue courante : `data-panel-view` = liste de vues (« site atlas »).
+  const scopeOf = () => PANEL_IDS.filter((id) => panels.has(id) && (panels.get(id).dataset.panelView ?? 'site').split(' ').includes(viewOf()));
 
   function save() {
     write(STORAGE_HIDDEN, serializeHidden(hidden));
@@ -61,10 +71,11 @@ export function createPanels() {
   }
 
   function refresh() {
+    const scope = scopeOf();
     for (const [id, el] of panels) el.classList.toggle('panel-collapsed', hidden.includes(id));
-    const siteVisible = !$('panel-a').hidden;
-    tray.hidden = !siteVisible || hidden.length === 0;
-    tray.replaceChildren(...PANEL_IDS.filter((id) => hidden.includes(id) && panels.has(id)).map((id) => {
+    const shownChips = scope.filter((id) => hidden.includes(id));
+    tray.hidden = shownChips.length === 0;
+    tray.replaceChildren(...shownChips.map((id) => {
       const chip = document.createElement('button');
       chip.type = 'button';
       chip.className = 'tray-chip';
@@ -79,7 +90,8 @@ export function createPanels() {
       btn.setAttribute('aria-label', t('panel.minimize', { name }));
       btn.title = t('panel.minimize', { name });
     }
-    const only = isSceneOnly(hidden);
+    const only = isSceneOnly(hidden, scope);
+    sceneBtn.hidden = scope.length === 0;
     sceneBtn.setAttribute('aria-pressed', String(only));
     sceneBtn.querySelector('.scene-label').textContent = t(only ? 'panel.showAll' : 'panel.sceneOnly');
     sceneBtn.querySelector('use').setAttribute('href', `./vendor/icons/sprite.svg#i-${only ? 'eye' : 'eye-off'}`);
@@ -95,7 +107,7 @@ export function createPanels() {
     el.prepend(btn);
   }
   sceneBtn.addEventListener('click', () => {
-    ({ hidden, restore } = toggleSceneOnly(hidden, restore));
+    ({ hidden, restore } = toggleSceneOnly(hidden, restore, scopeOf()));
     save();
     refresh();
   });

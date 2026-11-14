@@ -7,12 +7,15 @@ sources et sommes de contrôle dans SOURCES.md. Aucun accès réseau ici.
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 import time
 from pathlib import Path
 
 from pipeline import validate
 from pipeline.export import PipelineConfig, SiteSpec, build_site, write_index
+from pipeline.ephemeris_spice import kernels_available
+from pipeline.global_state import build_global, write_global
 from pipeline.sites import demo_specs, real_specs
 
 CONFIG_DIR = Path("config")
@@ -26,7 +29,6 @@ def _build(specs: list[SiteSpec], cfg: PipelineConfig, out: Path) -> list[dict]:
         t0 = time.perf_counter()
         entry = build_site(spec, cfg, out)
         site_kb = (out / entry["site_file"]).stat().st_size / 1024
-        import json
         trunc = sum(json.loads((out / entry["site_file"]).read_text(encoding="utf-8"))["horizon"]["truncated"])
         print(f"  {spec.id:<28} {time.perf_counter() - t0:5.1f} s  site {site_kb:7.0f} Ko  azimuts tronqués {trunc:3d}  "
               f"synthetic={entry['synthetic']} (relief réel={entry['terrain_real']}, éphémérides fictives={entry['ephemeris_synthetic']})")
@@ -69,7 +71,15 @@ def main(argv: list[str] | None = None) -> int:
             return 2
     print(f"construction de {len(specs)} site(s) → {args.out}")
     entries = _build(specs, cfg, args.out)
+    if only is not None and (args.out / "index.json").is_file():
+        # Construction partielle : on garde les autres sites de l'index (ceux dont les fichiers existent encore).
+        old = json.loads((args.out / "index.json").read_text(encoding="utf-8"))["sites"]
+        built = {e["id"] for e in entries}
+        entries += [e for e in old if e["id"] not in built and (args.out / e["site_file"]).is_file()]
     write_index(entries, args.out, cfg)
+    engine = "spice" if args.command == "build" and kernels_available(cfg.kernel_dir) else "demo-analytic"
+    write_global(build_global(cfg, engine), args.out)
+    print(f"  global.json (Atlas) : moteur {engine}")
     print(f"terminé en {time.perf_counter() - t0:.0f} s ; validation :")
     return validate.main([str(args.out)])
 

@@ -69,10 +69,12 @@ export function createShell(store) {
         short.textContent = t(`nav.short.${item.dataset.view}`);
         item.setAttribute('aria-label', label.textContent);
       }
+      document.body.dataset.view = view;
       for (const panel of document.querySelectorAll('[data-view-panel]')) {
-        panel.hidden = panel.dataset.viewPanel !== view || (panel.id === 'panel-a' && !siteReady);
+        panel.hidden = !panel.dataset.viewPanel.split(' ').includes(view) || (panel.hasAttribute('data-needs-site') && !siteReady);
       }
-      $('scene').hidden = view !== 'site';
+      for (const el of document.querySelectorAll('[data-view-only]')) el.hidden = el.dataset.viewOnly !== view;
+      for (const scene of document.querySelectorAll('[data-scene]')) scene.hidden = scene.dataset.scene !== view;
       $('crumb').textContent = view === 'site' && siteName ? siteName : t(`nav.${view}`);
       toggle.querySelector('.rail-label').textContent = t(rail.classList.contains('expanded') ? 'nav.collapse' : 'nav.expand');
     },

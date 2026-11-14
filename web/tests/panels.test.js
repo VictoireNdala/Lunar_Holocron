@@ -3,8 +3,22 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { PANEL_IDS, parseHidden, serializeHidden, togglePanel, toggleSceneOnly, isSceneOnly } from '../js/ui/panels.js';
 
-test('PANEL_IDS : les cinq panneaux de la vue de site', () => {
-  assert.deepEqual([...PANEL_IDS], ['view3d', 'bodies', 'site', 'panorama', 'time']);
+test('PANEL_IDS : les panneaux de la vue de site (cinq) et celui de l\'Atlas (couches)', () => {
+  assert.deepEqual([...PANEL_IDS], ['view3d', 'bodies', 'site', 'panorama', 'time', 'layers']);
+});
+
+test('portée : « scène seule » ne touche que les panneaux de la vue courante', () => {
+  const siteScope = ['view3d', 'bodies', 'site', 'panorama', 'time'];
+  const only = toggleSceneOnly(['layers'], [], siteScope);
+  assert.deepEqual(only.hidden, [...PANEL_IDS]); // les panneaux de l'Atlas gardent leur état (ici : couches déjà réduit)
+  assert.equal(isSceneOnly(only.hidden, siteScope), true);
+  assert.equal(isSceneOnly(only.hidden, ['layers']), true);
+  const back = toggleSceneOnly(only.hidden, only.restore, siteScope);
+  assert.deepEqual(back.hidden, ['layers']); // seuls les panneaux de la vue de site sont rouverts
+  assert.equal(isSceneOnly([], []), false); // portée vide : jamais « scène seule »
+  const atlas = toggleSceneOnly(['panorama'], [], ['time', 'layers']);
+  assert.deepEqual(atlas.hidden, ['panorama', 'time', 'layers']);
+  assert.deepEqual(atlas.restore, []);
 });
 
 test('parseHidden : ne garde que les identifiants connus, sans doublon ; entrées invalides ignorées', () => {
@@ -46,8 +60,8 @@ test('toggleSceneOnly : sans état à restaurer, tout se rouvre', () => {
   assert.deepEqual(back.hidden, []);
 });
 
-test('isSceneOnly : vrai seulement si les cinq panneaux sont repliés', () => {
-  assert.equal(isSceneOnly(['view3d', 'bodies', 'site', 'panorama']), false);
+test('isSceneOnly : vrai seulement si tous les panneaux de la portée sont repliés', () => {
+  assert.equal(isSceneOnly(['view3d', 'bodies', 'site', 'panorama', 'time']), false); // il manque « layers » (portée = tous)
   assert.equal(isSceneOnly([...PANEL_IDS]), true);
   assert.equal(isSceneOnly([]), false);
 });

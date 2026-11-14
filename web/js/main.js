@@ -3,6 +3,7 @@ import { bodyStateAt, createDataSource, DataError, siteTimeRange } from './data.
 import { formatNumber, formatUtc, getLang, setLang, t } from './i18n.js';
 import { createPanel3d } from './panel3d.js';
 import { createStore } from './store.js';
+import { createAtlasPanel } from './ui/atlaspanel.js';
 import { createPanoramaPanel } from './ui/panoramapanel.js';
 import { createPanels } from './ui/panels.js';
 import { createShell } from './ui/shell.js';
@@ -24,7 +25,10 @@ function dataRoot() {
 }
 
 const source = createDataSource(dataRoot());
-const store = createStore(decode(window.location.hash));
+const initialState = decode(window.location.hash);
+if (!initialState.view && !initialState.siteIdA) initialState.view = 'atlas'; // ATLAS § 7 : sans site dans l'URL, on s'ouvre sur l'Atlas
+const store = createStore(initialState);
+const atlas = createAtlasPanel(store, source, (id) => store.set({ siteIdA: id, view: 'site' }));
 const panel3d = createPanel3d(store);
 const shell = createShell(store);
 const panorama = createPanoramaPanel(store);
@@ -150,6 +154,7 @@ function renderAll() {
   const entry = index && site ? index.sites.find((s) => s.id === site.id) : null;
   shell.render(store.get(), entry ? siteName(entry) : null, Boolean(site));
   panels.refresh();
+  if (store.get().view === 'atlas') atlas.show();
   if (!index) return;
   renderSiteSelect();
   if (!site) return;
@@ -217,8 +222,13 @@ function bindControls() {
 store.subscribe((state, changed) => {
   if (changed.includes('lang')) setLang(state.lang);
   window.history.replaceState(null, '', encode(state));
-  if (changed.includes('siteIdA')) { loadSiteA(); return; }
+  if (changed.includes('siteIdA')) {
+    if (changed.includes('view')) renderAll(); // bascule de vue immédiate ; le site se charge ensuite
+    loadSiteA();
+    return;
+  }
   renderAll();
+  atlas.update(changed);
   if (site) { panel3d.update(changed); panorama.update(changed); }
 });
 
@@ -233,6 +243,7 @@ async function start() {
     showError(err);
     return;
   }
+  if (store.get().view === 'atlas') atlas.show();
   const requested = store.get().siteIdA;
   const siteIdA = index.sites.some((s) => s.id === requested) ? requested : index.sites[0].id;
   if (siteIdA !== requested) store.set({ siteIdA });

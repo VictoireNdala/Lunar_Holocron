@@ -130,9 +130,28 @@ export async function loadTerrainFile(metaUrl, fetchFn = (url) => globalThis.fet
   return { meta, heightsM: decodeHeights(meta, await request(fetchFn, binUrl, 'binary'), binUrl) };
 }
 
+/** Contrôles légers de global.json (la validation complète est faite par pipeline/validate.py). */
+export function checkGlobal(doc) {
+  const errors = checkVersion(doc);
+  if (errors.length) return errors;
+  const n = doc.time?.n;
+  if (!Number.isInteger(n) || n < 1) return ['time.n: entier ≥ 1 attendu'];
+  for (const body of ['sun', 'earth']) for (const key of ['lat_mdeg', 'lon_mdeg', 'radius_mdeg']) {
+    const got = doc[body]?.[key]?.length;
+    if (got !== n) errors.push(`${body}.${key}: longueur ${got}, attendu ${n}`);
+  }
+  return errors;
+}
+
+/** Séries d'un corps de global.json au format de `interpolateSubPoint` (atlas/sphere.js). */
+export function globalSeries(doc, body) {
+  return { t0Ms: Date.parse(doc.time.t0_utc), stepMs: doc.time.step_s * 1000, latMdeg: doc[body].lat_mdeg, lonMdeg: doc[body].lon_mdeg };
+}
+
 /** Source de données relative à `root` (ex. 'data/sample/'), avec cache mémoire. */
 export function createDataSource(root, fetchFn = (url) => globalThis.fetch(url)) {
   let indexPromise = null;
+  let globalPromise = null;
   const sites = new Map();
   const terrains = new Map();
 
@@ -143,6 +162,16 @@ export function createDataSource(root, fetchFn = (url) => globalThis.fetch(url))
       indexPromise.catch(() => { indexPromise = null; });
     }
     return indexPromise;
+  }
+
+  /** Éphémérides globales de l'Atlas (facultatives : un dossier sans global.json lève DataError « missing »). */
+  async function loadGlobal() {
+    if (!globalPromise) {
+      const url = `${root}global.json`;
+      globalPromise = request(fetchFn, url, 'json').then((doc) => { ensure(checkGlobal(doc), url); return doc; });
+      globalPromise.catch(() => { globalPromise = null; });
+    }
+    return globalPromise;
   }
 
   async function entryOf(id) {
@@ -174,5 +203,5 @@ export function createDataSource(root, fetchFn = (url) => globalThis.fetch(url))
     return terrains.get(id);
   }
 
-  return { root, loadIndex, loadSite, loadTerrain };
+  return { root, loadIndex, loadSite, loadTerrain, loadGlobal };
 }

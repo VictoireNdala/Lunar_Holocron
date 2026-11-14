@@ -43,6 +43,11 @@
     <div id="scene" class="scene" data-scene="site">
       <div id="view3d" class="view3d"></div>
     </div>
+    <!-- Scène de l'Atlas : globe 3D (sphère lisse texturée, D-015). -->
+    <div id="atlas-scene" class="scene" data-scene="atlas" hidden>
+      <div id="globe" class="view3d"></div>
+      <div id="globe-tip" class="globe-tip" role="tooltip" hidden></div>
+    </div>
 
     <header class="topbar glass glass-blur">
       <div class="brand">
@@ -81,9 +86,9 @@
 
     <main id="main" tabindex="-1">
       <!-- Vue de site : tiroir à droite et barre de temps en bas, par-dessus la scène. -->
-      <div id="panel-a" data-view-panel="site" hidden>
+      <div id="panel-a" data-view-panel="site" data-needs-site hidden>
         <aside class="drawer" data-i18n-aria="site.heading">
-          <section class="card glass" aria-labelledby="view3d-heading" data-panel="view3d" data-panel-title="view3d.heading">
+          <section class="card glass" aria-labelledby="view3d-heading" data-panel="view3d" data-panel-view="site" data-panel-title="view3d.heading">
             <h2 id="view3d-heading" data-i18n="view3d.heading"></h2>
             <div class="toolbar">
               <div class="seg" role="group" data-i18n-aria="view3d.mode">
@@ -111,7 +116,7 @@
             <p class="hint" data-i18n="view3d.note"></p>
           </section>
 
-          <section class="card glass" aria-labelledby="bodies-heading" data-panel="bodies" data-panel-title="bodies.heading">
+          <section class="card glass" aria-labelledby="bodies-heading" data-panel="bodies" data-panel-view="site" data-panel-title="bodies.heading">
             <h2 id="bodies-heading" data-i18n="bodies.heading"></h2>
             <div class="table-scroll">
             <table class="readings">
@@ -138,7 +143,7 @@
             <p class="hint" data-i18n="bodies.note"></p>
           </section>
 
-          <section class="card glass" aria-labelledby="site-heading" data-panel="site" data-panel-title="site.heading">
+          <section class="card glass" aria-labelledby="site-heading" data-panel="site" data-panel-view="site" data-panel-title="site.heading">
             <h2 id="site-heading" data-i18n="site.heading"></h2>
             <p id="site-name" class="site-name"></p>
             <p id="site-synthetic" class="tag" data-i18n="site.synthetic" hidden></p>
@@ -148,8 +153,11 @@
           </section>
         </aside>
 
-        <div class="dock">
-        <section class="panorama glass" aria-labelledby="pano-heading" data-panel="panorama" data-panel-title="pano.heading">
+      </div>
+
+      <!-- Panorama (vue de site) et barre de temps : commune à la vue de site et à l'Atlas (une seule horloge, ATLAS § 4). -->
+        <div class="dock" data-view-panel="site atlas" data-needs-site hidden>
+        <section class="panorama glass" aria-labelledby="pano-heading" data-panel="panorama" data-panel-view="site" data-view-only="site" data-panel-title="pano.heading">
           <div class="pano-head">
             <h2 id="pano-heading" data-i18n="pano.heading"></h2>
             <div class="seg" role="group" data-i18n-aria="pano.controls">
@@ -167,7 +175,7 @@
           <p class="pano-foot"><span id="pano-readout" class="num" aria-live="polite"></span> <span id="pano-enlarged"></span></p>
           <p class="hint" data-i18n="pano.legend"></p>
         </section>
-        <section class="timebar glass" aria-labelledby="time-heading" data-panel="time" data-panel-title="time.heading">
+        <section class="timebar glass" aria-labelledby="time-heading" data-panel="time" data-panel-view="site atlas" data-panel-title="time.heading">
           <h2 id="time-heading" class="visually-hidden" data-i18n="time.heading"></h2>
           <form id="time-form" class="time-form" novalidate>
             <label class="field inline">
@@ -187,13 +195,25 @@
           <p id="time-warning" class="warning" role="status" hidden></p>
         </section>
         </div>
-      </div>
 
       <!-- Vues pas encore construites : état « à venir » honnête (UI-DESIGN § 3.3). -->
-      <section class="empty-view glass" data-view-panel="atlas" hidden>
-        <h2 data-i18n="nav.atlas"></h2><p data-i18n="empty.atlas"></p>
-        <a class="btn primary" href="#view=site" data-goto="site" data-i18n="empty.toSite"></a>
-      </section>
+      <aside class="drawer" data-view-panel="atlas" hidden>
+        <section class="card glass" aria-labelledby="layers-heading" data-panel="layers" data-panel-view="atlas" data-panel-title="atlas.layers">
+          <h2 id="layers-heading" data-i18n="atlas.layers"></h2>
+          <label class="check"><input id="layer-terminator" type="checkbox" checked><span class="swatch swatch-sun" aria-hidden="true"></span><span data-i18n="atlas.terminator"></span></label>
+          <label class="check"><input id="layer-earth" type="checkbox" checked><span class="swatch swatch-earth" aria-hidden="true"></span><span data-i18n="atlas.earthZone"></span></label>
+          <label class="check"><input id="layer-graticule" type="checkbox"><span data-i18n="atlas.graticule"></span></label>
+          <label class="check"><input id="layer-sites" type="checkbox" checked><span data-i18n="atlas.sites"></span></label>
+          <div class="toolbar atlas-actions">
+            <button type="button" class="btn" id="globe-home" data-i18n="atlas.home"></button>
+            <button type="button" class="btn" id="globe-south" data-i18n="atlas.south"></button>
+          </div>
+          <dl class="facts" id="atlas-facts"></dl>
+          <p id="atlas-texture-note" class="warning" role="status" hidden></p>
+          <p class="hint" data-i18n="atlas.note"></p>
+          <p class="hint" id="atlas-credit"></p>
+        </section>
+      </aside>
       <section class="empty-view glass" data-view-panel="world" hidden>
         <h2 data-i18n="nav.world"></h2><p data-i18n="empty.world"></p>
         <a class="btn primary" href="#view=site" data-goto="site" data-i18n="empty.toSite"></a>

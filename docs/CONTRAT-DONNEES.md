@@ -186,6 +186,7 @@ Ajoutés sans rien retirer (l'interface ignore les champs inconnus ; un fichier 
 - `sites/<id>.json` et chaque entrée de `index.json` : **`terrain_real`** (le relief vient d'un MNT réel) et **`ephemeris_synthetic`** (les positions du Soleil et de la Terre sont fictives). Deux drapeaux distincts, pour ne pas mentir par omission (D-016). Règle : `synthetic` = `ephemeris_synthetic` OU NON `terrain_real` ; `ephemeris_synthetic` est vrai si et seulement si `provenance.ephemeris.engine == "demo-analytic"`.
 - Entrée d'index : **`tier`** (entier, ordre de construction, D-016), **`lola_priority_site`** (booléen) et **`nasa_2024_region`** (texte ou `null`) (D-018), **`pgda_id`** (texte).
 - `provenance.dem` peut porter `citation` et `filled_nodes`.
+- **`web/data/global.json`** (Atlas, A-03, facultatif) : points sub-solaire et sub-terrestre sur la même période et le même pas que les sites (`time.t0_utc`, `step_s`, `n`), `lat_mdeg`, `lon_mdeg` (dans [-180000, 180000)) et `radius_mdeg` entiers pour `sun` et `earth`, avec `synthetic` et `provenance.ephemeris` ; schéma `global.schema.json`, vérifié par `validate` (longueurs = `time.n`, `synthetic` cohérent avec le moteur). Même vecteur Lune vers corps que les séries de site. Spécification : `docs/ATLAS.md` § 3.3.
 - **Seuil « any »** : `is_visible(f, 'any')` dépend de la fraction visible `f` (> 0), pas de l'écart d'élévation `d` : pour `d` à peine supérieur à `-r`, `f` peut s'arrondir à 0 en double précision (sans effet pratique).
 
 ## 8. Évolution du contrat

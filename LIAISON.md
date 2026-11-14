@@ -97,14 +97,14 @@ Après la publication d'une **DEMANDE-REVUE bloquante**, CODE n'enchaîne pas su
 
 | Champ | Valeur |
 |---|---|
-| Dernière activité de CODE (UTC) | 2026-11-14T20:30Z |
+| Dernière activité de CODE (UTC) | 2026-11-14T20:55Z |
 | Session | S4 |
-| Tâche en cours | T-20, T-05, T-07, S-01 terminés ; prochaine : comparaison Horizons (T-24), fichier d'or T-08, Atlas |
+| Tâche en cours | A-01 à A-04 faits (M-031) ; prochaine : A-05 (cartes 2D), A-06 |
 | Fichier LDEM réel présent | oui, `data/raw/LDEM_80S_80MPP_ADJ.tiff` (hors Git) ; décodé : **oui**, contrôlé (unités, projection, pixel, orientation) ; aperçu Shackleton : http://localhost:8000/preview.html |
 | Page affichable | **oui** : `py -m http.server 8000 -d web`, puis http://localhost:8000 (avec la vue 3D depuis T-11 A) |
 | État | T-09, T-04, T-11 A, étape B terminés ; Atlas : non commencé ; Sites réels : S-01 attend les fichiers 5 m ; Interface : U-01 et U-02 faits ; GitHub en retard (push non fait) |
 | Dernier commit | journal après `0ca9349` (T-21 étape B) ; tag `pre-event-base` sur `a79f658` (dernier commit du 13 nov.) |
-| Tests (dernière exécution) | pytest : 191 passés ; node : 67 passés |
+| Tests (dernière exécution) | pytest : 215 passés ; node : 78 passés |
 | Dépôt propre (`git status`) | oui (après le commit de journal) |
 | Bloquants | Aucun côté code. Données NASA non reçues (J4). |
 | Messages CODE→CHAT en attente de réponse | 3 (M-022 T-06, M-028 T-05, M-029 T-07 : revues non bloquantes) |
@@ -369,7 +369,7 @@ Index : M-001 INSTRUCTION (démarrage) · M-002 INFO (fonctionnement du canal) �
 
 ## 5. Boîte CODE → CHAT
 
-Index : M-003 RAPPORT (T-00) · M-004 RAPPORT (T-01) · M-006 DEMANDE-REVUE (T-02) · M-007 RAPPORT (T-03) · M-009 INFO (GitHub, tag) · M-011 RAPPORT (T-09, page affichable) · M-012 RAPPORT (T-04) · M-013 QUESTION (Q-011, site demo-a) · M-015 RAPPORT (T-11 étape A, vue 3D) · M-019 RAPPORT (étape B, MNT réel, Shackleton) · M-020 RAPPORT (U-01) · M-021 RAPPORT (U-02) · M-022 DEMANDE-REVUE (T-06) · M-023 RAPPORT (T-10) · M-026 INFO (noyaux SPICE mesurés) · M-027 RAPPORT (T-20) · M-028 DEMANDE-REVUE (T-05, S-01) · M-029 DEMANDE-REVUE (T-07, D-021) · M-030 INFO (panneaux repliables)
+Index : M-003 RAPPORT (T-00) · M-004 RAPPORT (T-01) · M-006 DEMANDE-REVUE (T-02) · M-007 RAPPORT (T-03) · M-009 INFO (GitHub, tag) · M-011 RAPPORT (T-09, page affichable) · M-012 RAPPORT (T-04) · M-013 QUESTION (Q-011, site demo-a) · M-015 RAPPORT (T-11 étape A, vue 3D) · M-019 RAPPORT (étape B, MNT réel, Shackleton) · M-020 RAPPORT (U-01) · M-021 RAPPORT (U-02) · M-022 DEMANDE-REVUE (T-06) · M-023 RAPPORT (T-10) · M-026 INFO (noyaux SPICE mesurés) · M-027 RAPPORT (T-20) · M-028 DEMANDE-REVUE (T-05, S-01) · M-029 DEMANDE-REVUE (T-07, D-021) · M-030 INFO (panneaux repliables) · M-031 DEMANDE-REVUE (Atlas A-01 à A-04, Q-013)
 
 Ajouter les nouveaux messages à la suite, du plus ancien au plus récent.
 
@@ -837,6 +837,30 @@ Ajouter les nouveaux messages à la suite, du plus ancien au plus récent.
   - **Non testé** : clavier (Tab, Entrée) sur les pastilles ; mobile ; orbite à la souris et molette sur la scène (la scène reçoit bien les événements là où aucun panneau ne la couvre, mais je n'ai pas simulé de glissement).
 - Réponse attendue: non
 
+### M-031 · CODE→CHAT · DEMANDE-REVUE · réf: A-01, A-02, A-03, A-04, Q-013 · priorité: NORMALE
+- Date (UTC): 2026-11-14T20:55Z
+- Statut: OUVERT
+- Réponse à: M-016
+- Objet: Atlas : textures (usage local, licence à trancher), fonctions pures, `global.json`, globe 3D ; panneaux repliables (M-030) ; question Q-013
+- Corps:
+  - **Adresse** : http://localhost:8000 s'ouvre maintenant sur l'**Atlas** (ATLAS § 7 : sans site dans l'URL). Globe 3D de la Lune avec texture, terminateur (jaune), zone « Terre au-dessus de l'horizon plat » (bleu), points sub-solaire et sub-terrestre, marqueurs des 7 sites (réels en vert, démonstrations en orange), graticule en option, boutons « Vue initiale » et « Pôle Sud », lecture lat/lon sous le curseur, **horloge commune** (la barre de temps pilote le globe et la vue de site). Clic sur un site = ouverture de sa vue.
+  - **A-01 textures** : `lroc_color_2k.jpg` (457 942 octets) et `lroc_color_poles_1k.jpg` (139 068 octets) de NASA SVS (CGI Moon Kit), téléchargés et **ouverts** : les **deux sont équirectangulaires** (l'image « pôles » n'est PAS une projection polaire), longitude 0° au centre, nord en haut ; zones polaires (> 70°) comblées par un albédo basse résolution, donc floues. **Contrôle** : Tycho tombe à (959 ; 758) px sur 2048 × 1024, au bon endroit.
+    **Licence — QUESTION Q-013** : la page de l'objet donne seulement le crédit « NASA's Scientific Visualization Studio » et l'avertissement « optimized for aesthetics, not science » ; **aucune licence**. Les directives NASA (lues, mises à jour le 27 oct. 2026) disent que le contenu NASA est « généralement » non soumis à droit d'auteur, demandent de citer la NASA, interdisent l'approbation implicite, excluent les logos ; elles **ne couvrent pas explicitement** les données d'une université partenaire (LROC/ASU). Conformément à M-016 § 4, **je n'ai pas supposé le domaine public** : textures **utilisées en local, ignorées par Git** (`.gitignore`), captures qui les montrent aussi ; repli sans texture (sphère grise + message). Crédit et avertissement sont affichés dans l'Atlas ; `web/assets/moon/LICENSE-ASSETS.md` et `SOURCES.md` à jour. **Décision à prendre** : versionner ou non (Q-013).
+  - **A-02 fonctions pures** (`web/js/atlas/sphere.js`) : `latLonToVector`, `vectorToLatLon`, `angularDistanceDeg`, `terminatorCircle`, `terminatorLatitudeDeg`, `equirectPixel` et inverse, `southPolar` / `northPolar` et inverses, `interpolateSubPoint` (latitude linéaire, **longitude sur le cercle**). **Convention** (écrite dans le code, le test et le fichier d'or) : lat 0 / lon 0 → +x ; nord → +y ; **lon +90° → −z** (l'Est apparaît à droite vu de l'extérieur).
+    **Valeurs d'or** `tests/golden/atlas_sphere.json`, calculées par des **méthodes indépendantes** (`tests/reference/make_atlas_golden.py`) : vecteurs par produit de matrices de rotation ; distances par arccos du produit scalaire (le JS utilise atan2 produit vectoriel / scalaire) ; pôle Sud par `pipeline.projection` (confrontée à GDAL en M-019) ; **pôle Nord par construction géométrique** (projection stéréographique depuis le pôle Sud sur le plan tangent au pôle Nord) ; terminateur par rotation autour de l'axe du point sub-solaire. Un test Python (`test_atlas_golden.py`) impose que le Sud égale `pipeline.projection` et que le Nord soit son symétrique.
+    **Deux erreurs de MES valeurs d'or, détectées par les tests avant tout usage** : (1) signe de la rotation autour de y (lon +90° donnait +z), corrigé ; (2) cas Tycho de la carte équirectangulaire **saisi à la main** (958,29 au lieu de 959,15) puis `np.interp` mal appelé (abscisses décroissantes) : les valeurs sont maintenant **calculées**, jamais tapées.
+    **Formules du pôle Nord** (ATLAS § 5.3 demandait de les vérifier) : ρ_nord(+φ) = ρ_sud(−φ), x = ρ sin λ, y = −ρ cos λ (longitude 0° vers le bas) : **confirmées** par construction géométrique, aller-retour et symétrie.
+  - **A-03 `global.json`** (`pipeline/global_state.py`, schéma `global.schema.json`, `validate`) : 43 824 échantillons horaires, **SPICE** (`synthetic: false`), 1,35 Mo ; mode démonstration en repli. Mêmes `spkpos(…, "MOON_ME", "LT+S", "MOON")` que les séries de site. **Contrôle indépendant** : un site posé exactement au point sub-solaire SPICE voit le Soleil à **> 89,99°** d'élévation (4 instants) ; plages : |lat sub-solaire| < 1,7°, |lat sub-terrestre| < 7°, |lon sub-terrestre| < 10°, 12 tours de longitude sub-solaire par an.
+  - **A-04 globe** (`web/js/atlas/globe.js`, 300 lignes) : sphère lisse 64 × 32 (D-002), éclairage vers le point sub-solaire, côté nuit éclairci (note affichée), étoiles à **graine fixe**, `OrbitControls` (distance 1,35 à 6), vol de caméra de 0,9 s (instantané si « réduire les animations »), clic distinct du glissement, info-bulle des sites, repli sans WebGL.
+    **Vérification de l'orientation de la texture** : page de contrôle (hors dépôt) qui regarde (0°, 0°) avec le Soleil en (0°, 0°) : Tycho est en bas légèrement à gauche du méridien 0, Copernicus à gauche du centre, Imbrium en haut à gauche, les mers de l'Est (Tranquillitatis, Crisium) à droite : **pas de miroir**. Capture : `docs/captures/a04-orientation-globe-tycho.png` (non versionnée, texture).
+  - **Défaut trouvé et corrigé** : `pipeline.cli build --site X` **réécrivait `index.json` avec ce seul site** (je l'ai découvert en l'utilisant, `web/data/` s'est retrouvé à 1 site avant reconstruction). Corrigé (fusion avec l'index existant) et **test de régression** ajouté.
+  - **Panneaux** : un même « scène seule » par vue (les panneaux de l'Atlas et ceux de la vue de site ont des portées distinctes) ; barre de temps partagée par les deux vues ; le texte périmé « À venir… » du panneau a été retiré.
+  - **Preuves** : `pytest pipeline/tests -q` → « 215 passed » ; `node --test "web/tests/**/*.test.js"` → « tests 78, pass 78 » (9 de `sphere`, 1 de `global` dans `data`, panneaux avec portée) ; `nonetwork` étendu à `js/atlas/` ; captures Edge de l'Atlas (accueil), du pôle Sud et de l'orientation.
+  - **Limites constatées, honnêtes** : (1) les **7 marqueurs se superposent** sur le globe (tous à moins de 1,3° du pôle) : la carte polaire 2D (A-05) est la vraie réponse ; (2) un clic réel sur un marqueur, le glissement à la souris et la molette n'ont **pas** été simulés ; seul le rendu est vérifié ; (3) le vol vers le pôle n'a pas été capturé en animation (l'horloge virtuelle de l'Edge sans interface ne fait pas avancer `performance.now`) : l'arrivée est vérifiée par une page de contrôle qui place la caméra ; (4) l'Atlas affiche des positions SPICE **réelles**, mais `synthetic` du `global.json` est faux seulement si les noyaux sont présents au moment de `build`.
+  - **Points à relire en priorité** : (1) convention lon +90° → −z ; (2) pôle Nord (signes) ; (3) longitude interpolée sur le cercle ; (4) Q-013.
+  - Commit : « A-03, A-04 : global.json et globe 3D de l'Atlas ».
+- Réponse attendue: oui — relecture (points 1 à 3) et **décision sur Q-013**.
+
 ## 6. Journal d'activité de CODE (ajout uniquement)
 
 Format d'une entrée :
@@ -1052,6 +1076,13 @@ Entrées spéciales : `DEBUT DE SESSION` (messages lus, tâche reprise) et `FIN 
 - Commandes : `node --test` → 67 pass · page de contrôle (clics réels) → comportement attendu
 - Commit : « UI : panneaux repliables, scène seule, éclairage d'étude »
 - Prochaine étape : Atlas (A-01 textures, A-02 fonctions pures), à la demande de l'humain.
+
+#### 2026-11-14T20:55Z · A-01 à A-04, ATLAS · session S5
+- Actions : textures lues (page et directives NASA, via un agent de lecture web) puis téléchargées (`curl` refusé par TLS, `Invoke-WebRequest` accepté) et **ouvertes** ; Q-013 ; `sphere.js` et valeurs d'or indépendantes (2 erreurs de mes valeurs corrigées) ; `global_state.py`, schéma, validation ; `globe.js`, `atlaspanel.js`, restructuration de la page (dock commun, scène et panneau de l'Atlas, portée des panneaux) ; défaut de `build --site` corrigé ; **un accent grave PowerShell a de nouveau inséré 3 caractères de contrôle dans `CONTRAT-DONNEES.md` : détecté par un contrôle systématique, fichier restauré puis modifié par script Python** ; captures ; RAPPORT M-031.
+- Fichiers : créés [`web/js/atlas/{sphere,globe}.js`, `web/js/ui/atlaspanel.js`, `pipeline/{global_state}.py`, `pipeline/schema/global.schema.json`, `web/data/global.json`, `tests/golden/atlas_sphere.json`, `tests/reference/make_atlas_golden.py`, tests (`sphere`, `test_global_state`, `test_atlas_golden`), `web/assets/moon/LICENSE-ASSETS.md`] · modifiés [`web/index.html`, `web/js/{main,data,i18n}.js`, `web/js/ui/{shell,nav,panels}.js`, `web/css/shell.css`, `pipeline/{cli,validate}.py`, `docs/CONTRAT-DONNEES.md`, `SOURCES.md`, `DECISIONS.md` (Q-013), `.gitignore`] · hors Git [`web/assets/moon/*.jpg`, captures avec texture]
+- Commandes : `pytest` → 215 passed · `node --test` → 78 pass · `pipeline.cli build` → 7 sites + `global.json`, validate OK
+- Commit : « A-03, A-04 : global.json et globe 3D de l'Atlas »
+- Prochaine étape : A-05 (cartes 2D), A-06 (onglets, lecture animée).
 
 ## 7. Journal de CHAT (ajout uniquement)
 

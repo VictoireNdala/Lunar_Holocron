@@ -33,3 +33,7 @@ web/data/local/
 
 # Textures de la Lune (Atlas) : non versionnées tant que Q-013 (licence des données ASU) n'est pas tranchée
 web/assets/moon/*.jpg
+
+# Captures qui montrent la texture de la Lune : non versionnées tant que Q-013 n'est pas tranchée
+docs/captures/a04-*.png
+docs/captures/atlas-*.png

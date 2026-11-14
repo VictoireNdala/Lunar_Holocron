@@ -3,7 +3,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
-import { bodyStateAt, siteTimeRange, createDataSource, checkSite, DataError } from '../js/data.js';
+import { bodyStateAt, siteTimeRange, createDataSource, checkSite, checkGlobal, globalSeries, DataError } from '../js/data.js';
 
 const WEB_DIR = fileURLToPath(new URL('..', import.meta.url));
 const HOUR_MS = 3600 * 1000;
@@ -103,6 +103,22 @@ test('chargement du jeu d\'exemple : index, site, terrain', async () => {
   const step = (terrain.meta.z.max_m - terrain.meta.z.min_m) / 65535;
   assert.ok(Math.min(...terrain.heightsM) >= terrain.meta.z.min_m - step);
   assert.ok(Math.max(...terrain.heightsM) <= terrain.meta.z.max_m + step);
+});
+
+test('global.json : chargement, séries pour l\'interpolation, contrôle de longueur, absence signalée', async () => {
+  const doc = {
+    schema_version: '1.1', synthetic: true, time: { t0_utc: '2027-01-01T00:00:00Z', step_s: 3600, n: 3 },
+    sun: { lat_mdeg: [0, 1000, 2000], lon_mdeg: [179000, 180000 - 1, -179000], radius_mdeg: [267, 267, 267] },
+    earth: { lat_mdeg: [0, 0, 0], lon_mdeg: [0, 0, 0], radius_mdeg: [950, 950, 950] },
+  };
+  const ok = { ok: true, status: 200, json: async () => doc };
+  const src = createDataSource('data/x/', diskFetch({ 'data/x/global.json': ok }));
+  const g = await src.loadGlobal();
+  assert.strictEqual(await src.loadGlobal(), g, 'servi par le cache');
+  const s = globalSeries(g, 'sun');
+  assert.deepEqual([s.t0Ms, s.stepMs, s.latMdeg.length], [Date.parse('2027-01-01T00:00:00Z'), 3600000, 3]);
+  assert.match(checkGlobal({ ...doc, sun: { ...doc.sun, lat_mdeg: [0] } }).join('\n'), /sun\.lat_mdeg/);
+  await assert.rejects(createDataSource('data/absent/', diskFetch()).loadGlobal(), (err) => err instanceof DataError && err.code === 'missing');
 });
 
 test('fichier manquant : DataError « missing » qui nomme le fichier', async () => {
