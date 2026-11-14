@@ -20,7 +20,7 @@ import { createShell } from './ui/shell.js';
 import { decode, encode } from './urlstate.js';
 
 const HOUR_MS = 3600 * 1000;
-// Données par défaut : sorties du pipeline (web/data/, `py -m pipeline.cli build`). L'exemple fait main reste en `?data=data/sample/`.
+// Données par défaut : sorties du pipeline (web/data/, `py -m pipeline.cli build`). `?data=chemin/relatif/` permet de pointer un autre dossier de données.
 const DEFAULT_DATA_ROOT = 'data/';
 const DATA_ROOT_PATTERN = /^(?:[a-z0-9_-]+\/)+$/;
 const TIME_INPUT_PATTERN = /^(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2})$/;

@@ -12,7 +12,7 @@ import pytest
 from pipeline import geodesy
 from pipeline.config import R_REF_M
 from pipeline.dem import Dem, GridDem
-from pipeline.dem_synthetic import make_synthetic_dem
+from pipeline.fixtures.dem_synthetic import make_synthetic_dem
 from pipeline.horizon import HorizonConfig, compute_horizon, sample_distances
 
 LAT0, LON0 = -89.0, 0.0

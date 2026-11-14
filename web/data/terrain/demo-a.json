@@ -1,1 +1,0 @@
-{"center":{"lat_deg":-89.0,"lon_deg":0.0},"frame":"local-enu","grid":{"n":257,"size_m":20000.0,"spacing_m":78.125},"id":"demo-a","schema_version":"1.1","synthetic":true,"z":{"byte_order":"little","col_order":"west-to-east","encoding":"uint16-linear","file":"demo-a.bin","max_m":5.95212102169171,"min_m":-1496.1281905570067,"row_order":"north-to-south"}}

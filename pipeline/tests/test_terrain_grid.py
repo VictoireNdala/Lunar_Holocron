@@ -6,7 +6,7 @@ import numpy as np
 import pytest
 
 from pipeline.config import R_REF_M
-from pipeline.dem_synthetic import make_synthetic_dem
+from pipeline.fixtures.dem_synthetic import make_synthetic_dem
 from pipeline.terrain_grid import build_terrain_grid, decode_uint16, encode_uint16
 
 

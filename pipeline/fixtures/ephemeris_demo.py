@@ -13,6 +13,7 @@ import numpy as np
 from numpy.typing import NDArray
 
 from pipeline.config import LAT_MAX_DEG, LAT_MIN_DEG
+from pipeline.timegrid import BODIES, utc_grid  # noqa: F401  (réexportés pour les tests)
 
 FloatArray = NDArray[np.float64]
 # Paramètres du modèle fictif (docs/PIPELINE.md). Ce ne sont pas des mesures.
@@ -22,13 +23,6 @@ EARTH_LAT_AMPL_DEG, EARTH_LAT_PERIOD_D, EARTH_LAT_PHASE = 6.7, 27.212, 1.3
 EARTH_LON_AMPL_DEG, EARTH_LON_PERIOD_D, EARTH_LON_PHASE = 7.9, 27.555, 2.1
 SUN_RADIUS_DEG = 0.2665
 EARTH_RADIUS_DEG = 0.95
-BODIES = ("sun", "earth")
-
-
-def utc_grid(start_utc: str, step_s: int, count: int) -> list[str]:
-    """`count` instants UTC ISO 8601 sans `Z`, espacés de `step_s`."""
-    t0 = np.datetime64(start_utc.rstrip("Z"), "s")
-    return [str(t0 + np.timedelta64(k * step_s, "s")) for k in range(count)]
 
 
 def _days_since(utc: Sequence[str], origin: str = "2026-01-01T00:00:00") -> FloatArray:

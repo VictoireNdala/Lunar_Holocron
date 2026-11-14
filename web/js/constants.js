@@ -1,4 +1,4 @@
-// Constantes du projet, miroir exact de pipeline/config.py (vérifié par pipeline/tests/test_web_sample.py).
+// Constantes du projet, miroir exact de pipeline/config.py (vérifié par pipeline/tests/test_web_sample.py : fixture fictive de test).
 // Une seule définition par constante : toute modification se fait dans les deux fichiers, dans le même commit.
 
 // --- Géométrie lunaire ---

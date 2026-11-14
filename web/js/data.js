@@ -148,7 +148,7 @@ export function globalSeries(doc, body) {
   return { t0Ms: Date.parse(doc.time.t0_utc), stepMs: doc.time.step_s * 1000, latMdeg: doc[body].lat_mdeg, lonMdeg: doc[body].lon_mdeg };
 }
 
-/** Source de données relative à `root` (ex. 'data/sample/'), avec cache mémoire. */
+/** Source de données relative à `root` (ex. 'data/'), avec cache mémoire. */
 export function createDataSource(root, fetchFn = (url) => globalThis.fetch(url)) {
   let indexPromise = null;
   let globalPromise = null;

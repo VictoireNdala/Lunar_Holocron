@@ -16,7 +16,6 @@
         "sha256": "3BA7B97CB00A2BCF21189C3AEB535F65AFC21207154AB9F0D43C5BDC1F7E747E",
         "source": "https://pgda.gsfc.nasa.gov/data/LOLA_5mpp/"
       },
-      "ephemeris_synthetic": true,
       "id": "site01-connecting-ridge",
       "label_en": "Connecting ridge (Site01)",
       "label_fr": "Crête de liaison (Site01)",
@@ -43,7 +42,6 @@
         "sha256": "38FF70DBDF2F066C2CFA94A646C3A59D653CE7F6B4528B15FC1B43EE397CE758",
         "source": "https://pgda.gsfc.nasa.gov/data/LOLA_5mpp/"
       },
-      "ephemeris_synthetic": true,
       "id": "site04-shackleton-rim",
       "label_en": "Shackleton rim (Site04)",
       "label_fr": "Rebord de Shackleton (Site04)",
@@ -70,7 +68,6 @@
         "sha256": "38AAEE10BB4DA4D63E7427AA1CA25C79BDBC649D212079A04990E135462091F8",
         "source": "https://pgda.gsfc.nasa.gov/data/LOLA_5mpp/"
       },
-      "ephemeris_synthetic": true,
       "id": "site07-peak-near-shackleton",
       "label_en": "Peak near Shackleton (Site07)",
       "label_fr": "Pic près de Shackleton (Site07)",
@@ -97,7 +94,6 @@
         "sha256": "58F3372C35BBD6BAF38FFD5633C1C96B59BD89DBD252150581D12893A43136E5",
         "source": "https://pgda.gsfc.nasa.gov/data/LOLA_5mpp/"
       },
-      "ephemeris_synthetic": true,
       "id": "site11-de-gerlache-rim",
       "label_en": "de Gerlache rim (Site11)",
       "label_fr": "Rebord de de Gerlache (Site11)",

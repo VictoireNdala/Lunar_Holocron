@@ -7,11 +7,12 @@ from pathlib import Path
 
 import numpy as np
 
-from pipeline import golden
+from pipeline.fixtures import golden
 
 ROOT = Path(__file__).resolve().parents[2]
 GOLDEN = json.loads((ROOT / "tests" / "golden" / "body_state_cases.json").read_text(encoding="utf-8"))
-SITE = json.loads((ROOT / GOLDEN["site_file"]).read_text(encoding="utf-8"))
+# Le fichier d'or signé porte `site_file: web/data/sites/demo-b.json` (chemin d'origine, avant V2-01) : le site fictif est maintenant une fixture de test.
+SITE = json.loads((ROOT / "tests" / "fixtures" / "web-data" / "sites" / Path(GOLDEN["site_file"]).name).read_text(encoding="utf-8"))
 CASES = GOLDEN["cases"]
 FIELDS = [f"{b}_{k}" for b in ("sun", "earth") for k in ("az_deg", "el_deg", "radius_deg", "horizon_deg")] + ["f_sun", "f_earth"]
 

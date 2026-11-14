@@ -8,7 +8,9 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from pipeline import ephemeris_demo, ephemeris_spice, validate
+from pipeline import ephemeris_spice, validate
+from pipeline.fixtures import ephemeris_demo
+from pipeline.fixtures.global_demo import demo_points
 from pipeline.export import PipelineConfig, dump_json
 from pipeline.global_state import build_global, write_global
 
@@ -26,7 +28,7 @@ def _cfg(count: int = 96) -> PipelineConfig:
 
 def test_demo_structure_and_flags() -> None:
     """Format du contrat (ATLAS § 3.3) : millidegrés entiers, synthetic vrai, moteur démo, longueurs = n."""
-    g = build_global(_cfg(), "demo-analytic")
+    g = build_global(_cfg(), "demo-analytic", demo_points)
     assert g["synthetic"] is True and g["provenance"]["ephemeris"]["engine"] == "demo-analytic"
     assert g["time"] == {"t0_utc": "2027-03-11T00:00:00Z", "step_s": 3600, "n": 96}
     for body in ("sun", "earth"):
@@ -38,7 +40,7 @@ def test_demo_structure_and_flags() -> None:
 
 def test_demo_matches_site_series() -> None:
     """Cohérence démo : un site posé au point sub-solaire du modèle voit le Soleil au zénith (élévation ≈ 90°)."""
-    g = build_global(_cfg(), "demo-analytic")
+    g = build_global(_cfg(), "demo-analytic", demo_points)
     utc = ephemeris_demo.utc_grid("2027-03-11T00:00:00Z", 3600, 96)
     for k in (0, 30, 77):
         lat, lon = g["sun"]["lat_mdeg"][k] / 1000.0, g["sun"]["lon_mdeg"][k] / 1000.0
@@ -49,14 +51,14 @@ def test_demo_matches_site_series() -> None:
 def test_deterministic_and_bytes(tmp_path: Path) -> None:
     """Deux écritures identiques octet pour octet ; le fichier passe validate."""
     for name in ("a", "b"):
-        write_global(build_global(_cfg(), "demo-analytic"), tmp_path / name)
+        write_global(build_global(_cfg(), "demo-analytic", demo_points), tmp_path / name)
     assert (tmp_path / "a" / "global.json").read_bytes() == (tmp_path / "b" / "global.json").read_bytes()
     assert validate.validate_global(json.loads((tmp_path / "a" / "global.json").read_text(encoding="utf-8"))) == []
 
 
 def test_validate_refuses_bad_global() -> None:
     """Longueur fausse, latitude hors plage, drapeau synthetic incohérent : refusés, avec le champ nommé."""
-    g = build_global(_cfg(), "demo-analytic")
+    g = build_global(_cfg(), "demo-analytic", demo_points)
     bad = json.loads(json.dumps(g)); bad["sun"]["lat_mdeg"].pop()
     assert any("sun.lat_mdeg" in e for e in validate.validate_global(bad))
     bad = json.loads(json.dumps(g)); bad["earth"]["lat_mdeg"][3] = 95000

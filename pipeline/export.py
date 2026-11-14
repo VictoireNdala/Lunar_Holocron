@@ -11,11 +11,12 @@ import json
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable, Sequence
 
 import numpy as np
 
-from pipeline import __version__, ephemeris_demo, ephemeris_spice
+from pipeline import __version__, ephemeris_spice
+from pipeline.timegrid import BODIES, utc_grid
 from pipeline.config import MOON_FRAME, R_REF_M
 from pipeline.dem import Dem
 from pipeline.horizon import HorizonConfig, compute_horizon
@@ -67,11 +68,12 @@ class SiteSpec:
     lon_deg: float
     dem: Dem
     dem_info: dict[str, Any]  # product, resolution_m, source, license (+ citation…)
-    engine: str  # 'demo-analytic' | 'spice'
+    engine: str  # 'spice' (production) ; tout autre moteur exige `series_fn` (jeux de test : pipeline/fixtures)
     terrain_real: bool
     verified: bool
     observer_height_m: float | None = None
     index_extra: dict[str, Any] = field(default_factory=dict)  # tier, pgda_id, lola_priority_site, nasa_2024_region…
+    series_fn: Callable[[str, float, float, Sequence[str]], dict[str, Any]] | None = None  # (corps, lat, lon, instants) → az/el/rayon ; hors SPICE
 
 
 def dump_json(path: Path, doc: Any) -> None:
@@ -82,15 +84,15 @@ def dump_json(path: Path, doc: Any) -> None:
 
 def _series(spec: SiteSpec, cfg: PipelineConfig, eye_height_m: float) -> dict[str, dict[str, list[int]]]:
     """Séries Soleil et Terre en millidegrés entiers, par le moteur demandé."""
-    utc = ephemeris_demo.utc_grid(cfg.start_utc, cfg.step_s, cfg.count)
+    utc = utc_grid(cfg.start_utc, cfg.step_s, cfg.count)
     out = {}
-    for body in ephemeris_demo.BODIES:
+    for body in BODIES:
         if spec.engine == "spice":
             raw = ephemeris_spice.body_series(body, spec.lat_deg, spec.lon_deg, eye_height_m, utc)
-        elif spec.engine == "demo-analytic":
-            raw = ephemeris_demo.body_series(body, spec.lat_deg, spec.lon_deg, utc)
+        elif spec.series_fn is not None:
+            raw = spec.series_fn(body, spec.lat_deg, spec.lon_deg, utc)
         else:
-            raise ValueError(f"moteur inconnu {spec.engine!r}")
+            raise ValueError(f"moteur {spec.engine!r} sans fonction de séries : seul « spice » est un moteur de production")
         out[body] = {k: [int(v) for v in arr] for k, arr in ephemeris_spice.to_millidegrees(raw).items()}
     return out
 
@@ -109,7 +111,7 @@ def build_site(spec: SiteSpec, cfg: PipelineConfig, out_dir: Path) -> dict[str, 
     grid = build_terrain_grid(spec.dem, spec.lat_deg, spec.lon_deg, cfg.terrain_size_m, cfg.terrain_n)
     z_min, z_max, raw = encode_uint16(grid.z_m)
 
-    ephemeris_synthetic = spec.engine == "demo-analytic"
+    ephemeris_synthetic = spec.engine != "spice"
     synthetic = ephemeris_synthetic or not spec.terrain_real
     flags = {"terrain_real": spec.terrain_real, "ephemeris_synthetic": ephemeris_synthetic}
     site = {

@@ -6,8 +6,8 @@
 
 > [!IMPORTANT]
 > **Read this before trusting a number.**
-> - Four sites (Site01, Site04, Site07, Site11) use **real** LOLA terrain models and **real** SPICE ephemerides. Three more sites are **fictional demonstrations**
->   and are flagged `"synthetic": true` in the data files; the interface shows a permanent honesty chip (“Real data” / “Demonstration data”) that cannot be hidden.
+> - Four sites (Site01, Site04, Site07, Site11) use **real** LOLA terrain models and **real** SPICE ephemerides. **No fictional data ships with the product**: synthetic test sets live in `pipeline/fixtures` and `tests/fixtures` only
+>   (a data file flagged `"synthetic": true` would still be shown with a permanent honesty chip that cannot be hidden).
 > - A real site is evaluated at the **centre of its terrain model’s extent**, not at a chosen landing point. Those positions are **unverified** (`"verified": false`).
 > - This is an independent hackathon project, **not endorsed by NASA**, and not a mission planning tool. The limits are listed [below](#limitations) and in the application’s *Sources and method* tab.
 
@@ -74,7 +74,7 @@ Key methodological choices (details in [`docs/`](docs/) and in the application�
 | Area | State |
 |---|---|
 | Data contract, schemas, validator | ✅ version 1.1, validated on every build |
-| Pipeline: terrain, horizon, visibility, indicators, SPICE ephemerides, export | ✅ 4 real sites + 3 demonstration sites |
+| Pipeline: terrain, horizon, visibility, indicators, SPICE ephemerides, export | ✅ 4 real sites (fictional test sets isolated in `fixtures`) |
 | Atlas: globe, three 2D maps, site sheet, guided tour, playback | ✅ |
 | Site view: verdict, readings, panorama, 3D, timeline, compare, method tab, deep links | ✅ |
 | Validation: SPICE against JPL Horizons (5 sites × 3 dates × Sun and Earth, 1,440 values) | ✅ see [`docs/VALIDATION-RESULTATS.md`](docs/VALIDATION-RESULTATS.md) |
@@ -83,7 +83,7 @@ Key methodological choices (details in [`docs/`](docs/) and in the application�
 | Browser smoke test (Playwright), mobile layout, accessibility audit, command palette | ❌ not done |
 | Level-2 sites (NASA 2024 regions without 5 m terrain), LOLA hillshade layer, polar-map zoom | ❌ not done |
 
-Test suites: **251 Python tests** and **157 JavaScript tests**, all passing at the last run (see [`STATUS.md`](STATUS.md) for the dated evidence).
+Test suites: **258 Python tests** and **157 JavaScript tests**, all passing at the last run (see [`STATUS.md`](STATUS.md) for the dated evidence).
 The detailed task plan is in [`PLAN.md`](PLAN.md); the live status is in [`STATUS.md`](STATUS.md); the exchange with the reviewing assistant is in [`LIAISON.md`](LIAISON.md).
 
 ## Getting started
@@ -111,7 +111,7 @@ py -m pipeline.tools.serve              # http://localhost:8000, served without 
 py -m http.server 8000 -d web           # alternative; the browser may keep stale JS modules: hard-reload with Ctrl+Shift+R
 ```
 
-The committed `web/data/` already contains the four real sites and the three demonstration sites. The Atlas textures (NASA SVS) are **not** committed
+The committed `web/data/` already contains the four real sites. The Atlas textures (NASA SVS) are **not** committed
 (licence to be settled, `Q-013`): without them the globe falls back to a plain sphere and says so.
 
 ### Run the tests
@@ -124,10 +124,10 @@ node --test "web/tests/**/*.test.js"    # JavaScript
 ### Rebuild the data
 
 ```powershell
-py -m pipeline.cli demo                 # three demonstration sites (note: rewrites index.json with those three only)
-py -m pipeline.cli build                # demonstration sites + every real site whose files are present in data/raw/
+py -m pipeline.cli build                # every real site whose files are present in data/raw/ (stops if the SPICE kernels are missing: no fictional fallback)
 py -m pipeline.cli build --site site04-shackleton-rim   # one site, other sites kept in the index
 py -m pipeline.cli validate             # check web/data against the data contract
+py -m pipeline.fixtures.demo_sites --site demo-b   # FICTIONAL test fixtures, written to tests/fixtures/web-data (never under web/)
 ```
 
 Real sites need local files that are **never committed** (`data/raw/`): the four SPICE kernels (`naif0012.tls`, `de440s.bsp`, `moon_pa_de440_200625.bpc`, `moon_de440_250416.tf`)
@@ -146,15 +146,17 @@ The tests read the committed results and need no network.
 ```
 ├─ pipeline/          Offline Python pipeline (geodesy, projection, DEM readers, horizon, visibility, kpi, SPICE, export, CLI, validation)
 │  ├─ schema/           JSON Schemas: index, site, terrain, global
+│  ├─ fixtures/         FICTIONAL test generators only (synthetic terrain and ephemerides); never imported by production code
 │  ├─ tools/            site catalogue, DEM cropping, icon sprite, dev server, Horizons validation
 │  └─ tests/            pytest suite
 ├─ web/               Static application (native ES modules, no bundler)
 │  ├─ js/               state, data loading, verdicts, timeline, compare, playback, links; atlas/ (globe, maps, sheets); ui/ (panels)
 │  ├─ css/  vendor/     design tokens, shell; three.js, fonts, icons (all local)
-│  ├─ data/             committed outputs: index, global, sites/, terrain/, sample/
+│  ├─ data/             committed outputs: index, global, sites/, terrain/
 │  └─ tests/            node --test suite
-├─ config/            pipeline period and grids, site catalogues (demonstration and real)
+├─ config/            pipeline period and grids, real-site catalogue
 ├─ tests/
+│  ├─ fixtures/         fictional test data (never served by the application)
 │  ├─ golden/           reference values shared by Python and JavaScript
 │  └─ reference/        independent recomputation scripts, Horizons values
 ├─ docs/              Architecture, data contract, pipeline, interface, Atlas, real sites, validation results, UI design
@@ -218,6 +220,6 @@ This project is not endorsed by NASA. NASA data remain subject to their own term
 
 **Lunar Holocron** est un navigateur des sites d’alunissage du pôle Sud lunaire. Pour un site et une date, il montre où se trouvent le Soleil et la Terre par rapport à
 **l’horizon réel du terrain**, afin de juger l’énergie solaire disponible et la liaison directe avec la Terre ; il permet de comparer deux sites.
-Projet réalisé pour le NASA Space Apps Challenge 2026. **Quatre sites utilisent des données réelles (relief LOLA, éphémérides SPICE) ; trois sites de démonstration sont fictifs et signalés comme tels.**
+Projet réalisé pour le NASA Space Apps Challenge 2026. **Quatre sites utilisent des données réelles (relief LOLA, éphémérides SPICE) ; aucune donnée fictive n’est livrée avec le produit (les jeux fictifs ne servent qu’aux tests).**
 Les indicateurs des sites réels sont calculés au centre du modèle de terrain, pas à un point d’alunissage choisi. Le projet n’est pas approuvé par la NASA.
 La documentation de conception est dans [`docs/`](docs/) ; l’état d’avancement dans [`STATUS.md`](STATUS.md) ; les résultats de validation mesurés dans [`docs/VALIDATION-RESULTATS.md`](docs/VALIDATION-RESULTATS.md).

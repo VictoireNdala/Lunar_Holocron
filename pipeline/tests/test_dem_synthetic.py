@@ -7,7 +7,7 @@ import pytest
 
 from pipeline import geodesy
 from pipeline.dem import MultiResDem
-from pipeline.dem_synthetic import KINDS, make_synthetic_dem
+from pipeline.fixtures.dem_synthetic import KINDS, make_synthetic_dem
 
 LAT0, LON0 = -89.0, 0.0
 
@@ -39,7 +39,7 @@ def test_deterministic() -> None:
 
 def test_value_noise_matches_pointwise_hash() -> None:
     """La lecture dans la table des nœuds donne exactement le hachage point par point (non-régression de l'optimisation)."""
-    from pipeline.dem_synthetic import _hash_unit, value_noise
+    from pipeline.fixtures.dem_synthetic import _hash_unit, value_noise
     rng = np.random.default_rng(12)
     e, n = rng.uniform(-60_000, 60_000, 2000), rng.uniform(-60_000, 60_000, 2000)
     cell, seed = 1500.0, 42

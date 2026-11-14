@@ -15,7 +15,8 @@ from typing import Any
 
 import numpy as np
 
-from pipeline import ephemeris_demo, visibility
+from pipeline import visibility
+from pipeline.fixtures import ephemeris_demo
 
 GOLDEN_SITE_ID = "demo-b"  # massif à l'est : Soleil et Terre passent par tous les états (masqué, partiel, visible)
 HALF_HOUR = timedelta(minutes=30)
@@ -100,10 +101,10 @@ def build_golden(site_path: Path) -> dict[str, Any]:
         cases.append({"utc": utc + "Z", "motif": motif, **{k: round(v, 9) for k, v in values.items()}})
     return {
         "description": "Soleil et Terre vus d'un site de démonstration (FICTIF) : (azimut, élévation, rayon angulaire, horizon à l'azimut, fraction visible) à 20 instants. "
-                       "Généré par `py -m pipeline.cli demo --write-golden`, RELU par un humain avant d'être figé. Lu par pytest et par node --test.",
+                       "Généré par `py -m pipeline.fixtures.golden`, RELU par un humain avant d'être figé. Lu par pytest et par node --test.",
         "synthetic": True,
         "site_id": site["id"],
-        "site_file": f"web/data/sites/{site['id']}.json",
+        "site_file": f"tests/fixtures/web-data/sites/{site['id']}.json",
         "method": "Valeurs calculées directement à l'instant (éphémérides de démonstration, masque du site, pipeline/visibility.py) ; "
                   "le JavaScript interpole les séries horaires exportées (bodyStateAt) puis applique horizonAt et visibleFraction.",
         "tolerance_angle_deg": 0.001,
@@ -121,8 +122,8 @@ def write_golden(data_dir: Path, out_path: Path) -> Path:
 
 
 def main() -> None:
-    """`py -m pipeline.golden` : régénère le fichier d'or depuis web/data/ SANS reconstruire les sites (n'écrase pas l'index)."""
-    path = write_golden(Path("web/data"), Path("tests/golden/body_state_cases.json"))
+    """`py -m pipeline.fixtures.golden` : régénère le fichier d'or depuis tests/fixtures/web-data/. ATTENTION : le fichier signé (SHA-256 dans docs/REVUE-FICHIER-OR.md) ne doit PAS être régénéré."""
+    path = write_golden(Path("tests/fixtures/web-data"), Path("tests/golden/body_state_cases.json"))
     print(f"fichier d'or écrit : {path} (A RELIRE par un humain avant d'etre fige)")
 
 

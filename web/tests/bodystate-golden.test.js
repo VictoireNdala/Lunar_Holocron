@@ -10,7 +10,8 @@ import { horizonAt, visibleFraction } from '../js/visibility.js';
 const GOLDEN_URL = new URL('../../tests/golden/body_state_cases.json', import.meta.url);
 const present = existsSync(GOLDEN_URL);
 const golden = present ? JSON.parse(readFileSync(GOLDEN_URL, 'utf8')) : null;
-const site = present ? JSON.parse(readFileSync(new URL(`../../${golden.site_file}`, import.meta.url), 'utf8')) : null;
+// `site_file` du fichier signé garde son chemin d'origine (web/data/sites/demo-b.json) : le site FICTIF est désormais une fixture de test (V2-01, D-029).
+const site = present ? JSON.parse(readFileSync(new URL(`../../tests/fixtures/web-data/sites/${golden.site_file.split('/').pop()}`, import.meta.url), 'utf8')) : null;
 
 /** Écart angulaire en degrés sur le cercle (0° et 360° sont identiques). */
 const circularDiff = (a, b) => Math.abs(((a - b + 540) % 360) - 180);

@@ -1,4 +1,4 @@
-"""Tests de T-03 : jeu d'exemple de web/data/sample, constantes JS = constantes Python, fichier d'or de la fraction visible."""
+"""Tests de T-03 : jeu d’exemple de tests/fixtures/sample (FICTIF), constantes JS = constantes Python, fichier d'or de la fraction visible."""
 
 from __future__ import annotations
 
@@ -11,7 +11,7 @@ import pytest
 from pipeline import config, validate
 
 ROOT = Path(__file__).resolve().parents[2]
-SAMPLE_DIR = ROOT / "web" / "data" / "sample"
+SAMPLE_DIR = ROOT / "tests" / "fixtures" / "sample"
 CONSTANTS_JS = ROOT / "web" / "js" / "constants.js"
 GOLDEN_FRACTION = ROOT / "tests" / "golden" / "visible_fraction.json"
 

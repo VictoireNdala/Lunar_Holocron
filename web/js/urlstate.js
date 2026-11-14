@@ -1,4 +1,4 @@
-// État ⇄ fragment d'URL (INTERFACE § 3) : #a=demo-a&b=demo-b&t=2027-03-14T06:00Z&thr=strict&lang=fr&w=30
+// État ⇄ fragment d'URL (INTERFACE § 3) : #a=site01-connecting-ridge&b=site04-shackleton-rim&t=2027-03-14T06:00Z&thr=strict&lang=fr&w=30
 // Les valeurs invalides sont ignorées sans erreur. Fonctions pures, testées par web/tests/urlstate.test.js.
 import { THRESHOLD_MODES } from './constants.js';
 import { VIEWS } from './ui/nav.js';

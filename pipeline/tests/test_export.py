@@ -10,7 +10,8 @@ import pytest
 
 from pipeline import validate
 from pipeline.config import R_REF_M
-from pipeline.dem_synthetic import make_synthetic_dem
+from pipeline.fixtures import ephemeris_demo
+from pipeline.fixtures.dem_synthetic import make_synthetic_dem
 from pipeline.export import PipelineConfig, SiteSpec, build_site, write_index
 from pipeline.terrain_grid import decode_uint16
 
@@ -32,7 +33,7 @@ def _spec(site_id: str = "test-demo") -> SiteSpec:
     dem = make_synthetic_dem("crater", seed=1, resolution_m=200.0, center_lat_deg=LAT, center_lon_deg=LON, half_size_km=35.0)
     return SiteSpec(id=site_id, name={"fr": "Site d'essai", "en": "Test site"}, lat_deg=LAT, lon_deg=LON, dem=dem,
                     dem_info={"product": "SYNTHETIC", "resolution_m": 200.0, "source": None, "license": "n/a"},
-                    engine="demo-analytic", terrain_real=False, verified=True)
+                    engine="demo-analytic", terrain_real=False, verified=True, series_fn=ephemeris_demo.body_series)
 
 
 @pytest.fixture(scope="module")

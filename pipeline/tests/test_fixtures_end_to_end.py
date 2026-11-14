@@ -1,4 +1,4 @@
-"""Bout en bout (T-07, T-08) : `cli demo` produit les sites, `validate` renvoie 0, deux exécutions sont identiques octet pour octet.
+"""Bout en bout (T-07, T-08) : le générateur de fixtures produit les sites FICTIFS, `validate` renvoie 0, deux exécutions sont identiques octet pour octet.
 
 Configuration réduite (3 jours, MNT de 10 km) pour rester rapide ; la configuration complète est exercée à la main
 (`py -m pipeline.cli build`, voir STATUS.md).
@@ -11,7 +11,10 @@ from pathlib import Path
 
 import pytest
 
-from pipeline import cli, sites
+ROOT = Path(__file__).resolve().parents[2]
+
+from pipeline import cli
+from pipeline.fixtures import demo_sites as sites
 
 
 @pytest.fixture()
@@ -33,8 +36,8 @@ def small_config(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
 
 
 def _run(out: Path, config: Path) -> int:
-    """Lance `cli demo` dans `out`."""
-    return cli.main(["demo", "--out", str(out), "--config", str(config)])
+    """Lance le générateur de sites FICTIFS de test dans `out`."""
+    return sites.main(["--out", str(out), "--config", str(config)])
 
 
 def test_demo_builds_three_sites_and_validates(small_config: Path, tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
@@ -78,13 +81,17 @@ def test_demo_a_is_on_the_crater_rim(small_config: Path, tmp_path: Path) -> None
     assert len(z) == 2 * 33 * 33
 
 
+@pytest.mark.skipif(not (ROOT / "data" / "raw" / "spice" / "de440s.bsp").is_file() or not (ROOT / "data" / "raw" / "LDEM_80S_80MPP_ADJ.tiff").is_file()
+                    or not (ROOT / "data" / "raw" / "Site01_final_adj_5mpp_surf.tif").is_file() or not (ROOT / "data" / "raw" / "Site04_final_adj_5mpp_surf.tif").is_file(),
+                    reason="noyaux SPICE ou MNT réels absents de data/raw")
 def test_partial_build_keeps_other_sites_in_index(small_config: Path, tmp_path: Path) -> None:
-    """Régression : `build --site X` ne doit pas retirer les autres sites de l'index (défaut découvert le 14 nov.)."""
+    """Régression : `build --site X` ne doit pas retirer les autres sites de l'index (défaut découvert le 14 nov.). Sites RÉELS, données locales requises."""
     out = tmp_path / "out"
-    assert _run(out, small_config) == 0
-    assert cli.main(["build", "--site", "demo-b", "--out", str(out), "--config", str(small_config)]) == 0
+    for site_id in ("site01-connecting-ridge", "site04-shackleton-rim"):
+        assert cli.main(["build", "--site", site_id, "--out", str(out), "--config", str(small_config)]) == 0
+    assert cli.main(["build", "--site", "site04-shackleton-rim", "--out", str(out), "--config", str(small_config)]) == 0
     ids = [s["id"] for s in json.loads((out / "index.json").read_text(encoding="utf-8"))["sites"]]
-    assert ids == ["demo-a", "demo-b", "demo-c"]
+    assert ids == ["site01-connecting-ridge", "site04-shackleton-rim"]
 
 
 def test_unknown_site_is_an_error(small_config: Path, tmp_path: Path) -> None:

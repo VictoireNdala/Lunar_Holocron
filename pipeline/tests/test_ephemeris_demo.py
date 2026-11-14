@@ -5,7 +5,7 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from pipeline.ephemeris_demo import SUN_RADIUS_DEG, EARTH_RADIUS_DEG, body_series, utc_grid
+from pipeline.fixtures.ephemeris_demo import SUN_RADIUS_DEG, EARTH_RADIUS_DEG, body_series, utc_grid
 
 T0 = "2026-01-01T00:00:00Z"
 N = 43824

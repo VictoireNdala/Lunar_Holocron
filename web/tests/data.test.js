@@ -6,14 +6,15 @@ import { fileURLToPath } from 'node:url';
 import { bodyStateAt, siteTimeRange, createDataSource, checkSite, checkGlobal, globalSeries, DataError } from '../js/data.js';
 
 const WEB_DIR = fileURLToPath(new URL('..', import.meta.url));
+const FIXTURES_DIR = fileURLToPath(new URL('../../tests/fixtures/', import.meta.url)); // jeux FICTIFS de test (D-029) : jamais sous web/
 const HOUR_MS = 3600 * 1000;
 
 /** fetch simulé qui lit les fichiers sous web/ ; 404 si absent. */
-function diskFetch(overrides = {}) {
+function diskFetch(overrides = {}, base = WEB_DIR) {
   return async (url) => {
     if (url in overrides) return overrides[url];
     try {
-      const buf = await readFile(WEB_DIR + url);
+      const buf = await readFile(base + url);
       return {
         ok: true, status: 200,
         json: async () => JSON.parse(buf.toString('utf8')),
@@ -88,7 +89,7 @@ test('checkSite signale une série de mauvaise longueur et une version majeure i
 });
 
 test('chargement du jeu d\'exemple : index, site, terrain', async () => {
-  const src = createDataSource('data/sample/', diskFetch());
+  const src = createDataSource('sample/', diskFetch({}, FIXTURES_DIR));
   const index = await src.loadIndex();
   assert.equal(index.synthetic, true);
   assert.equal(index.sites[0].id, 'sample-a');
@@ -127,7 +128,7 @@ test('fichier manquant : DataError « missing » qui nomme le fichier', async ()
 });
 
 test('serveur injoignable (ouverture en file://) : DataError « network »', async () => {
-  const src = createDataSource('data/sample/', async () => { throw new TypeError('Failed to fetch'); });
+  const src = createDataSource('sample/', async () => { throw new TypeError('Failed to fetch'); });
   await assert.rejects(src.loadIndex(), (err) => err instanceof DataError && err.code === 'network');
 });
 
@@ -138,6 +139,6 @@ test('version majeure inconnue dans l\'index : DataError « schema-version »', 
 });
 
 test('site inconnu de l\'index : DataError « unknown-site »', async () => {
-  const src = createDataSource('data/sample/', diskFetch());
+  const src = createDataSource('sample/', diskFetch({}, FIXTURES_DIR));
   await assert.rejects(src.loadSite('nope'), (err) => err instanceof DataError && err.code === 'unknown-site');
 });

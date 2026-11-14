@@ -16,7 +16,7 @@ from pathlib import Path
 import numpy as np
 
 ROOT = Path(__file__).resolve().parents[2]
-OUT = ROOT / "web" / "data" / "sample"
+OUT = ROOT / "tests" / "fixtures" / "sample"
 SITE_ID = "sample-a"
 LAT_DEG, LON_DEG = -89.5, 30.0
 START = datetime(2027, 3, 11, tzinfo=timezone.utc)  # couvre l'instant par défaut de l'interface (2027-03-14T06:00Z)
