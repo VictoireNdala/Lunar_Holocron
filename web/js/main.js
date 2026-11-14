@@ -1,9 +1,9 @@
-// Initialisation de la page (T-09) : chargement des données, état, langue, affichage du site et de l'état des corps.
-// Pas encore de relief dessiné : le panorama (T-10) et la vue 3D (T-11) viendront ensuite.
+// Initialisation de la page : chargement des données, état, langue, coque (U-02), vue de site (T-09, T-11).
 import { bodyStateAt, createDataSource, DataError, siteTimeRange } from './data.js';
 import { formatNumber, formatUtc, getLang, setLang, t } from './i18n.js';
 import { createPanel3d } from './panel3d.js';
 import { createStore } from './store.js';
+import { createShell } from './ui/shell.js';
 import { decode, encode } from './urlstate.js';
 
 const HOUR_MS = 3600 * 1000;
@@ -24,6 +24,7 @@ function dataRoot() {
 const source = createDataSource(dataRoot());
 const store = createStore(decode(window.location.hash));
 const panel3d = createPanel3d(store);
+const shell = createShell(store);
 let index = null;
 let site = null;
 
@@ -141,6 +142,8 @@ function renderHonesty() {
 function renderAll() {
   applyStaticTexts();
   renderHonesty();
+  const entry = index && site ? index.sites.find((s) => s.id === site.id) : null;
+  shell.render(store.get(), entry ? siteName(entry) : null, Boolean(site));
   if (!index) return;
   renderSiteSelect();
   if (!site) return;
@@ -158,7 +161,6 @@ async function loadSiteA() {
     if (store.get().siteIdA !== id) return; // un autre site a été choisi entre-temps
     site = loaded;
     $('error').hidden = true;
-    $('panel-a').hidden = false;
     renderAll();
     const terrain = await source.loadTerrain(id);
     if (store.get().siteIdA === id) await panel3d.show(site, terrain);

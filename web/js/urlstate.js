@@ -1,6 +1,7 @@
 // État ⇄ fragment d'URL (INTERFACE § 3) : #a=demo-a&b=demo-b&t=2027-03-14T06:00Z&thr=strict&lang=fr&w=30
 // Les valeurs invalides sont ignorées sans erreur. Fonctions pures, testées par web/tests/urlstate.test.js.
 import { THRESHOLD_MODES } from './constants.js';
+import { VIEWS } from './ui/nav.js';
 
 const SITE_ID = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 const TIME = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})Z$/;
@@ -27,6 +28,7 @@ function parseTime(text) {
 /** État → fragment d'URL. */
 export function encode(state) {
   const p = [];
+  if (state.view) p.push(`view=${state.view}`);
   if (state.siteIdA) p.push(`a=${state.siteIdA}`);
   if (state.compare && state.siteIdB) p.push(`b=${state.siteIdB}`);
   if (Number.isFinite(state.tMs)) p.push(`t=${formatTime(state.tMs)}`);
@@ -46,6 +48,8 @@ export function decode(hash) {
     return out;
   }
   const get = (k) => { try { return params.get(k); } catch { return null; } };
+  const view = get('view');
+  if (VIEWS.includes(view)) out.view = view;
   const a = get('a');
   if (a && SITE_ID.test(a)) out.siteIdA = a;
   const b = get('b');

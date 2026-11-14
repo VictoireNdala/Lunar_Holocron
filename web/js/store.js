@@ -3,6 +3,7 @@ import { DEFAULT_THRESHOLD } from './constants.js';
 
 /** État par défaut (INTERFACE § 3). siteIdA est fixé au premier site de l'index au démarrage. */
 export const DEFAULT_STATE = Object.freeze({
+  view: 'site',             // vue de la coque (ui/nav.js), fragment `view=`
   siteIdA: null,
   siteIdB: null,
   compare: false,

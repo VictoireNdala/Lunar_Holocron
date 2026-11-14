@@ -1,0 +1,114 @@
+/* Coque de l'application (docs/UI-DESIGN.md § 5.1-5.2, U-02) : rail, barre flottante, scène plein écran.
+   Bureau ≥ 1024 px : la scène occupe tout l'écran ; l'interface flotte par-dessus. Le rail se déplie PAR-DESSUS
+   la scène (pas de recalcul de mise en page pendant le rendu WebGL). Mobile : rail → barre d'onglets en bas. */
+
+.skip-link {
+  position: absolute; left: var(--s-3); top: -60px; z-index: 100;
+  background: var(--text); color: var(--bg-0); padding: 8px 12px; border-radius: var(--r-field); font-weight: 600;
+}
+.skip-link:focus { top: var(--s-3); }
+
+.ico { width: 20px; height: 20px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* --- Rail --- */
+.rail {
+  position: fixed; z-index: 40; left: var(--s-3); top: var(--s-3); bottom: var(--s-3);
+  width: 64px; padding: var(--s-2); display: flex; flex-direction: column; gap: var(--s-2);
+  overflow: hidden; transition: width var(--t-base) var(--ease);
+}
+.rail.expanded { width: 232px; }
+.rail-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--s-1); }
+.rail-item, .rail-toggle {
+  display: flex; align-items: center; gap: var(--s-3); min-height: 44px; padding: 0 12px;
+  border-radius: var(--r-field); color: var(--text-2); text-decoration: none; white-space: nowrap;
+  border: 1px solid transparent; background: transparent; font: 500 var(--fs-14)/1 var(--font-ui); cursor: pointer;
+  transition: background var(--t-fast) var(--ease), color var(--t-fast) var(--ease);
+}
+.rail-toggle { margin-bottom: var(--s-2); }
+.rail-item:hover, .rail-toggle:hover { color: var(--text); background: rgba(255, 255, 255, 0.06); }
+.rail-item[aria-current="page"] { color: var(--text); background: rgba(90, 169, 255, 0.16); border-color: rgba(90, 169, 255, 0.45); }
+.rail-item[aria-current="page"] .ico { color: var(--earth); }
+.rail-label { opacity: 0; transition: opacity var(--t-fast) var(--ease); }
+.rail.expanded .rail-label { opacity: 1; }
+.rail-short { display: none; }
+
+/* --- Scène et calques --- */
+.stage { position: fixed; inset: 0 0 0 88px; }
+.scene { position: absolute; inset: 0; background: #000; }
+.scene .view3d { width: 100%; height: 100%; border: 0; border-radius: 0; }
+.topbar {
+  position: absolute; z-index: 30; top: var(--s-3); left: var(--s-3); right: var(--s-3);
+  display: flex; flex-wrap: wrap; gap: var(--s-3); align-items: center; justify-content: space-between; padding: 10px var(--s-4);
+}
+.topbar .brand { display: flex; align-items: baseline; gap: var(--s-2); min-width: 0; }
+.brand-name { font-weight: 700; font-size: var(--fs-16); letter-spacing: -0.01em; }
+.crumb-sep { color: var(--text-2); }
+.crumb { color: var(--text-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.stage .honesty { position: absolute; z-index: 29; top: 78px; left: 0; right: 0; margin: 0; pointer-events: none; }
+.stage .honesty > * { pointer-events: auto; }
+.stage .error, .stage .loading { position: absolute; z-index: 28; top: 130px; left: 50%; transform: translateX(-50%); margin: 0; max-width: 560px; }
+
+#main { position: absolute; inset: 0; pointer-events: none; }
+#main:focus { outline: none; }
+#main > * { pointer-events: auto; }
+#panel-a { pointer-events: none; }
+#panel-a > * { pointer-events: auto; }
+.drawer {
+  position: absolute; right: var(--s-3); top: 128px; bottom: 112px; width: 380px;
+  display: flex; flex-direction: column; gap: var(--s-3); overflow-y: auto; padding-right: 2px;
+  scrollbar-width: thin; scrollbar-color: var(--line-strong) transparent;
+}
+.drawer .card { flex: none; }
+.drawer .upcoming { text-align: left; }
+.timebar {
+  position: absolute; left: var(--s-3); right: calc(380px + var(--s-3) * 2); bottom: var(--s-3);
+  display: flex; flex-wrap: wrap; gap: var(--s-3) var(--s-4); align-items: center; padding: var(--s-3) var(--s-4);
+}
+.timebar .time-form { align-items: center; }
+.timebar .steps { margin-top: 0; }
+.timebar .current { margin-top: 0; font-size: var(--fs-14); color: var(--text-2); }
+.timebar .warning { flex-basis: 100%; margin-top: 0; }
+.empty-view {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: min(520px, calc(100% - 32px));
+  padding: var(--s-8); text-align: center; display: flex; flex-direction: column; gap: var(--s-4); align-items: center;
+}
+.empty-view p { color: var(--text-2); }
+.empty-view .btn { text-decoration: none; display: inline-flex; align-items: center; }
+.drawer .readings th, .drawer .readings td { padding: 8px 4px; }
+.drawer .readings td { font-size: var(--fs-13); }
+.drawer .readings thead th { font-size: 11px; letter-spacing: 0.03em; }
+/* Pied de page sous le tiroir, à droite de la barre de temps (aucun chevauchement). */
+.stage .footer {
+  position: absolute; z-index: 5; right: var(--s-3); bottom: var(--s-3); width: 380px;
+  padding: 0; text-align: left; pointer-events: none; text-shadow: 0 1px 2px #000;
+}
+
+/* --- Mobile : barre d'onglets en bas, contenu empilé (UI-DESIGN § 5.1) --- */
+@media (max-width: 1023px) {
+  .rail {
+    left: 0; right: 0; top: auto; bottom: 0; width: auto; height: 68px; padding: 6px var(--s-2);
+    flex-direction: row; border-radius: 0; border-width: 1px 0 0;
+  }
+  .rail.expanded { width: auto; }
+  .rail-toggle { display: none; }
+  .rail-list { flex-direction: row; justify-content: space-around; width: 100%; }
+  .rail-item { flex-direction: column; gap: 2px; min-height: 56px; padding: 4px 6px; font-size: 11px; justify-content: center; }
+  .rail-label { display: none; }
+  .rail-short { display: block; }
+  .rail-list > li { flex: 1 1 0; min-width: 0; }
+  .rail-item { width: 100%; }
+  .stage { position: static; padding-bottom: 76px; display: flex; flex-direction: column; }
+  .stage .topbar { order: -3; }
+  .stage .honesty { order: -2; }
+  .stage .scene { order: -1; }
+  .scene { position: relative; height: 56vh; }
+  .topbar { position: sticky; top: 0; margin: 0; left: auto; right: auto; border-radius: 0; }
+  .stage .honesty { position: static; margin: var(--s-3) var(--s-3) 0; }
+  .stage .error, .stage .loading { position: static; transform: none; margin: var(--s-3); }
+  #main { position: static; }
+  #panel-a { display: flex; flex-direction: column-reverse; }
+  .drawer { position: static; width: auto; overflow: visible; padding: var(--s-3); }
+  .timebar { position: static; margin: var(--s-3) var(--s-3) 0; }
+  .empty-view { position: static; transform: none; width: auto; margin: var(--s-4) var(--s-3); }
+  .stage .footer { position: static; max-width: none; padding: var(--s-4) var(--s-3); text-shadow: none; }
+}

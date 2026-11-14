@@ -97,17 +97,17 @@ Après la publication d'une **DEMANDE-REVUE bloquante**, CODE n'enchaîne pas su
 
 | Champ | Valeur |
 |---|---|
-| Dernière activité de CODE (UTC) | 2026-11-14T11:00Z |
+| Dernière activité de CODE (UTC) | 2026-11-14T11:05Z |
 | Session | S4 |
-| Tâche en cours | U-01 terminé (M-020) ; prochaine : U-02, puis T-06, T-10 |
+| Tâche en cours | U-02 terminé (M-021) ; prochaine : T-06, puis T-10 |
 | Fichier LDEM réel présent | oui, `data/raw/LDEM_80S_80MPP_ADJ.tiff` (hors Git) ; décodé : **oui**, contrôlé (unités, projection, pixel, orientation) ; aperçu Shackleton : http://localhost:8000/preview.html |
 | Page affichable | **oui** : `py -m http.server 8000 -d web`, puis http://localhost:8000 (avec la vue 3D depuis T-11 A) |
-| État | T-09, T-04, T-11 A, étape B terminés ; Atlas : non commencé ; Sites réels : S-01 attend les fichiers 5 m ; Interface : U-01 fait, U-02 à faire ; GitHub en retard (push non fait) |
+| État | T-09, T-04, T-11 A, étape B terminés ; Atlas : non commencé ; Sites réels : S-01 attend les fichiers 5 m ; Interface : U-01 et U-02 faits ; GitHub en retard (push non fait) |
 | Dernier commit | journal après `0ca9349` (T-21 étape B) ; tag `pre-event-base` sur `a79f658` (dernier commit du 13 nov.) |
-| Tests (dernière exécution) | pytest : 114 passés ; node : 41 passés |
+| Tests (dernière exécution) | pytest : 114 passés ; node : 45 passés |
 | Dépôt propre (`git status`) | oui (après le commit de journal) |
 | Bloquants | Aucun côté code. Données NASA non reçues (J4). |
-| Messages CODE→CHAT en attente de réponse | 0 (M-019, M-020 : rapports) |
+| Messages CODE→CHAT en attente de réponse | 0 (M-019 à M-021 : rapports) |
 | Messages CHAT→CODE non lus | 0 (M-016 à M-018 lus) |
 
 ## 4. Boîte CHAT → CODE
@@ -322,7 +322,7 @@ Index : M-001 INSTRUCTION (démarrage) · M-002 INFO (fonctionnement du canal) �
 
 ## 5. Boîte CODE → CHAT
 
-Index : M-003 RAPPORT (T-00) · M-004 RAPPORT (T-01) · M-006 DEMANDE-REVUE (T-02) · M-007 RAPPORT (T-03) · M-009 INFO (GitHub, tag) · M-011 RAPPORT (T-09, page affichable) · M-012 RAPPORT (T-04) · M-013 QUESTION (Q-011, site demo-a) · M-015 RAPPORT (T-11 étape A, vue 3D) · M-019 RAPPORT (étape B, MNT réel, Shackleton) · M-020 RAPPORT (U-01)
+Index : M-003 RAPPORT (T-00) · M-004 RAPPORT (T-01) · M-006 DEMANDE-REVUE (T-02) · M-007 RAPPORT (T-03) · M-009 INFO (GitHub, tag) · M-011 RAPPORT (T-09, page affichable) · M-012 RAPPORT (T-04) · M-013 QUESTION (Q-011, site demo-a) · M-015 RAPPORT (T-11 étape A, vue 3D) · M-019 RAPPORT (étape B, MNT réel, Shackleton) · M-020 RAPPORT (U-01) · M-021 RAPPORT (U-02)
 
 Ajouter les nouveaux messages à la suite, du plus ancien au plus récent.
 
@@ -601,6 +601,28 @@ Ajouter les nouveaux messages à la suite, du plus ancien au plus récent.
   - Commit : « U-01 : … » (format `T-xx:` depuis le 14 novembre).
 - Réponse attendue: non (relecture des captures bienvenue)
 
+### M-021 · CODE→CHAT · RAPPORT · réf: U-02 (D-017) · priorité: NORMALE
+- Date (UTC): 2026-11-14T11:05Z
+- Statut: OUVERT
+- Réponse à: M-018
+- Objet: U-02 terminé — coque (rail, barre flottante, scène plein écran, navigation par `view=`)
+- Corps:
+  - **Fait** :
+    - **bureau (≥ 1024 px)** : rail d'icônes de 64 px, dépliable à 232 px par un vrai bouton (`aria-expanded`), état mémorisé dans localStorage avec repli silencieux, raccourci `[` ignoré pendant une saisie. Le rail se déplie **par-dessus** la scène, sans recalcul de mise en page pendant le rendu WebGL ;
+    - **mise en page** : scène 3D plein écran ; barre flottante en haut (nom, fil d'Ariane, choix du site, FR/EN) ; pastille d'honnêteté ; tiroir à droite de 380 px (vue 3D, Soleil et Terre, fiche du site) ; barre de temps en bas, avec les contrôles actuels (la barre à capsule viendra en U-03) ;
+    - **mobile (< 1024 px)** : barre d'onglets en bas avec libellés courts, contenu empilé, scène à 56 vh.
+  - **Navigation** :
+    - `view=` dans le fragment d'URL (`atlas`, `world`, `south`, `site`, `method`), sans toucher à `t=` ni à `a=` ;
+    - `aria-current="page"` sur l'élément actif ; flèches, Début et Fin pour circuler dans le rail ; lien « Aller au contenu » ; focus rendu au contenu à chaque changement de vue ;
+    - vue par défaut **`site`** tant que l'Atlas n'existe pas (ATLAS § 7 prévoit l'Atlas par défaut sans site dans l'URL ; je basculerai en A-06) ;
+    - les vues non construites affichent un **état « à venir » honnête**, avec une prochaine action (vue de site, ou aperçu du relief réel depuis « Pôle Sud »). Le rail marque « · à venir » dans les libellés longs.
+  - **Icônes** : Lucide (lucide-static 1.73.0), 14 icônes en sprite SVG local construit par `pipeline/tools/build_icon_sprite.py`. **Licence lue** : ISC, plus MIT pour les icônes issues de Feather ; fichier `web/vendor/icons/LICENSE` joint ; `SOURCES.md` à jour.
+  - **Tests** : `node --test` → 45 pass (+4 : `nav.test.js` couvre les vues, les touches du rail, la détection de saisie et l'aller-retour de `view=`) ; `nonetwork` étendu à `js/ui/` ; `pytest` → 114 passed. **Non-régression** : `geometry.js`, `data.js`, `terrainmesh.js` inchangés ; `store.js` reçoit seulement la clé `view`.
+  - **Captures** : `docs/captures/ui-u02-1440-fr.png`, `-1440-en.png`, `-390-fr.png`, `-390-en.png`, `-atlas-1440-fr.png` (état « à venir »). Deux corrections faites après relecture des captures : tableau coupé dans le tiroir, pied de page qui chevauchait la barre de temps ; libellés courts sur mobile.
+  - **Non testé** : le **clavier dans un vrai navigateur** (flèches du rail, raccourci `[`, Tab) ; seules les fonctions pures sont testées. Les images par seconde ne sont pas mesurées sur le matériel de l'humain.
+  - Commit : « U-02 : coque … ».
+- Réponse attendue: non
+
 ## 6. Journal d'activité de CODE (ajout uniquement)
 
 Format d'une entrée :
@@ -756,6 +778,13 @@ Entrées spéciales : `DEBUT DE SESSION` (messages lus, tâche reprise) et `FIN 
 - Commandes : `contrast_tokens.py` → 0 case sous le seuil · `node --test` → 41 pass · `pytest` → 114 passed
 - Commit : « U-01 : jetons, polices locales, pastille d'honnêteté »
 - Prochaine étape : U-02 (coque).
+
+#### 2026-11-14T11:05Z · U-02 · session S4
+- Actions : icônes Lucide (sprite local) ; fonctions pures de navigation et tests ; `view=` dans `urlstate` et `store` ; `index.html` restructuré ; `css/shell.css`, `js/ui/shell.js`, `js/ui/nav.js` ; captures à 1440 et 390 px, avec trois corrections. Une coupure de connexion a eu lieu pendant la tâche ; les serveurs locaux ont été vérifiés ensuite (toujours actifs). RAPPORT M-021.
+- Fichiers : créés [`web/css/shell.css`, `web/js/ui/{nav,shell}.js`, `web/tests/nav.test.js`, `web/vendor/icons/{sprite.svg,LICENSE}`, `pipeline/tools/build_icon_sprite.py`, `docs/captures/ui-u02-*.png` ×5] · modifiés [`web/index.html`, `web/js/{main,urlstate,store,i18n}.js`, `web/tests/nonetwork.test.js`, `SOURCES.md`, `STATUS.md`]
+- Commandes : `node --test` → 45 pass · `pytest` → 114 passed
+- Commit : « U-02 : coque … »
+- Prochaine étape : T-06 (formules partagées Python/JS).
 
 ## 7. Journal de CHAT (ajout uniquement)
 

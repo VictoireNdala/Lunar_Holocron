@@ -8,7 +8,8 @@
   <link rel="stylesheet" href="./css/tokens.css">
   <link rel="stylesheet" href="./css/base.css">
   <link rel="stylesheet" href="./css/components.css">
-  <!-- Aucune ressource externe : three.js est copié localement (version figée, voir SOURCES.md). -->
+  <link rel="stylesheet" href="./css/shell.css">
+  <!-- Aucune ressource externe : three.js, polices et icônes sont copiés localement (versions figées, voir SOURCES.md). -->
   <script type="importmap">
     {
       "imports": {
@@ -19,130 +20,175 @@
   </script>
   <script type="module" src="./js/main.js"></script>
 </head>
-<body>
+<body class="app">
   <!-- Tous les textes sont injectés par js/i18n.js (attributs data-i18n). -->
-  <header class="header glass glass-blur">
-    <div class="brand">
-      <h1 data-i18n="app.title"></h1>
-      <p class="tagline" data-i18n="app.tagline"></p>
-    </div>
-    <div class="controls">
-      <label class="field">
-        <span data-i18n="site.label"></span>
-        <select id="site-select"></select>
-      </label>
-      <div class="lang" role="group" data-i18n-aria="lang.label">
-        <button type="button" class="lang-btn" data-lang="fr" aria-pressed="true">FR</button>
-        <button type="button" class="lang-btn" data-lang="en" aria-pressed="false">EN</button>
-      </div>
-    </div>
-  </header>
+  <a class="skip-link" href="#main" data-i18n="nav.skip"></a>
 
-  <!-- Pastille d'honnêteté (UI-DESIGN § 5.5) : toujours visible ; seule la note explicative se replie. -->
-  <div class="honesty">
-    <button type="button" id="honesty-chip" class="chip" aria-expanded="false" aria-controls="honesty-note">
-      <span class="chip-dot" aria-hidden="true"></span><span id="honesty-label"></span><span class="chip-caret" aria-hidden="true">▾</span>
+  <nav id="rail" class="rail glass" data-i18n-aria="nav.label">
+    <button type="button" id="rail-toggle" class="rail-toggle" aria-expanded="false" aria-controls="rail-list">
+      <svg class="ico" aria-hidden="true"><use href="./vendor/icons/sprite.svg#i-panel-left-open"></use></svg>
+      <span class="rail-label" data-i18n="nav.collapse"></span>
     </button>
-    <p id="honesty-note" class="chip-note glass" hidden></p>
-  </div>
+    <ul id="rail-list" class="rail-list">
+      <li><a class="rail-item" data-view="atlas" href="#view=atlas"><svg class="ico" aria-hidden="true"><use href="./vendor/icons/sprite.svg#i-globe"></use></svg><span class="rail-label" data-i18n="nav.atlas"></span></a></li>
+      <li><a class="rail-item" data-view="world" href="#view=world"><svg class="ico" aria-hidden="true"><use href="./vendor/icons/sprite.svg#i-map"></use></svg><span class="rail-label" data-i18n="nav.world"></span></a></li>
+      <li><a class="rail-item" data-view="south" href="#view=south"><svg class="ico" aria-hidden="true"><use href="./vendor/icons/sprite.svg#i-compass"></use></svg><span class="rail-label" data-i18n="nav.south"></span></a></li>
+      <li><a class="rail-item" data-view="site" href="#view=site"><svg class="ico" aria-hidden="true"><use href="./vendor/icons/sprite.svg#i-mountain"></use></svg><span class="rail-label" data-i18n="nav.site"></span></a></li>
+      <li><a class="rail-item" data-view="method" href="#view=method"><svg class="ico" aria-hidden="true"><use href="./vendor/icons/sprite.svg#i-book-open"></use></svg><span class="rail-label" data-i18n="nav.method"></span></a></li>
+    </ul>
+  </nav>
 
-  <div id="error" class="error" role="alert" hidden>
-    <strong data-i18n="error.title"></strong>
-    <p id="error-text"></p>
-  </div>
-  <p id="loading" class="loading" data-i18n="loading"></p>
-
-  <main id="panel-a" class="panel" hidden>
-    <section class="card card-wide glass" aria-labelledby="view3d-heading">
-      <h2 id="view3d-heading" data-i18n="view3d.heading"></h2>
-      <div class="toolbar">
-        <div class="seg" role="group" data-i18n-aria="view3d.mode">
-          <button type="button" class="btn mode-btn" data-mode="overview" aria-pressed="true" data-i18n="view3d.overview"></button>
-          <button type="button" class="btn mode-btn" data-mode="ground" aria-pressed="false" data-i18n="view3d.ground"></button>
-        </div>
-        <div id="view3d-turn" class="seg" hidden>
-          <button type="button" class="btn" data-turn="-1" data-i18n="view3d.turnLeft"></button>
-          <span id="view3d-az" class="az"></span>
-          <button type="button" class="btn" data-turn="1" data-i18n="view3d.turnRight"></button>
-        </div>
-        <label class="field inline">
-          <span data-i18n="view3d.exaggeration"></span>
-          <input id="view3d-exag" type="range" min="1" max="5" step="0.5" value="1">
-          <output id="view3d-exag-value" for="view3d-exag"></output>
-        </label>
-      </div>
+  <div class="stage">
+    <!-- Scène plein écran de la vue de site (relief 3D). -->
+    <div id="scene" class="scene" data-scene="site">
       <div id="view3d" class="view3d"></div>
-      <div class="legend">
-        <span data-i18n="view3d.legend"></span>
-        <div id="legend-bar" class="legend-bar" aria-hidden="true"></div>
-        <div class="legend-scale"><span id="legend-min"></span><span id="legend-max"></span></div>
-      </div>
-      <p id="view3d-status" class="warning" role="status" hidden></p>
-      <p class="hint" data-i18n="view3d.note"></p>
-    </section>
+    </div>
 
-    <section class="card glass" aria-labelledby="time-heading">
-      <h2 id="time-heading" data-i18n="time.heading"></h2>
-      <form id="time-form" class="time-form" novalidate>
-        <label class="field">
-          <span data-i18n="time.label"></span>
-          <input id="time-input" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" aria-describedby="time-hint">
+    <header class="topbar glass glass-blur">
+      <div class="brand">
+        <span class="brand-name" data-i18n="app.title"></span>
+        <span class="crumb-sep" aria-hidden="true">·</span>
+        <span id="crumb" class="crumb"></span>
+      </div>
+      <div class="controls">
+        <label class="field inline">
+          <span class="visually-hidden" data-i18n="site.label"></span>
+          <select id="site-select"></select>
         </label>
-        <button type="submit" class="btn primary" data-i18n="time.apply"></button>
-      </form>
-      <div class="steps">
-        <button type="button" class="btn" data-step-h="-24" data-i18n="time.minusDay"></button>
-        <button type="button" class="btn" data-step-h="-1" data-i18n="time.minusHour"></button>
-        <button type="button" class="btn" data-step-h="1" data-i18n="time.plusHour"></button>
-        <button type="button" class="btn" data-step-h="24" data-i18n="time.plusDay"></button>
+        <div class="lang" role="group" data-i18n-aria="lang.label">
+          <button type="button" class="lang-btn" data-lang="fr" aria-pressed="true">FR</button>
+          <button type="button" class="lang-btn" data-lang="en" aria-pressed="false">EN</button>
+        </div>
       </div>
-      <p id="time-hint" class="hint" data-i18n="time.hint"></p>
-      <p id="time-current" class="current"></p>
-      <p id="time-warning" class="warning" role="status" hidden></p>
-    </section>
+    </header>
 
-    <section class="card glass" aria-labelledby="bodies-heading">
-      <h2 id="bodies-heading" data-i18n="bodies.heading"></h2>
-      <div class="table-scroll">
-      <table class="readings">
-        <thead>
-          <tr>
-            <th scope="col" data-i18n="reading.body"></th>
-            <th scope="col" data-i18n="reading.az"></th>
-            <th scope="col" data-i18n="reading.el"></th>
-            <th scope="col" data-i18n="reading.radius"></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr data-body="sun">
-            <th scope="row"><span class="icon icon-sun" aria-hidden="true"></span><span data-i18n="body.sun"></span></th>
-            <td data-field="az"></td><td data-field="el"></td><td data-field="radius"></td>
-          </tr>
-          <tr data-body="earth">
-            <th scope="row"><span class="icon icon-earth" aria-hidden="true"></span><span data-i18n="body.earth"></span></th>
-            <td data-field="az"></td><td data-field="el"></td><td data-field="radius"></td>
-          </tr>
-        </tbody>
-      </table>
+    <!-- Pastille d'honnêteté (UI-DESIGN § 5.5) : toujours visible ; seule la note explicative se replie. -->
+    <div class="honesty">
+      <button type="button" id="honesty-chip" class="chip" aria-expanded="false" aria-controls="honesty-note">
+        <span class="chip-dot" aria-hidden="true"></span><span id="honesty-label"></span><span class="chip-caret" aria-hidden="true">▾</span>
+      </button>
+      <p id="honesty-note" class="chip-note glass" hidden></p>
+    </div>
+
+    <div id="error" class="error" role="alert" hidden>
+      <strong data-i18n="error.title"></strong>
+      <p id="error-text"></p>
+    </div>
+    <p id="loading" class="loading" data-i18n="loading"></p>
+
+    <main id="main" tabindex="-1">
+      <!-- Vue de site : tiroir à droite et barre de temps en bas, par-dessus la scène. -->
+      <div id="panel-a" data-view-panel="site" hidden>
+        <aside class="drawer" data-i18n-aria="site.heading">
+          <section class="card glass" aria-labelledby="view3d-heading">
+            <h2 id="view3d-heading" data-i18n="view3d.heading"></h2>
+            <div class="toolbar">
+              <div class="seg" role="group" data-i18n-aria="view3d.mode">
+                <button type="button" class="btn mode-btn" data-mode="overview" aria-pressed="true" data-i18n="view3d.overview"></button>
+                <button type="button" class="btn mode-btn" data-mode="ground" aria-pressed="false" data-i18n="view3d.ground"></button>
+              </div>
+              <div id="view3d-turn" class="seg" hidden>
+                <button type="button" class="btn" data-turn="-1" data-i18n="view3d.turnLeft"></button>
+                <span id="view3d-az" class="az"></span>
+                <button type="button" class="btn" data-turn="1" data-i18n="view3d.turnRight"></button>
+              </div>
+              <label class="field inline">
+                <span data-i18n="view3d.exaggeration"></span>
+                <input id="view3d-exag" type="range" min="1" max="5" step="0.5" value="1">
+                <output id="view3d-exag-value" for="view3d-exag"></output>
+              </label>
+            </div>
+            <div class="legend">
+              <span data-i18n="view3d.legend"></span>
+              <div id="legend-bar" class="legend-bar" aria-hidden="true"></div>
+              <div class="legend-scale"><span id="legend-min"></span><span id="legend-max"></span></div>
+            </div>
+            <p id="view3d-status" class="warning" role="status" hidden></p>
+            <p class="hint" data-i18n="view3d.note"></p>
+          </section>
+
+          <section class="card glass" aria-labelledby="bodies-heading">
+            <h2 id="bodies-heading" data-i18n="bodies.heading"></h2>
+            <div class="table-scroll">
+            <table class="readings">
+              <thead>
+                <tr>
+                  <th scope="col" data-i18n="reading.body"></th>
+                  <th scope="col" data-i18n="reading.az"></th>
+                  <th scope="col" data-i18n="reading.el"></th>
+                  <th scope="col" data-i18n="reading.radius"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr data-body="sun">
+                  <th scope="row"><span class="icon icon-sun" aria-hidden="true"></span><span data-i18n="body.sun"></span></th>
+                  <td data-field="az"></td><td data-field="el"></td><td data-field="radius"></td>
+                </tr>
+                <tr data-body="earth">
+                  <th scope="row"><span class="icon icon-earth" aria-hidden="true"></span><span data-i18n="body.earth"></span></th>
+                  <td data-field="az"></td><td data-field="el"></td><td data-field="radius"></td>
+                </tr>
+              </tbody>
+            </table>
+            </div>
+            <p class="hint" data-i18n="bodies.note"></p>
+          </section>
+
+          <section class="card glass" aria-labelledby="site-heading">
+            <h2 id="site-heading" data-i18n="site.heading"></h2>
+            <p id="site-name" class="site-name"></p>
+            <p id="site-synthetic" class="tag" data-i18n="site.synthetic" hidden></p>
+            <dl id="site-info" class="facts"></dl>
+            <h3 data-i18n="prov.heading"></h3>
+            <dl id="site-provenance" class="facts"></dl>
+          </section>
+          <p class="upcoming" data-i18n="upcoming"></p>
+        </aside>
+
+        <section class="timebar glass" aria-labelledby="time-heading">
+          <h2 id="time-heading" class="visually-hidden" data-i18n="time.heading"></h2>
+          <form id="time-form" class="time-form" novalidate>
+            <label class="field inline">
+              <span data-i18n="time.label"></span>
+              <input id="time-input" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" aria-describedby="time-hint">
+            </label>
+            <button type="submit" class="btn primary" data-i18n="time.apply"></button>
+          </form>
+          <div class="steps">
+            <button type="button" class="btn" data-step-h="-24" data-i18n="time.minusDay"></button>
+            <button type="button" class="btn" data-step-h="-1" data-i18n="time.minusHour"></button>
+            <button type="button" class="btn" data-step-h="1" data-i18n="time.plusHour"></button>
+            <button type="button" class="btn" data-step-h="24" data-i18n="time.plusDay"></button>
+          </div>
+          <p id="time-current" class="current"></p>
+          <p id="time-hint" class="visually-hidden" data-i18n="time.hint"></p>
+          <p id="time-warning" class="warning" role="status" hidden></p>
+        </section>
       </div>
-      <p class="hint" data-i18n="bodies.note"></p>
-    </section>
 
-    <section class="card glass" aria-labelledby="site-heading">
-      <h2 id="site-heading" data-i18n="site.heading"></h2>
-      <p id="site-name" class="site-name"></p>
-      <p id="site-synthetic" class="tag" data-i18n="site.synthetic" hidden></p>
-      <dl id="site-info" class="facts"></dl>
-      <h3 data-i18n="prov.heading"></h3>
-      <dl id="site-provenance" class="facts"></dl>
-    </section>
+      <!-- Vues pas encore construites : état « à venir » honnête (UI-DESIGN § 3.3). -->
+      <section class="empty-view glass" data-view-panel="atlas" hidden>
+        <h2 data-i18n="nav.atlas"></h2><p data-i18n="empty.atlas"></p>
+        <a class="btn primary" href="#view=site" data-goto="site" data-i18n="empty.toSite"></a>
+      </section>
+      <section class="empty-view glass" data-view-panel="world" hidden>
+        <h2 data-i18n="nav.world"></h2><p data-i18n="empty.world"></p>
+        <a class="btn primary" href="#view=site" data-goto="site" data-i18n="empty.toSite"></a>
+      </section>
+      <section class="empty-view glass" data-view-panel="south" hidden>
+        <h2 data-i18n="nav.south"></h2><p data-i18n="empty.south"></p>
+        <a class="btn primary" href="./preview.html" data-i18n="empty.toPreview"></a>
+      </section>
+      <section class="empty-view glass" data-view-panel="method" hidden>
+        <h2 data-i18n="nav.method"></h2><p data-i18n="empty.method"></p>
+        <a class="btn primary" href="#view=site" data-goto="site" data-i18n="empty.toSite"></a>
+      </section>
+    </main>
 
-    <p class="upcoming" data-i18n="upcoming"></p>
-  </main>
-
-  <footer class="footer">
-    <p id="footer-data"></p>
-    <p data-i18n="footer.license"></p>
-  </footer>
+    <footer class="footer">
+      <p id="footer-data"></p>
+      <p data-i18n="footer.license"></p>
+    </footer>
+  </div>
 </body>
 </html>
