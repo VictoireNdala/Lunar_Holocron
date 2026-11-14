@@ -201,6 +201,20 @@
             <p class="hint" data-i18n="bodies.note"></p>
           </section>
 
+          <section class="card glass compare" aria-labelledby="cmp-heading" data-panel="compare" data-panel-view="site" data-panel-title="compare.heading">
+            <h2 id="cmp-heading" data-i18n="compare.heading"></h2>
+            <label class="field"><span data-i18n="compare.pick"></span><select id="compare-select"></select></label>
+            <p id="compare-hint" class="hint" data-i18n="compare.hint"></p>
+            <div id="compare-body" hidden>
+              <p id="compare-warning" class="warning" role="status" data-i18n="compare.windowWarning" hidden></p>
+              <p id="compare-legend" class="hint"></p>
+              <div class="table-scroll"><table class="readings"><caption class="visually-hidden" data-i18n="compare.captionKpi"></caption><tbody id="compare-kpis"></tbody></table></div>
+              <h3 data-i18n="compare.now"></h3>
+              <div class="table-scroll"><table class="readings"><caption class="visually-hidden" data-i18n="compare.captionNow"></caption><tbody id="compare-now"></tbody></table></div>
+              <p class="hint" data-i18n="compare.note"></p>
+            </div>
+          </section>
+
           <section class="card glass" aria-labelledby="site-heading" data-panel="site" data-panel-view="site" data-panel-title="site.heading">
             <h2 id="site-heading" data-i18n="site.heading"></h2>
             <p id="site-name" class="site-name"></p>
@@ -336,10 +350,70 @@
           <p class="hint" id="atlas-credit"></p>
         </section>
       </aside>
-      <section class="empty-view glass" data-view-panel="method" hidden>
-        <h2 data-i18n="nav.method"></h2><p data-i18n="empty.method"></p>
-        <a class="btn primary" href="#view=site" data-goto="site" data-i18n="empty.toSite"></a>
-      </section>
+      <article class="method glass" data-view-panel="method" aria-labelledby="method-title" hidden>
+        <h2 id="method-title" data-i18n="method.title"></h2>
+        <section class="method-section" aria-labelledby="m-what">
+          <h3 id="m-what" data-i18n="method.what"></h3>
+            <p data-i18n="method.what.0"></p>
+            <p data-i18n="method.what.1"></p>
+        </section>
+        <section class="method-section" aria-labelledby="m-data">
+          <h3 id="m-data" data-i18n="method.data"></h3>
+            <p data-i18n="method.data.0"></p>
+          <dl id="method-provenance" class="facts"></dl>
+          <p id="method-no-site" class="hint" data-i18n="method.noSite" hidden></p>
+          <ul>
+            <li data-i18n="method.data.2"></li>
+            <li data-i18n="method.data.3"></li>
+            <li data-i18n="method.data.4"></li>
+          </ul>
+        </section>
+        <section class="method-section" aria-labelledby="m-method">
+          <h3 id="m-method" data-i18n="method.method"></h3>
+          <ul>
+            <li data-i18n="method.method.0"></li>
+            <li data-i18n="method.method.1"></li>
+            <li data-i18n="method.method.2"></li>
+            <li data-i18n="method.method.3"></li>
+            <li data-i18n="method.method.4"></li>
+          </ul>
+        </section>
+        <section class="method-section" aria-labelledby="m-kpi">
+          <h3 id="m-kpi" data-i18n="method.kpi"></h3>
+          <ul>
+            <li data-i18n="method.kpi.0"></li>
+            <li data-i18n="method.kpi.1"></li>
+            <li data-i18n="method.kpi.2"></li>
+            <li data-i18n="method.kpi.3"></li>
+            <li data-i18n="method.kpi.4"></li>
+            <li data-i18n="method.kpi.5"></li>
+          </ul>
+        </section>
+        <section class="method-section" aria-labelledby="m-limits">
+          <h3 id="m-limits" data-i18n="method.limits"></h3>
+          <ul>
+            <li data-i18n="method.limits.0"></li>
+            <li data-i18n="method.limits.1"></li>
+            <li data-i18n="method.limits.2"></li>
+            <li data-i18n="method.limits.3"></li>
+            <li data-i18n="method.limits.4"></li>
+            <li data-i18n="method.limits.5"></li>
+            <li data-i18n="method.limits.6"></li>
+            <li data-i18n="method.limits.7"></li>
+          </ul>
+            <p data-i18n="method.limits.8"></p>
+            <p data-i18n="method.limits.9"></p>
+        </section>
+        <section class="method-section" aria-labelledby="m-credits">
+          <h3 id="m-credits" data-i18n="method.credits"></h3>
+          <ul>
+            <li data-i18n="method.credits.0"></li>
+            <li data-i18n="method.credits.1"></li>
+            <li data-i18n="method.credits.2"></li>
+          </ul>
+        </section>
+        <p id="method-synthetic" class="warning" role="status" data-i18n="method.synthetic" hidden></p>
+      </article>
     </main>
 
     <footer class="footer">

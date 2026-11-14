@@ -4,7 +4,7 @@
 export const VIEWS = Object.freeze(['atlas', 'world', 'south', 'north', 'site', 'method']);
 
 /** Vues déjà construites ; les autres affichent un état « à venir » honnête. */
-export const IMPLEMENTED_VIEWS = Object.freeze(['atlas', 'world', 'south', 'north', 'site']);
+export const IMPLEMENTED_VIEWS = Object.freeze(['atlas', 'world', 'south', 'north', 'site', 'method']);
 
 /** Vue par défaut tant que l'Atlas n'existe pas (ATLAS § 7 : l'Atlas deviendra la vue d'accueil sans site dans l'URL). */
 export const DEFAULT_VIEW = 'site';

@@ -10,7 +10,9 @@ import { preloadTier1 } from './preload.js';
 import { createMapPanel } from './ui/mappanel.js';
 import { createPanoramaPanel } from './ui/panoramapanel.js';
 import { createPanels } from './ui/panels.js';
+import { createComparePanel } from './ui/comparepanel.js';
 import { createReadings } from './ui/readings.js';
+import { renderMethodPage } from './ui/methodpage.js';
 import { createSiteLinks } from './ui/sitelinks.js';
 import { createTimelinePanel } from './ui/timelinepanel.js';
 import { createVerdictPanel } from './ui/verdictpanel.js';
@@ -47,6 +49,8 @@ const panorama = createPanoramaPanel(store);
 const panels = createPanels();
 const siteLinks = createSiteLinks();
 const readings = createReadings();
+const compare = createComparePanel(store);
+let siteB = null;
 const timeline = createTimelinePanel(store);
 const verdict = createVerdictPanel(store);
 /** Période couverte : celle du site affiché (même période pour tous), à défaut celle de global.json. */
@@ -186,6 +190,7 @@ function renderAll() {
   panels.refresh();
   renderPlayback();
   showAtlasView();
+  if (store.get().view === 'method') renderMethodPage(site);
   if (!index) return;
   renderSiteSelect();
   if (!site) return;
@@ -193,6 +198,7 @@ function renderAll() {
   renderTime();
   readings.render(site, store.get());
   verdict.render(site, store.get());
+  compare.render(site, siteB, store.get());
   if (store.get().view === 'site') timeline.render(site, store.get());
 }
 
@@ -214,6 +220,22 @@ async function loadSiteA() {
   } finally {
     $('loading').hidden = true;
   }
+}
+
+/** Charge le site B demandé (`b=` dans l'URL ou liste), s'il existe dans l'index et diffère de A ; sinon la comparaison est vide. */
+async function loadSiteB() {
+  const { compare: on, siteIdB, siteIdA } = store.get();
+  const known = index?.sites.some((s) => s.id === siteIdB);
+  if (!on || !known || siteIdB === siteIdA) { siteB = null; if (site) renderAll(); return; }
+  try {
+    const loaded = await source.loadSite(siteIdB);
+    if (store.get().siteIdB !== siteIdB) return; // un autre site B a été choisi entre-temps
+    siteB = loaded;
+  } catch (err) {
+    siteB = null;
+    showError(err);
+  }
+  if (site) renderAll();
 }
 
 /** Lit le champ de date (UTC) ; null si invalide. */
@@ -265,7 +287,9 @@ store.subscribe((state, changed) => {
   if (changed.includes('lang')) setLang(state.lang);
   window.history.replaceState(null, '', encode(state));
   if (changed.includes('playing') && !state.playing && coveredRange() && state.tMs >= coveredRange().endMs) showTimeNote(t('time.ended'));
+  if (changed.includes('siteIdB') || changed.includes('compare')) loadSiteB();
   if (changed.includes('siteIdA')) {
+    loadSiteB(); // B égal à A : la comparaison se vide
     if (changed.includes('view')) renderAll(); // bascule de vue immédiate ; le site se charge ensuite
     atlasSites.render();
     loadSiteA();
@@ -291,10 +315,12 @@ async function start() {
   }
   showAtlasView();
   atlasSites.setEntries(index.sites);
+  compare.setIndex(index.sites);
   const requested = store.get().siteIdA;
   const siteIdA = index.sites.some((s) => s.id === requested) ? requested : index.sites[0].id;
   if (siteIdA !== requested) store.set({ siteIdA });
   else await loadSiteA();
+  await loadSiteB();
   window.history.replaceState(null, '', encode(store.get()));
   // Préchargement discret du terrain et des séries des sites prioritaires, une fois la première vue affichée (S-04).
   setTimeout(() => preloadTier1(source, index.sites), 1500);

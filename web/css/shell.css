@@ -136,6 +136,20 @@
 .proj-seg { margin-bottom: var(--s-2); flex-wrap: wrap; }
 .timebar .hint { flex-basis: 100%; margin: 0; }
 
+/* --- Comparaison A / B (T-14) : tableaux étroits, colonnes fixes --- */
+.compare table { table-layout: fixed; width: 100%; }
+.compare th:first-child { width: 40%; }
+.compare .readings th, .compare .readings td { white-space: normal; overflow-wrap: anywhere; padding: 8px 4px; font-size: var(--fs-13); vertical-align: top; }
+.compare .readings thead th { font-size: 12px; }
+
+/* --- Page « Sources et méthode » (T-14) --- */
+.method { position: absolute; top: 128px; bottom: 76px; left: var(--s-3); right: var(--s-3); max-width: 880px; margin: 0 auto; overflow-y: auto; padding: var(--s-6); }
+.method h2 { margin-top: 0; }
+.method-section { margin-bottom: var(--s-5); }
+.method-section h3 { margin: 0 0 var(--s-2); }
+.method ul { margin: var(--s-2) 0; padding-left: var(--s-5); }
+.method li, .method p { margin: 0 0 var(--s-2); line-height: 1.55; }
+
 /* --- Frise temporelle (T-12) --- */
 .timeline { padding: var(--s-3) var(--s-4); }
 .tl-head { display: flex; flex-wrap: wrap; gap: var(--s-2) var(--s-3); align-items: center; margin-bottom: var(--s-2); padding-right: 38px; }
@@ -223,6 +237,7 @@
   .dock { position: static; margin: var(--s-3) var(--s-3) 0; max-height: none; overflow: visible; }
   .dock .timebar { position: static; }
   .pano-canvas { height: 160px; }
+  .method { position: static; margin: var(--s-3); padding: var(--s-4); overflow: visible; }
   .empty-view { position: static; transform: none; width: auto; margin: var(--s-4) var(--s-3); }
   .stage .footer { position: static; max-width: none; padding: var(--s-4) var(--s-3); text-shadow: none; }
 }

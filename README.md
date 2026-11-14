@@ -4,11 +4,12 @@
 
 *NASA Space Apps Challenge 2026 — “Lunar Landing Site Navigator” (CLPS Lunar Mission Browser).*
 
-> [!WARNING]
-> **Work in progress — demonstration data only.**
-> NASA datasets (LOLA terrain models, SPICE ephemerides) are not connected yet. Every value currently produced by this repository is **synthetic**,
-> flagged `"synthetic": true` in the data files, and the application will display a permanent *“DEMONSTRATION DATA — fictitious values”* banner.
-> No synthetic value is ever presented as real.
+> [!IMPORTANT]
+> **Read this before trusting a number.**
+> - Four sites (Site01, Site04, Site07, Site11) use **real** LOLA terrain models and **real** SPICE ephemerides. Three more sites are **fictional demonstrations**
+>   and are flagged `"synthetic": true` in the data files; the interface shows a permanent honesty chip (“Real data” / “Demonstration data”) that cannot be hidden.
+> - A real site is evaluated at the **centre of its terrain model’s extent**, not at a chosen landing point. Those positions are **unverified** (`"verified": false`).
+> - This is an independent hackathon project, **not endorsed by NASA**, and not a mission planning tool. The limits are listed [below](#limitations) and in the application’s *Sources and method* tab.
 
 ---
 
@@ -24,24 +25,25 @@ Lunar Holocron makes that question visual and quantitative for:
 
 ## What it does
 
-For a selected site and date (UTC), the application will show:
+The application is **static and fully offline** (no server logic, no CDN, no remote API at run time). All heavy computation is done beforehand by an offline Python pipeline.
 
-| View | Purpose |
+| Area | What you get |
 |---|---|
-| **360° panorama** | Terrain horizon silhouette with the Sun and the Earth at their true azimuth and elevation, plus their ±24 h track. |
-| **3D terrain view** | 20 × 20 km regional mesh, lit from the Sun’s direction (illustrative), ground-level and overview cameras. |
-| **Timeline** | Sun and Earth elevation against the horizon *at their own azimuth*, with visibility bands. |
-| **Verdicts and readings** | Hidden / Partial / Visible for each body, with the signed margin above the horizon. |
-| **Site indicators** | Percentage of time with Sun, Earth, or both visible; longest night; longest Earth outage; monthly heat map. |
-| **A/B comparison** | Two sites side by side at the same instant, with a comparison table. |
-| **Sources and method page** | Data provenance, formulas, definitions of every indicator, and known limitations. |
+| **Atlas** | A 3D globe and three 2D maps (world, South Pole, North Pole) with the day/night limit, the sub-solar and sub-Earth points, and the sites. Click a site for its sheet; a guided tour visits the four priority sites. The Atlas uses a smooth sphere and a flat horizon: **it shows no visibility verdict**. |
+| **Site: verdict** | Strict / optimistic threshold, the share of time with the Sun and the Earth visible, both together, the longest period without Sun and without Earth, a month-by-month heat map and its table. |
+| **Site: readings** | For each body: Hidden / Partial / Visible (independent of the threshold), azimuth, elevation, **horizon at the body’s azimuth**, **signed margin**, angular radius, and a geometric “direct link possible” sentence. |
+| **Site: views** | 360° panorama of the real horizon, a 3D terrain view, and a **timeline** with elevation curves, the terrain horizon at each body’s azimuth and visibility bands (7 days to the whole 2026–2030 period). |
+| **Compare** | Site B against site A at the same instant and threshold: indicators, difference B − A, no ranking. |
+| **Time** | One clock for every view: UTC field, ±1 h / ±1 day, play / pause at ×1, ×60, ×3600, ×86 400, “Now”. |
+| **Sources and method** | Provenance read from the data file, formulas, definitions of every indicator, limits, validation, credits, use of AI. |
+| **Links** | Buttons to open the site in Quickmap or Moon Trek (external, opened by your click only). |
 
-The application is **static and fully offline**: no server, no CDN, no remote API. All heavy computation is done beforehand by an offline Python pipeline.
+The interface is available in French and English. The state (view, sites A/B, instant, threshold, window, language) lives in the URL fragment.
 
 ## How it works
 
 ```
-NASA data (LOLA DEMs, SPICE kernels)      ← not connected yet: synthetic stand-ins for now
+NASA data (LOLA DEMs from PGDA, SPICE kernels from NAIF)      local files, never committed
         │
         ▼
 pipeline/  (Python, offline, run once per site)
@@ -50,36 +52,39 @@ pipeline/  (Python, offline, run once per site)
    shared visibility formulas ─► indicators ─► export
         │
         ▼
-web/data/  (static JSON + compact binary terrain grids — the data contract)
+web/data/  (static JSON + compact binary terrain grids — the data contract, version 1.1)
         │
         ▼
-web/  (static app, native ES modules, three.js vendored locally)
+web/  (static app, native ES modules, three.js vendored locally, no build step)
 ```
 
-Key methodological choices (details in [`docs/`](docs/)):
+Key methodological choices (details in [`docs/`](docs/) and in the application’s method tab):
 
-- **Horizon mask** — for each azimuth, the maximum elevation of the surrounding terrain seen from the observer, **including lunar curvature**:
-  `elev = atan2((R+hₜ)·cos δ − (R+hₒ), (R+hₜ)·sin δ)`, with `δ = d / R` and `R = 1,737.4 km`.
-- **Visible fraction of a disk** — the share of the Sun’s or Earth’s disk above the horizon:
-  `f = 1 − (acos x − x·√(1−x²)) / π`, with `x = clamp((el − h) / r, −1, 1)`.
-- **Two explicit thresholds** — *strict* (disk centre above the horizon, `f ≥ 0.5`, default) and *optimistic* (any part of the disk visible, `f > 0`). Both are computed and exposed.
-- **Lunar frame** — `MOON_ME` (the LOLA frame), not `IAU_MOON`.
+- **Horizon mask** — for each azimuth, the maximum elevation of the surrounding terrain seen from the observer (2.0 m eye height, provisional), **including lunar curvature**:
+  `elev = atan2((R+hₜ)·cos δ − (R+hₒ), (R+hₜ)·sin δ)`, with `δ = d / R` and `R = 1,737.4 km`, out to 150 km.
+- **Visible fraction of a disk** — `f = 1 − (acos x − x·√(1−x²)) / π`, with `x = clamp((el − h) / r, −1, 1)`; the horizon is read at the azimuth of the disk centre.
+- **Two explicit thresholds** — *strict* (`f ≥ 0.5`, default) and *optimistic* (`f > 0`). The state Hidden / Partial / Visible (`f = 0`, `0 < f < 1`, `f = 1`) does not depend on the threshold.
+- **Lunar frame** — `MOON_ME`, not `IAU_MOON`.
 - **Conventions** — azimuth 0° = North, 90° = East, clockwise; geometric elevation without refraction; selenocentric latitude (negative south); all times in UTC.
-- **One formula, two implementations** — every visibility formula exists in Python *and* JavaScript, and both are checked against the **same reference values** ([`tests/golden/`](tests/golden/)).
+- **One formula, two implementations** — every visibility formula exists in Python *and* JavaScript, checked against the **same reference values** ([`tests/golden/`](tests/golden/)).
 - **Reproducibility** — identical inputs give byte-identical outputs; provenance (terrain product, kernels, pipeline version) is written into every data file.
 
 ## Project status
 
-| Milestone | Content | Status |
-|---|---|---|
-| **J0 — Foundations** | Repository, data contract and JSON Schema validator, geodesy and polar projection, JS constants, hand-made sample dataset | ✅ Done |
-| **J1 — Demo computations** | Synthetic terrain, horizon mask, shared visibility formulas, indicators, demo ephemerides, export | ⏳ Next |
-| **J2 — Core interface** | Data loading, state, panorama, 3D view, timeline, verdicts | ⏳ Planned |
-| **J3 — Complete P0 product** | Polar map, A/B comparison, method page, smoke tests, performance | ⏳ Planned |
-| **J4 — Real data** | SPICE kernels, LOLA DEMs, verified site coordinates, scientific validation | ⏳ Waiting for NASA data |
+| Area | State |
+|---|---|
+| Data contract, schemas, validator | ✅ version 1.1, validated on every build |
+| Pipeline: terrain, horizon, visibility, indicators, SPICE ephemerides, export | ✅ 4 real sites + 3 demonstration sites |
+| Atlas: globe, three 2D maps, site sheet, guided tour, playback | ✅ |
+| Site view: verdict, readings, panorama, 3D, timeline, compare, method tab, deep links | ✅ |
+| Validation: SPICE against JPL Horizons (5 sites × 3 dates × Sun and Earth, 1,440 values) | ✅ see [`docs/VALIDATION-RESULTATS.md`](docs/VALIDATION-RESULTATS.md) |
+| Python / JavaScript agreement file for body positions (`body_state_cases.json`) | ⏳ generated, **awaiting human review** ([`docs/REVUE-FICHIER-OR.md`](docs/REVUE-FICHIER-OR.md)) |
+| Horizon mask against an official tool, LOLA average illumination, sensitivity analysis | ❌ not done |
+| Browser smoke test (Playwright), mobile layout, accessibility audit, command palette | ❌ not done |
+| Level-2 sites (NASA 2024 regions without 5 m terrain), LOLA hillshade layer, polar-map zoom | ❌ not done |
 
-Current test suite: **85 Python tests** and **3 JavaScript tests**, all passing.
-The detailed task plan is in [`PLAN.md`](PLAN.md); the live status is in [`STATUS.md`](STATUS.md).
+Test suites: **251 Python tests** and **157 JavaScript tests**, all passing at the last run (see [`STATUS.md`](STATUS.md) for the dated evidence).
+The detailed task plan is in [`PLAN.md`](PLAN.md); the live status is in [`STATUS.md`](STATUS.md); the exchange with the reviewing assistant is in [`LIAISON.md`](LIAISON.md).
 
 ## Getting started
 
@@ -99,46 +104,61 @@ py -m venv .venv
 pip install -r pipeline/requirements.txt
 ```
 
+### Run the application
+
+```powershell
+py -m pipeline.tools.serve              # http://localhost:8000, served without browser caching (recommended)
+py -m http.server 8000 -d web           # alternative; the browser may keep stale JS modules: hard-reload with Ctrl+Shift+R
+```
+
+The committed `web/data/` already contains the four real sites and the three demonstration sites. The Atlas textures (NASA SVS) are **not** committed
+(licence to be settled, `Q-013`): without them the globe falls back to a plain sphere and says so.
+
 ### Run the tests
 
 ```powershell
-py -m pytest pipeline/tests -q          # Python: schema, geodesy, projection, sample dataset
-node --test "web/tests/**/*.test.js"    # JavaScript: constants and shared reference values
+py -m pytest pipeline/tests -q          # Python (SPICE tests are skipped when the kernels are absent)
+node --test "web/tests/**/*.test.js"    # JavaScript
 ```
 
-### Validate a dataset against the data contract
+### Rebuild the data
 
 ```powershell
-py -m pipeline.validate web/data/sample   # exit code 0 if valid, 1 otherwise
+py -m pipeline.cli demo                 # three demonstration sites (note: rewrites index.json with those three only)
+py -m pipeline.cli build                # demonstration sites + every real site whose files are present in data/raw/
+py -m pipeline.cli build --site site04-shackleton-rim   # one site, other sites kept in the index
+py -m pipeline.cli validate             # check web/data against the data contract
 ```
 
-### Coming with the next milestones
+Real sites need local files that are **never committed** (`data/raw/`): the four SPICE kernels (`naif0012.tls`, `de440s.bsp`, `moon_pa_de440_200625.bpc`, `moon_de440_250416.tf`)
+and the PGDA terrain files. Names, sizes and SHA-256 sums are in [`SOURCES.md`](SOURCES.md).
+
+### Validate against JPL Horizons
 
 ```powershell
-py -m pipeline.cli demo                 # generate the three demonstration sites (J1)
-py -m pipeline.tools.serve                    # serve the application at http://localhost:8000, no browser caching (recommended)
-py -m http.server 8000 -d web           # alternative; the browser may keep stale JS modules: hard-reload with Ctrl+Shift+R
+py -m pipeline.tools.horizons_validate  # read-only requests to the public Horizons API; the results are committed
 ```
+
+The tests read the committed results and need no network.
 
 ## Repository layout
 
 ```
-├─ pipeline/          Offline Python pipeline
-│  ├─ config.py         physical constants and conventions (single source, with references)
-│  ├─ geodesy.py        great-circle destination, ENU basis, azimuth/elevation, terrain elevation
-│  ├─ projection.py     south polar stereographic projection (parametrisable)
-│  ├─ validate.py       data-contract validator (JSON Schema + cross-checks)
-│  ├─ schema/           JSON Schemas: index, site, terrain
+├─ pipeline/          Offline Python pipeline (geodesy, projection, DEM readers, horizon, visibility, kpi, SPICE, export, CLI, validation)
+│  ├─ schema/           JSON Schemas: index, site, terrain, global
+│  ├─ tools/            site catalogue, DEM cropping, icon sprite, dev server, Horizons validation
 │  └─ tests/            pytest suite
 ├─ web/               Static application (native ES modules, no bundler)
-│  ├─ js/               constants.js (mirror of config.py) — more modules to come
-│  ├─ data/sample/      hand-made synthetic sample dataset
+│  ├─ js/               state, data loading, verdicts, timeline, compare, playback, links; atlas/ (globe, maps, sheets); ui/ (panels)
+│  ├─ css/  vendor/     design tokens, shell; three.js, fonts, icons (all local)
+│  ├─ data/             committed outputs: index, global, sites/, terrain/, sample/
 │  └─ tests/            node --test suite
+├─ config/            pipeline period and grids, site catalogues (demonstration and real)
 ├─ tests/
 │  ├─ golden/           reference values shared by Python and JavaScript
-│  └─ reference/        independent recomputation scripts and sample generator
-├─ docs/              Architecture, data contract, pipeline, interface, tests & validation, real-data plan
-├─ PLAN.md  STATUS.md  DECISIONS.md  SOURCES.md
+│  └─ reference/        independent recomputation scripts, Horizons values
+├─ docs/              Architecture, data contract, pipeline, interface, Atlas, real sites, validation results, UI design
+├─ PLAN.md  STATUS.md  DECISIONS.md  SOURCES.md  LIAISON.md
 └─ LICENSE            Apache License 2.0
 ```
 
@@ -149,23 +169,24 @@ py -m http.server 8000 -d web           # alternative; the browser may keep stal
 | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Overview, glossary, angular conventions, reference formulas |
 | [`docs/CONTRAT-DONNEES.md`](docs/CONTRAT-DONNEES.md) | Exact format of the data files exchanged between pipeline and application |
 | [`docs/PIPELINE.md`](docs/PIPELINE.md) | Computations: terrain, horizon, ephemerides, indicators, export |
-| [`docs/INTERFACE.md`](docs/INTERFACE.md) | Application design: views, state, accessibility, performance budget |
-| [`docs/TESTS-VALIDATION.md`](docs/TESTS-VALIDATION.md) | Reference values, tests, and the scientific validation plan |
-| [`docs/BRANCHEMENT-DONNEES-REELLES.md`](docs/BRANCHEMENT-DONNEES-REELLES.md) | Step-by-step plan to switch from synthetic to NASA data |
+| [`docs/INTERFACE.md`](docs/INTERFACE.md), [`docs/UI-DESIGN.md`](docs/UI-DESIGN.md), [`docs/ATLAS.md`](docs/ATLAS.md) | Application design: views, state, accessibility, design system, Atlas |
+| [`docs/SITES-REELS.md`](docs/SITES-REELS.md), [`docs/INVENTAIRE-DONNEES.md`](docs/INVENTAIRE-DONNEES.md) | Real sites and data inventory |
+| [`docs/TESTS-VALIDATION.md`](docs/TESTS-VALIDATION.md), [`docs/VALIDATION-RESULTATS.md`](docs/VALIDATION-RESULTATS.md) | Reference values, tests, validation plan and **measured results** |
+| [`docs/REVUE-FICHIER-OR.md`](docs/REVUE-FICHIER-OR.md) | The Python/JavaScript agreement file awaiting human review |
 | [`DECISIONS.md`](DECISIONS.md) | Decision log and open questions |
 
-The design documents are currently written in French; code identifiers and data fields are in English.
+The design documents are written in French; code identifiers and data fields are in English.
 
-## Data sources (planned)
+## Data sources
 
 | Source | Use |
 |---|---|
-| LRO / LOLA digital elevation models (PDS Geosciences Node) | Terrain, horizon masks |
+| LRO / LOLA digital elevation models, NASA Goddard PGDA (products 78 and 90) | Terrain, horizon masks |
 | NAIF SPICE generic kernels (DE440, lunar orientation) | Sun and Earth positions in `MOON_ME` |
-| NASA Goddard PGDA products | Validation of illumination and Earth visibility |
-| JPL Horizons | Spot checks of ephemerides |
+| NASA/JPL Horizons System | **Validation only** (never used by the pipeline, the application or the tests) |
+| NASA Scientific Visualization Studio, CGI Moon Kit | Illustrative Atlas textures, kept local and uncommitted; used in no calculation |
 
-None of these sources is used yet. Licences and citations are recorded in [`SOURCES.md`](SOURCES.md) as each source is integrated.
+Licences, citations and checksums are recorded in [`SOURCES.md`](SOURCES.md). Several source pages state **no explicit licence**; the rule followed is to cite them and to commit only derived results.
 
 ## Limitations
 
@@ -175,17 +196,21 @@ None of these sources is used yet. Licences and citations are recorded in [`SOUR
 - No modelling of dust, scattered light, or thermal effects.
 - Earth visibility is **geometric** line of sight: it says nothing about ground-station availability or link budget.
 - The strict and optimistic thresholds are documented choices, not physical truths.
+- Real-site indicators are computed at the centre of the terrain model, with a provisional 2 m eye height.
+- The monthly heat map exists for the strict threshold only (that is what the data contract provides).
+- SPICE and Horizons share the same ephemeris family, so the validation checks our geometry, not the ephemerides; one Earth-elevation difference of 2.4·10⁻⁵° is unexplained.
 
 ## Use of AI
 
 This project is built with the help of AI tools, used transparently:
-**Claude** (Anthropic) for the preliminary study, architecture, and scientific review, and **Claude Code** for implementation, tests, and technical documentation.
-Every reference value is recomputed independently before it is used in a test, and every human verification is logged in [`SOURCES.md`](SOURCES.md#4-usage-de-lia-transparence).
+**Claude** (Anthropic) for the preliminary study, architecture, and review, and **Claude Code** for implementation, tests, and technical documentation.
+Reference values are recomputed independently where possible, and the points that still need a human check (the Python/JavaScript agreement file, the site positions, the scientific choices)
+are listed in [`STATUS.md`](STATUS.md) and in [`SOURCES.md`](SOURCES.md#4-usage-de-lia-transparence).
 
 ## License
 
 Released under the [Apache License 2.0](LICENSE).
-This project is not endorsed by NASA. NASA data, once integrated, remain subject to their own terms of use, listed in [`SOURCES.md`](SOURCES.md).
+This project is not endorsed by NASA. NASA data remain subject to their own terms of use, listed in [`SOURCES.md`](SOURCES.md).
 
 ---
 
@@ -193,5 +218,6 @@ This project is not endorsed by NASA. NASA data, once integrated, remain subject
 
 **Lunar Holocron** est un navigateur des sites d’alunissage du pôle Sud lunaire. Pour un site et une date, il montre où se trouvent le Soleil et la Terre par rapport à
 **l’horizon réel du terrain**, afin de juger l’énergie solaire disponible et la liaison directe avec la Terre ; il permet de comparer deux sites.
-Projet réalisé pour le NASA Space Apps Challenge 2026. **En construction : toutes les données actuelles sont synthétiques (fictives).**
-La documentation de conception est dans [`docs/`](docs/) ; l’état d’avancement dans [`STATUS.md`](STATUS.md).
+Projet réalisé pour le NASA Space Apps Challenge 2026. **Quatre sites utilisent des données réelles (relief LOLA, éphémérides SPICE) ; trois sites de démonstration sont fictifs et signalés comme tels.**
+Les indicateurs des sites réels sont calculés au centre du modèle de terrain, pas à un point d’alunissage choisi. Le projet n’est pas approuvé par la NASA.
+La documentation de conception est dans [`docs/`](docs/) ; l’état d’avancement dans [`STATUS.md`](STATUS.md) ; les résultats de validation mesurés dans [`docs/VALIDATION-RESULTATS.md`](docs/VALIDATION-RESULTATS.md).
