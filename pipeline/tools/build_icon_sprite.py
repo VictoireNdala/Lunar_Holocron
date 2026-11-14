@@ -11,7 +11,7 @@ import sys
 from pathlib import Path
 
 ICONS = ("globe", "map", "compass", "mountain", "book-open", "languages", "circle-help", "search",
-         "panel-left-open", "panel-left-close", "play", "pause", "info", "x")
+         "panel-left-open", "panel-left-close", "play", "pause", "info", "x", "minus", "eye", "eye-off")
 OUT = Path("web/vendor/icons/sprite.svg")
 
 

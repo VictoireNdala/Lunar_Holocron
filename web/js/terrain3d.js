@@ -15,6 +15,7 @@ const SKY_DISTANCE_FACTOR = 0.9;
 const MIN_SPRITE_RADIUS_DEG = 2.0; // rayon apparent minimal des sprites (agrandis, signalé dans l'interface)
 const BELOW_HORIZON_OPACITY = 0.35; // corps sous l'horizon géométrique : sprite atténué
 const SUN_INTENSITY = 2.5;
+const STUDY_INTENSITY = 1.3; // éclairage d'étude (relief lisible même quand le Soleil est sous l'horizon)
 // Pas d'atmosphère : le vrai ciel lunaire n'éclaire presque pas. Ambiance relevée pour garder la teinte lisible (rendu illustratif).
 const AMBIENT_LIT = 0.35;
 const AMBIENT_DARK = 0.12; // Soleil sous l'horizon : sombre
@@ -63,7 +64,10 @@ export function createTerrainView(container, { onQualityChange = () => {} } = {}
   const ambient = new THREE.AmbientLight(0xffffff, AMBIENT_DARK);
   const sunLight = new THREE.DirectionalLight(0xffffff, 0);
   sunLight.castShadow = true;
-  scene.add(ambient, sunLight, sunLight.target);
+  // Éclairage d'étude : lumière rasante fixe (nord-ouest), ILLUSTRATIVE, sans ombres ; ne représente pas le Soleil.
+  const studyLight = new THREE.DirectionalLight(0xdfe8ff, STUDY_INTENSITY);
+  studyLight.position.set(-1, 0.5, -1).multiplyScalar(1000);
+  scene.add(ambient, sunLight, sunLight.target, studyLight);
 
   const textures = [discTexture('#f5a623', null), discTexture('#3b82f6', '#ffffff')];
   const sprites = textures.map((map) => new THREE.Sprite(new THREE.SpriteMaterial({ map, depthWrite: false })));
@@ -221,6 +225,8 @@ export function createTerrainView(container, { onQualityChange = () => {} } = {}
     setTerrain(terrainMeta, heightsM) { meta = terrainMeta; heights = heightsM; rebuildMesh(); applyCamera(true); },
     /** États {azDeg, elDeg, radiusDeg} du Soleil et de la Terre (ou null). */
     setBodies(sun, earth) { bodies = { sun, earth }; placeBodies(); requestRender(); },
+    /** Active ou coupe l'éclairage d'étude (illustratif, fixe) qui rend le relief lisible. */
+    setStudyLight(on) { studyLight.visible = Boolean(on); requestRender(); },
     /** Éclairage d'aperçu illustratif (aucun sprite) quand aucun Soleil n'est fourni ; null pour l'enlever. */
     setPreviewLight(light) { previewLight = light; placeBodies(); requestRender(); },
     /** 'overview' (orbite) ou 'ground' (au sol, regard vers azDeg). */

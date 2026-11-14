@@ -78,6 +78,7 @@ export function createPanel3d(store) {
     btn.addEventListener('click', () => store.set({ panoramaCenterAz: wrapDeg(store.get().panoramaCenterAz + Number(btn.dataset.turn) * TURN_STEP_DEG) }));
   }
   $('view3d-exag').addEventListener('input', (e) => { view?.setExaggeration(Number(e.target.value)); renderControls(); });
+  $('view3d-study').addEventListener('change', (e) => view?.setStudyLight(e.target.checked));
 
   return {
     /** Affiche le terrain et l'état des corps d'un site. */
@@ -89,6 +90,7 @@ export function createPanel3d(store) {
       if (await ensureView()) {
         view.setTerrain(terrain.meta, terrain.heightsM);
         view.setExaggeration(Number($('view3d-exag').value));
+        view.setStudyLight($('view3d-study').checked);
         pushBodies();
         pushViewMode();
       }

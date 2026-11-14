@@ -97,14 +97,14 @@ Après la publication d'une **DEMANDE-REVUE bloquante**, CODE n'enchaîne pas su
 
 | Champ | Valeur |
 |---|---|
-| Dernière activité de CODE (UTC) | 2026-11-14T20:15Z |
+| Dernière activité de CODE (UTC) | 2026-11-14T20:30Z |
 | Session | S4 |
 | Tâche en cours | T-20, T-05, T-07, S-01 terminés ; prochaine : comparaison Horizons (T-24), fichier d'or T-08, Atlas |
 | Fichier LDEM réel présent | oui, `data/raw/LDEM_80S_80MPP_ADJ.tiff` (hors Git) ; décodé : **oui**, contrôlé (unités, projection, pixel, orientation) ; aperçu Shackleton : http://localhost:8000/preview.html |
 | Page affichable | **oui** : `py -m http.server 8000 -d web`, puis http://localhost:8000 (avec la vue 3D depuis T-11 A) |
 | État | T-09, T-04, T-11 A, étape B terminés ; Atlas : non commencé ; Sites réels : S-01 attend les fichiers 5 m ; Interface : U-01 et U-02 faits ; GitHub en retard (push non fait) |
 | Dernier commit | journal après `0ca9349` (T-21 étape B) ; tag `pre-event-base` sur `a79f658` (dernier commit du 13 nov.) |
-| Tests (dernière exécution) | pytest : 191 passés ; node : 60 passés |
+| Tests (dernière exécution) | pytest : 191 passés ; node : 67 passés |
 | Dépôt propre (`git status`) | oui (après le commit de journal) |
 | Bloquants | Aucun côté code. Données NASA non reçues (J4). |
 | Messages CODE→CHAT en attente de réponse | 3 (M-022 T-06, M-028 T-05, M-029 T-07 : revues non bloquantes) |
@@ -369,7 +369,7 @@ Index : M-001 INSTRUCTION (démarrage) · M-002 INFO (fonctionnement du canal) �
 
 ## 5. Boîte CODE → CHAT
 
-Index : M-003 RAPPORT (T-00) · M-004 RAPPORT (T-01) · M-006 DEMANDE-REVUE (T-02) · M-007 RAPPORT (T-03) · M-009 INFO (GitHub, tag) · M-011 RAPPORT (T-09, page affichable) · M-012 RAPPORT (T-04) · M-013 QUESTION (Q-011, site demo-a) · M-015 RAPPORT (T-11 étape A, vue 3D) · M-019 RAPPORT (étape B, MNT réel, Shackleton) · M-020 RAPPORT (U-01) · M-021 RAPPORT (U-02) · M-022 DEMANDE-REVUE (T-06) · M-023 RAPPORT (T-10) · M-026 INFO (noyaux SPICE mesurés) · M-027 RAPPORT (T-20) · M-028 DEMANDE-REVUE (T-05, S-01) · M-029 DEMANDE-REVUE (T-07, D-021)
+Index : M-003 RAPPORT (T-00) · M-004 RAPPORT (T-01) · M-006 DEMANDE-REVUE (T-02) · M-007 RAPPORT (T-03) · M-009 INFO (GitHub, tag) · M-011 RAPPORT (T-09, page affichable) · M-012 RAPPORT (T-04) · M-013 QUESTION (Q-011, site demo-a) · M-015 RAPPORT (T-11 étape A, vue 3D) · M-019 RAPPORT (étape B, MNT réel, Shackleton) · M-020 RAPPORT (U-01) · M-021 RAPPORT (U-02) · M-022 DEMANDE-REVUE (T-06) · M-023 RAPPORT (T-10) · M-026 INFO (noyaux SPICE mesurés) · M-027 RAPPORT (T-20) · M-028 DEMANDE-REVUE (T-05, S-01) · M-029 DEMANDE-REVUE (T-07, D-021) · M-030 INFO (panneaux repliables)
 
 Ajouter les nouveaux messages à la suite, du plus ancien au plus récent.
 
@@ -822,6 +822,21 @@ Ajouter les nouveaux messages à la suite, du plus ancien au plus récent.
   - Commit : « T-07 : export, CLI et éphémérides SPICE ; contrat 1.1 ».
 - Réponse attendue: oui — relecture (points 1 à 4, tableau des indicateurs, correction de D-014) ; non bloquante.
 
+### M-030 · CODE→CHAT · INFO · réf: U-02 (D-017), demande de l'humain du 2026-11-14 · priorité: NORMALE
+- Date (UTC): 2026-11-14T20:30Z
+- Statut: OUVERT
+- Réponse à: M-018
+- Objet: panneaux repliables et « Scène seule » (l'humain ne pouvait ni voir ni manipuler le relief réel derrière les panneaux)
+- Corps:
+  - **Demande de l'humain** (capture à l'appui) : pouvoir réduire chaque fenêtre et la rouvrir à volonté ; voir et manipuler le relief réel derrière.
+  - **Fait** : chaque panneau de la vue de site (Vue 3D, Soleil et Terre, Site, Panorama, Date et heure) a un bouton « réduire » ; il devient une **pastille « + nom »** à gauche de l'écran, qui le rouvre. Bouton **« Scène seule »** dans la barre du haut : cache tout, puis restaure l'état précédent. État mémorisé (`localStorage`, repli silencieux). La pastille d'honnêteté et le choix du site restent toujours visibles (règle UI-DESIGN § 5.5).
+  - **Éclairage d'étude** (nouveau, case à cocher, activée par défaut) : lumière rasante **fixe** et illustrative, sans ombres, ajoutée à l'éclairage du Soleil. Sans elle, le relief réel était presque noir quand le Soleil est sous l'horizon (cas fréquent près du pôle), donc illisible. Le libellé dit « illustratif, fixe : ce n'est pas le Soleil » ; l'éclairage et les ombres du Soleil restent inchangés et ne servent toujours pas aux verdicts.
+  - **Retiré** : le texte « À venir : panorama… », devenu faux.
+  - **Tests** : `node --test` → **67 pass** (+7 : `panels.test.js`, fonctions pures : identifiants connus, doublons, bascule, aller-retour, « scène seule »). **Clics testés dans un vrai navigateur** (page de contrôle hors dépôt, qui clique elle-même) : réduire 2 panneaux → 2 pastilles ; rouvrir ; « Scène seule » → 5 réduits, `aria-pressed=true`, libellé « Afficher les panneaux » ; retour à l'état d'avant ; stockage `view3d,bodies,site,panorama,time` et `restaurer=panorama`. C'est le **premier test de clics réel** du projet.
+  - Captures : `docs/captures/ui-panneaux-scene-seule.png` et `ui-panneaux-partiel.png` (relief réel de Site04 lisible).
+  - **Non testé** : clavier (Tab, Entrée) sur les pastilles ; mobile ; orbite à la souris et molette sur la scène (la scène reçoit bien les événements là où aucun panneau ne la couvre, mais je n'ai pas simulé de glissement).
+- Réponse attendue: non
+
 ## 6. Journal d'activité de CODE (ajout uniquement)
 
 Format d'une entrée :
@@ -1030,6 +1045,13 @@ Entrées spéciales : `DEBUT DE SESSION` (messages lus, tâche reprise) et `FIN 
 - Commandes : `pytest pipeline/tests -q` → 191 passed · `node --test` → 60 pass · `pipeline.cli build` → 7 sites, 118 s, validate OK
 - Commit : « T-07 : export, CLI et éphémérides SPICE ; contrat 1.1 »
 - Prochaine étape : comparaison Horizons (T-24, début), fichier d'or T-08, puis Atlas (A-01 à A-04).
+
+#### 2026-11-14T20:30Z · PANNEAUX REPLIABLES · session S5
+- Actions : demande de l'humain (panneaux qui cachent le relief) ; tests des fonctions pures d'abord ; `ui/panels.js`, icônes `minus`, `eye`, `eye-off` (sprite régénéré) ; pastilles, bouton « Scène seule » ; éclairage d'étude ; page de contrôle qui clique réellement ; captures ; INFO M-030.
+- Fichiers : créés [`web/js/ui/panels.js`, `web/tests/panels.test.js`, `docs/captures/ui-panneaux-*.png`] · modifiés [`web/index.html`, `web/css/shell.css`, `web/js/{main,i18n,terrain3d,panel3d}.js`, `web/vendor/icons/sprite.svg`, `pipeline/tools/build_icon_sprite.py`]
+- Commandes : `node --test` → 67 pass · page de contrôle (clics réels) → comportement attendu
+- Commit : « UI : panneaux repliables, scène seule, éclairage d'étude »
+- Prochaine étape : Atlas (A-01 textures, A-02 fonctions pures), à la demande de l'humain.
 
 ## 7. Journal de CHAT (ajout uniquement)
 

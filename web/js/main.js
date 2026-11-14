@@ -4,6 +4,7 @@ import { formatNumber, formatUtc, getLang, setLang, t } from './i18n.js';
 import { createPanel3d } from './panel3d.js';
 import { createStore } from './store.js';
 import { createPanoramaPanel } from './ui/panoramapanel.js';
+import { createPanels } from './ui/panels.js';
 import { createShell } from './ui/shell.js';
 import { decode, encode } from './urlstate.js';
 
@@ -27,6 +28,7 @@ const store = createStore(decode(window.location.hash));
 const panel3d = createPanel3d(store);
 const shell = createShell(store);
 const panorama = createPanoramaPanel(store);
+const panels = createPanels();
 let index = null;
 let site = null;
 
@@ -147,6 +149,7 @@ function renderAll() {
   renderHonesty();
   const entry = index && site ? index.sites.find((s) => s.id === site.id) : null;
   shell.render(store.get(), entry ? siteName(entry) : null, Boolean(site));
+  panels.refresh();
   if (!index) return;
   renderSiteSelect();
   if (!site) return;

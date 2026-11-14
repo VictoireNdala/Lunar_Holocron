@@ -55,6 +55,7 @@
           <span class="visually-hidden" data-i18n="site.label"></span>
           <select id="site-select"></select>
         </label>
+        <button type="button" id="scene-only" class="btn scene-btn" aria-pressed="false"><svg class="ico" aria-hidden="true"><use href="./vendor/icons/sprite.svg#i-eye-off"></use></svg><span class="scene-label"></span></button>
         <div class="lang" role="group" data-i18n-aria="lang.label">
           <button type="button" class="lang-btn" data-lang="fr" aria-pressed="true">FR</button>
           <button type="button" class="lang-btn" data-lang="en" aria-pressed="false">EN</button>
@@ -70,6 +71,8 @@
       <p id="honesty-note" class="chip-note glass" hidden></p>
     </div>
 
+    <div id="tray" class="tray" role="toolbar" data-i18n-aria="panel.tray" hidden></div>
+
     <div id="error" class="error" role="alert" hidden>
       <strong data-i18n="error.title"></strong>
       <p id="error-text"></p>
@@ -80,7 +83,7 @@
       <!-- Vue de site : tiroir à droite et barre de temps en bas, par-dessus la scène. -->
       <div id="panel-a" data-view-panel="site" hidden>
         <aside class="drawer" data-i18n-aria="site.heading">
-          <section class="card glass" aria-labelledby="view3d-heading">
+          <section class="card glass" aria-labelledby="view3d-heading" data-panel="view3d" data-panel-title="view3d.heading">
             <h2 id="view3d-heading" data-i18n="view3d.heading"></h2>
             <div class="toolbar">
               <div class="seg" role="group" data-i18n-aria="view3d.mode">
@@ -98,6 +101,7 @@
                 <output id="view3d-exag-value" for="view3d-exag"></output>
               </label>
             </div>
+            <label class="check"><input id="view3d-study" type="checkbox" checked><span data-i18n="view3d.study"></span></label>
             <div class="legend">
               <span data-i18n="view3d.legend"></span>
               <div id="legend-bar" class="legend-bar" aria-hidden="true"></div>
@@ -107,7 +111,7 @@
             <p class="hint" data-i18n="view3d.note"></p>
           </section>
 
-          <section class="card glass" aria-labelledby="bodies-heading">
+          <section class="card glass" aria-labelledby="bodies-heading" data-panel="bodies" data-panel-title="bodies.heading">
             <h2 id="bodies-heading" data-i18n="bodies.heading"></h2>
             <div class="table-scroll">
             <table class="readings">
@@ -134,7 +138,7 @@
             <p class="hint" data-i18n="bodies.note"></p>
           </section>
 
-          <section class="card glass" aria-labelledby="site-heading">
+          <section class="card glass" aria-labelledby="site-heading" data-panel="site" data-panel-title="site.heading">
             <h2 id="site-heading" data-i18n="site.heading"></h2>
             <p id="site-name" class="site-name"></p>
             <p id="site-synthetic" class="tag" data-i18n="site.synthetic" hidden></p>
@@ -142,11 +146,10 @@
             <h3 data-i18n="prov.heading"></h3>
             <dl id="site-provenance" class="facts"></dl>
           </section>
-          <p class="upcoming" data-i18n="upcoming"></p>
         </aside>
 
         <div class="dock">
-        <section class="panorama glass" aria-labelledby="pano-heading">
+        <section class="panorama glass" aria-labelledby="pano-heading" data-panel="panorama" data-panel-title="pano.heading">
           <div class="pano-head">
             <h2 id="pano-heading" data-i18n="pano.heading"></h2>
             <div class="seg" role="group" data-i18n-aria="pano.controls">
@@ -164,7 +167,7 @@
           <p class="pano-foot"><span id="pano-readout" class="num" aria-live="polite"></span> <span id="pano-enlarged"></span></p>
           <p class="hint" data-i18n="pano.legend"></p>
         </section>
-        <section class="timebar glass" aria-labelledby="time-heading">
+        <section class="timebar glass" aria-labelledby="time-heading" data-panel="time" data-panel-title="time.heading">
           <h2 id="time-heading" class="visually-hidden" data-i18n="time.heading"></h2>
           <form id="time-form" class="time-form" novalidate>
             <label class="field inline">

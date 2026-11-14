@@ -95,6 +95,30 @@
   padding: 0; text-align: left; pointer-events: none; text-shadow: 0 1px 2px #000;
 }
 
+/* --- Panneaux repliables (demande de l'humain) : bouton de réduction, pastilles de restauration, « scène seule » --- */
+[data-panel] { position: relative; }
+[data-panel].panel-collapsed { display: none; }
+.panel-min {
+  position: absolute; top: 8px; right: 8px; z-index: 2; width: 32px; height: 32px; padding: 0; display: grid; place-items: center;
+  color: var(--text-2); background: transparent; border: 1px solid transparent; border-radius: 8px; cursor: pointer;
+  transition: background var(--t-fast) var(--ease), color var(--t-fast) var(--ease);
+}
+.panel-min:hover { color: var(--text); background: rgba(255, 255, 255, 0.08); border-color: var(--line-strong); }
+[data-panel] > h2, .pano-head, .timebar .time-form { padding-right: 38px; }
+.timebar { padding-right: 56px; }
+.scene-btn { display: inline-flex; align-items: center; gap: var(--s-2); }
+.scene-btn[aria-pressed="true"] { background: var(--text); color: var(--bg-0); border-color: var(--text); font-weight: 600; }
+.check { display: flex; align-items: center; gap: var(--s-2); margin: var(--s-2) 0 0; color: var(--text-2); font-size: var(--fs-13); cursor: pointer; }
+.check input { accent-color: var(--earth); width: 18px; height: 18px; }
+.tray { position: absolute; z-index: 29; left: var(--s-3); top: 96px; display: flex; flex-direction: column; gap: var(--s-2); align-items: flex-start; }
+.tray[hidden] { display: none; }
+.tray-chip {
+  display: inline-flex; align-items: center; gap: var(--s-2); min-height: 36px; padding: 6px 14px; border-radius: 999px; cursor: pointer;
+  font: 600 var(--fs-13)/1.2 var(--font-ui); color: var(--text); background: var(--bg-1); border: 1px solid var(--line-strong); box-shadow: var(--shadow);
+}
+.tray-chip::before { content: "+"; font-family: var(--font-mono); color: var(--earth); }
+.tray-chip:hover { border-color: var(--text-2); }
+
 /* --- Mobile : barre d'onglets en bas, contenu empilé (UI-DESIGN § 5.1) --- */
 @media (max-width: 1023px) {
   .rail {
@@ -116,6 +140,8 @@
   .scene { position: relative; height: 56vh; }
   .topbar { position: sticky; top: 0; margin: 0; left: auto; right: auto; border-radius: 0; }
   .stage .honesty { position: static; margin: var(--s-3) var(--s-3) 0; }
+  .tray { position: static; margin: var(--s-3) var(--s-3) 0; flex-direction: row; flex-wrap: wrap; order: -1; }
+  .scene-btn .scene-label { display: none; }
   .stage .error, .stage .loading { position: static; transform: none; margin: var(--s-3); }
   #main { position: static; }
   #panel-a { display: flex; flex-direction: column-reverse; }
