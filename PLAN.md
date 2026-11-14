@@ -126,6 +126,20 @@ Pour toutes les tâches s'appliquent la boucle de travail et la définition de �
 ### Après le jalon J3 : P1
 - **T-16** export CSV · **T-17** « et si on décale ? » (prochaine fenêtre, meilleure fenêtre du mois, avec tests) · **T-18** deux dates sur un même site · **T-19** lecture animée du panorama avec trace · **T-25** pastilles Artemis (pente, distance au pôle ; nécessite le MNT réel, donc après T-22).
 
+### Bloc « Atlas » (D-015, spécification : `docs/ATLAS.md`)
+Globe 3D, carte mondiale 2D, pôles Sud et Nord 2D, horloge commune. Tâches **A-01 à A-07** (tableau du § 8 de `docs/ATLAS.md`). Ordre conseillé :
+1. Tout de suite, sans dépendre du reste : **A-01** (textures, licence lue sur la page) et **A-02** (fonctions pures + tests d'or).
+2. **A-03** dès que la partie `ephemeris_demo` de T-07 existe (la faire tôt, elle sert aussi aux séries de site).
+3. **A-04** (globe) puis **A-05** (cartes 2D) puis **A-06** (onglets, URL, horloge).
+4. **A-07** seulement après le contrôle du MNT réel.
+L'Atlas **ne remplace pas** le noyau : T-06, T-05, T-07, T-08 et T-10 restent prioritaires pour la **vérité scientifique** ; l'Atlas est la porte d'entrée visuelle. Si le temps manque, livrer dans cet ordre : A-06 réduit (globe + carte pôle Sud) avant le reste.
+
+### Bloc « Interface » (D-017, spécification : `docs/UI-DESIGN.md`)
+Tâches **U-01 à U-07** (§ 7 de `docs/UI-DESIGN.md`) : jetons et polices locales, coque (rail, barre flottante), barre de temps à capsule (avec T-12), carte verdict (avec T-06), fiche de site (avec A-05 / S-03), palette ⌘K, finition. **U-01 et U-02 passent avant T-06** pour que T-10 et les écrans suivants soient construits dans le nouveau style. Ordre de coupe : U-06, puis U-07, **jamais U-01 à U-04**.
+
+### Bloc « Sites réels » (D-016, spécification : `docs/SITES-REELS.md`)
+Tâches **S-01 à S-04** (§ 8 de `docs/SITES-REELS.md`) : positions lues dans les MNT 5 m de PGDA 78, outil de découpe par site, marqueurs et fiche sur l'Atlas, préchargement et visite guidée. S-01 et S-02 prolongent l'aperçu 3D du relief réel (M-014 étape B) et préparent T-22 / T-23.
+
 ### J4 — Données réelles (dès que disponibles ; suivre `docs/BRANCHEMENT-DONNEES-REELLES.md`)
 - **T-20** noyaux SPICE et tests de plausibilité · **T-21** MNT : étiquette, convention de projection, contrôle sur un cratère · **T-22** `RasterDem`, `MultiResDem` réel, un site complet · **T-23** sites réels vérifiés, construction de tous les sites ·
   **T-24** validation scientifique (Horizons, PGDA, outil officiel, sensibilité) et `docs/VALIDATION-RESULTATS.md`.
@@ -151,3 +165,8 @@ Pour toutes les tâches s'appliquent la boucle de travail et la définition de �
 | Données réelles différentes de l'attendu | `BRANCHEMENT` § 6 ; le contrat ne change pas |
 | Règle du hackathon sur le code d'avant événement | `Q-001` ; commits préfixés `pre-event:` et tag `pre-event-base` |
 | Valeurs fictives prises pour réelles | Drapeau `synthetic`, bannière, validation de cohérence, relecture du vérificateur |
+
+## Backlog (à traiter seulement quand l'Atlas, les sites réels et l'interface sont stables)
+| Id | Idée | Origine | Remarque |
+|---|---|---|---|
+| B-01 | **Itinéraire de rover entre cratères** (trajet à pente et éclairage contraints, entre les sites de l'Atlas) | Demande de l'humain, 2026-11-14 | Hors périmètre du produit actuel (qui calcule des visibilités, pas des trajets) ; à spécifier à part (données de pente, critères, honnêteté sur les limites). |

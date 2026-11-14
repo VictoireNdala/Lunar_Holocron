@@ -122,6 +122,14 @@ function decodeHeights(meta, buffer, url) {
   return heightsM;
 }
 
+/** Charge un terrain seul (métadonnées + .bin) depuis son URL de métadonnées ; sert aussi aux aperçus du relief réel. */
+export async function loadTerrainFile(metaUrl, fetchFn = (url) => globalThis.fetch(url)) {
+  const meta = await request(fetchFn, metaUrl, 'json');
+  ensure(checkVersion(meta), metaUrl);
+  const binUrl = metaUrl.slice(0, metaUrl.lastIndexOf('/') + 1) + meta.z.file;
+  return { meta, heightsM: decodeHeights(meta, await request(fetchFn, binUrl, 'binary'), binUrl) };
+}
+
 /** Source de données relative à `root` (ex. 'data/sample/'), avec cache mémoire. */
 export function createDataSource(root, fetchFn = (url) => globalThis.fetch(url)) {
   let indexPromise = null;
@@ -159,13 +167,7 @@ export function createDataSource(root, fetchFn = (url) => globalThis.fetch(url))
 
   async function loadTerrain(id) {
     if (!terrains.has(id)) {
-      const promise = entryOf(id).then(async (entry) => {
-        const metaUrl = root + entry.terrain_file;
-        const meta = await request(fetchFn, metaUrl, 'json');
-        ensure(checkVersion(meta), metaUrl);
-        const binUrl = metaUrl.slice(0, metaUrl.lastIndexOf('/') + 1) + meta.z.file;
-        return { meta, heightsM: decodeHeights(meta, await request(fetchFn, binUrl, 'binary'), binUrl) };
-      });
+      const promise = entryOf(id).then((entry) => loadTerrainFile(root + entry.terrain_file, fetchFn));
       terrains.set(id, promise);
       promise.catch(() => terrains.delete(id));
     }

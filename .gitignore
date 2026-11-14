@@ -27,3 +27,6 @@ playwright-report/
 .vscode/
 .DS_Store
 Thumbs.db
+
+# Aperçus du relief réel (dérivés de data/raw, jamais versionnés)
+web/data/local/

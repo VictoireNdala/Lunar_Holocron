@@ -80,6 +80,7 @@ export function createTerrainView(container, { onQualityChange = () => {} } = {}
   let groundAzDeg = 0;
   let observerHeightM = 2;
   let bodies = { sun: null, earth: null };
+  let previewLight = null; // éclairage d'aperçu {azDeg, elDeg} sans Soleil affiché (relief réel sans éphémérides)
   let qualityLevel = 0;
   let frameTimes = [];
   let pending = false;
@@ -170,7 +171,7 @@ export function createTerrainView(container, { onQualityChange = () => {} } = {}
       sprites[k].material.opacity = b.elDeg < 0 ? BELOW_HORIZON_OPACITY : 1;
       sprites[k].material.transparent = true;
     });
-    const sun = bodies.sun;
+    const sun = bodies.sun ?? previewLight;
     const lit = Boolean(sun) && sun.elDeg >= 0;
     sunLight.intensity = lit ? SUN_INTENSITY : 0;
     ambient.intensity = lit ? AMBIENT_LIT : AMBIENT_DARK;
@@ -220,6 +221,8 @@ export function createTerrainView(container, { onQualityChange = () => {} } = {}
     setTerrain(terrainMeta, heightsM) { meta = terrainMeta; heights = heightsM; rebuildMesh(); applyCamera(true); },
     /** États {azDeg, elDeg, radiusDeg} du Soleil et de la Terre (ou null). */
     setBodies(sun, earth) { bodies = { sun, earth }; placeBodies(); requestRender(); },
+    /** Éclairage d'aperçu illustratif (aucun sprite) quand aucun Soleil n'est fourni ; null pour l'enlever. */
+    setPreviewLight(light) { previewLight = light; placeBodies(); requestRender(); },
     /** 'overview' (orbite) ou 'ground' (au sol, regard vers azDeg). */
     setViewMode(newMode, { azDeg = groundAzDeg, observerHeight = observerHeightM } = {}) {
       const reset = newMode !== mode;

@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lunar Holocron</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="./css/main.css">
+  <!-- Outil de développement : aperçu du relief réel (données locales non versionnées, web/data/local/). -->
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "./vendor/three/three.module.js",
+        "three/addons/": "./vendor/three/addons/"
+      }
+    }
+  </script>
+  <script type="module" src="./js/preview.js"></script>
+</head>
+<body>
+  <div class="banner banner-real" role="status" data-i18n="preview.chip"></div>
+  <header class="header">
+    <div class="brand">
+      <h1 data-i18n="preview.title"></h1>
+      <p class="tagline"><a href="./index.html" data-i18n="preview.back"></a></p>
+    </div>
+    <div class="controls">
+      <label class="field"><span data-i18n="preview.choose"></span><select id="preview-select"></select></label>
+      <div class="lang" role="group" data-i18n-aria="lang.label">
+        <button type="button" class="lang-btn" data-lang="fr" aria-pressed="true">FR</button>
+        <button type="button" class="lang-btn" data-lang="en" aria-pressed="false">EN</button>
+      </div>
+    </div>
+  </header>
+  <div id="error" class="error" role="alert" hidden><strong data-i18n="error.title"></strong><p id="error-text"></p></div>
+  <main class="panel">
+    <section class="card card-wide">
+      <div class="toolbar">
+        <div class="seg" role="group" data-i18n-aria="view3d.mode">
+          <button type="button" class="btn mode-btn" data-mode="overview" aria-pressed="true" data-i18n="view3d.overview"></button>
+          <button type="button" class="btn mode-btn" data-mode="ground" aria-pressed="false" data-i18n="view3d.ground"></button>
+        </div>
+        <label class="field inline">
+          <span data-i18n="view3d.exaggeration"></span>
+          <input id="exag" type="range" min="1" max="5" step="0.5" value="1">
+          <output id="exag-value" for="exag"></output>
+        </label>
+      </div>
+      <div id="view3d" class="view3d"></div>
+      <div class="legend">
+        <span data-i18n="view3d.legend"></span>
+        <div id="legend-bar" class="legend-bar" aria-hidden="true"></div>
+        <div class="legend-scale"><span id="legend-min"></span><span id="legend-max"></span></div>
+      </div>
+      <p id="light-note" class="hint"></p>
+      <dl id="facts" class="facts"></dl>
+    </section>
+  </main>
+</body>
+</html>

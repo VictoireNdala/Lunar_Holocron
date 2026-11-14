@@ -19,7 +19,7 @@ function files(dir, ext) {
 }
 
 test('index.html, CSS et modules JS ne chargent rien d\'externe', () => {
-  const targets = ['index.html', ...files('css/', '.css'), ...files('js/', '.js')];
+  const targets = ['index.html', 'preview.html', ...files('css/', '.css'), ...files('js/', '.js')];
   for (const path of targets) {
     const text = readFileSync(WEB_DIR + path, 'utf8');
     for (const re of EXTERNAL) assert.doesNotMatch(text, re, `${path} : ${re}`);
