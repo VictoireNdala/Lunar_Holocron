@@ -3,12 +3,12 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { PANEL_IDS, parseHidden, serializeHidden, togglePanel, toggleSceneOnly, isSceneOnly } from '../js/ui/panels.js';
 
-test('PANEL_IDS : les panneaux de la vue de site (cinq) et celui de l\'Atlas (couches)', () => {
-  assert.deepEqual([...PANEL_IDS], ['view3d', 'bodies', 'site', 'panorama', 'time', 'layers']);
+test('PANEL_IDS : les panneaux de la vue de site (six) et celui de l\'Atlas (couches)', () => {
+  assert.deepEqual([...PANEL_IDS], ['verdict', 'view3d', 'bodies', 'site', 'panorama', 'time', 'layers']);
 });
 
 test('portée : « scène seule » ne touche que les panneaux de la vue courante', () => {
-  const siteScope = ['view3d', 'bodies', 'site', 'panorama', 'time'];
+  const siteScope = ['verdict', 'view3d', 'bodies', 'site', 'panorama', 'time'];
   const only = toggleSceneOnly(['layers'], [], siteScope);
   assert.deepEqual(only.hidden, [...PANEL_IDS]); // les panneaux de l'Atlas gardent leur état (ici : couches déjà réduit)
   assert.equal(isSceneOnly(only.hidden, siteScope), true);
@@ -61,7 +61,7 @@ test('toggleSceneOnly : sans état à restaurer, tout se rouvre', () => {
 });
 
 test('isSceneOnly : vrai seulement si tous les panneaux de la portée sont repliés', () => {
-  assert.equal(isSceneOnly(['view3d', 'bodies', 'site', 'panorama', 'time']), false); // il manque « layers » (portée = tous)
+  assert.equal(isSceneOnly(['verdict', 'view3d', 'bodies', 'site', 'panorama', 'time']), false); // il manque « layers » (portée = tous)
   assert.equal(isSceneOnly([...PANEL_IDS]), true);
   assert.equal(isSceneOnly([]), false);
 });

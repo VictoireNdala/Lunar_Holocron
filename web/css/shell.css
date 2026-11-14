@@ -130,9 +130,39 @@
 
 /* --- Lecture animée et sélecteur de projection (A-06) --- */
 .playback { display: flex; flex-wrap: wrap; gap: var(--s-2) var(--s-3); align-items: center; }
-.speed-btn[aria-pressed="true"], .proj-btn[aria-pressed="true"] { background: var(--text); color: var(--bg-0); font-weight: 600; }
+.speed-btn[aria-pressed="true"], .proj-btn[aria-pressed="true"], .thr-btn[aria-pressed="true"] { background: var(--text); color: var(--bg-0); font-weight: 600; }
 .proj-seg { margin-bottom: var(--s-2); flex-wrap: wrap; }
 .timebar .hint { flex-basis: 100%; margin: 0; }
+
+/* --- Verdict du site et lectures (T-13, U-04) --- */
+.big-row { display: flex; flex-wrap: wrap; gap: var(--s-3) var(--s-6); margin: var(--s-3) 0 var(--s-1); }
+.big { margin: 0; display: flex; flex-direction: column; }
+.big-num { font-size: 44px; line-height: 1.05; font-weight: 600; letter-spacing: -0.02em; }
+.big-sun .big-num { color: var(--sun); }
+.big-earth .big-num { color: var(--earth); }
+.big-label { display: inline-flex; align-items: center; gap: var(--s-2); color: var(--text-2); font-size: var(--fs-13); }
+.kpis { display: grid; gap: var(--s-2); margin: var(--s-3) 0; }
+.kpi { display: flex; justify-content: space-between; gap: var(--s-3); padding: 8px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--bg-2); }
+.kpi dt { color: var(--text-2); font-size: var(--fs-13); }
+.kpi dd { margin: 0; font-weight: 600; text-align: right; }
+.heat { display: flex; flex-direction: column; gap: 4px; margin: var(--s-2) 0; overflow-x: auto; padding-bottom: 4px; }
+.heat-row { display: flex; align-items: center; gap: 2px; min-width: max-content; }
+.heat-label { width: 64px; flex: none; font-size: var(--fs-12); color: var(--text-2); }
+.heat-cell { width: 5px; height: 22px; padding: 0; border: 0; border-radius: 1px; cursor: pointer; background: color-mix(in srgb, var(--heat) calc(var(--v) * 100%), var(--bg-2)); }
+.heat-sun { --heat: var(--sun); }
+.heat-earth { --heat: var(--earth); }
+.heat-both { --heat: var(--ok); }
+.heat-cell:hover { outline: 1px solid var(--text); }
+.heat-cell[aria-current="date"] { outline: 2px solid var(--text); outline-offset: 1px; }
+.heat-cell:focus-visible { outline: 2px solid var(--text); outline-offset: 2px; }
+.reading { margin: var(--s-3) 0; padding-top: var(--s-2); border-top: 1px solid var(--line); }
+.reading h3 { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-2); margin: 0 0 var(--s-1); text-transform: none; letter-spacing: normal; font-size: var(--fs-14); color: var(--text); }
+.status { padding: 2px 10px; border-radius: 999px; font-size: var(--fs-12); font-weight: 600; border: 1px solid var(--line-strong); }
+.status[data-status="visible"] { color: var(--ok); border-color: var(--ok); }
+.status[data-status="partial"] { color: var(--warn); border-color: var(--warn); }
+.direct-link { margin: var(--s-2) 0; padding: 8px 12px; border-radius: 10px; border: 1px solid var(--line-strong); font-size: var(--fs-13); }
+.direct-link[data-possible="true"] { border-color: var(--ok); }
+#reading-warnings p { margin: 0 0 var(--s-1); }
 
 /* --- Fiche de site et visite guidée de l'Atlas (S-03, S-04) --- */
 .atlas-sites { margin-bottom: var(--s-3); display: flex; flex-direction: column; gap: var(--s-2); align-items: flex-start; }

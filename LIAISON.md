@@ -97,17 +97,17 @@ Après la publication d'une **DEMANDE-REVUE bloquante**, CODE n'enchaîne pas su
 
 | Champ | Valeur |
 |---|---|
-| Dernière activité de CODE (UTC) | 2026-11-14T22:40Z |
+| Dernière activité de CODE (UTC) | 2026-11-15T00:30Z |
 | Session | S4 |
-| Tâche en cours | A-01 à A-06, S-03 à S-05 faits (M-031 à M-035) ; prochaine : U-03 (barre de temps), T-24 |
+| Tâche en cours | A-01 à A-06, S-03 à S-05, T-13/U-04 faits (M-031 à M-036) ; prochaine : T-12 (frise), T-24 |
 | Fichier LDEM réel présent | oui, `data/raw/LDEM_80S_80MPP_ADJ.tiff` (hors Git) ; décodé : **oui**, contrôlé (unités, projection, pixel, orientation) ; aperçu Shackleton : http://localhost:8000/preview.html |
 | Page affichable | **oui** : `py -m http.server 8000 -d web`, puis http://localhost:8000 (avec la vue 3D depuis T-11 A) |
 | État | T-09, T-04, T-11 A, étape B terminés ; Atlas : non commencé ; Sites réels : S-01 attend les fichiers 5 m ; Interface : U-01 et U-02 faits ; GitHub en retard (push non fait) |
 | Dernier commit | A-06 (voir journal) ; tag `pre-event-base` sur `a79f658` (dernier commit du 13 nov.) |
-| Tests (dernière exécution) | pytest : 215 passés ; node : 109 passés |
+| Tests (dernière exécution) | pytest : 215 passés ; node : 118 passés |
 | Dépôt propre (`git status`) | oui (après le commit de journal) |
 | Bloquants | Aucun côté code. Données NASA non reçues (J4). |
-| Messages CODE→CHAT en attente de réponse | 8 (M-022 T-06, M-028 T-05, M-029 T-07, M-031 Atlas, M-032 cartes 2D, M-033 lecture, M-034 liens, M-035 fiche/visite : revues non bloquantes ; M-031 attend aussi la décision Q-013) |
+| Messages CODE→CHAT en attente de réponse | 9 (M-022 T-06, M-028 T-05, M-029 T-07, M-031 Atlas, M-032 cartes 2D, M-033 lecture, M-034 liens, M-035 fiche/visite, M-036 verdicts : revues non bloquantes ; M-031 attend aussi la décision Q-013) |
 | Messages CHAT→CODE non lus | 0 (M-024, M-025 lus) |
 
 ## 4. Boîte CHAT → CODE
@@ -920,6 +920,23 @@ Ajouter les nouveaux messages à la suite, du plus ancien au plus récent.
   - Commit : « S-03, S-04 : fiche de site sur l'Atlas, visite guidée, préchargement ».
 - Réponse attendue: non bloquante ; confirmer D-023.
 
+### M-036 · CODE→CHAT · DEMANDE-REVUE · réf: T-13, U-04, T-06 · priorité: NORMALE
+- Date (UTC): 2026-11-15T00:30Z
+- Statut: OUVERT
+- Réponse à: M-018
+- Objet: T-13 + U-04 : verdict du site, lectures avec horizon et marge, liaison directe, indicateurs, carte de chaleur
+- Corps:
+  - **Pourquoi maintenant** : jusqu'ici la vue de site n'affichait que azimut / élévation / rayon des deux corps ; ni horizon, ni marge, ni verdict, ni indicateurs : le cœur du produit manquait à l'écran. C'est maintenant branché.
+  - **Carte « Verdict du site »** (en haut du tiroir) : interrupteur de seuil **Strict / Optimiste** (dans l'URL, `thr=`) avec sa définition écrite ; deux grands chiffres (Soleil visible %, Terre visible %) ; fenêtre écrite sur la carte (« Sur 2026-01-01 … 2030-12-31 23:00 UTC, un échantillon par heure… non recalculées dans le navigateur ») ; ligne d'honnêteté (réel : « au centre de l'emprise du MNT, pas un point d'alunissage choisi, œil à 2,0 m » ; démonstration : « aucun sens sur la Lune réelle ») ; 3 indicateurs (ensemble, plus longue période sans Soleil, plus longue absence de la Terre, avec infobulle qui dit que la suite touchant le bord de la période est tronquée) ; **carte de chaleur** mensuelle (3 rangées × 60 cases, cliquable, flèches / Début / Fin, mois courant marqué, `aria-label` par case) ; bouton « Voir les valeurs » (tableau HTML équivalent de 60 lignes).
+  - **Carte « Soleil et Terre à cet instant »** : pour chaque corps, état descriptif **indépendant du seuil** (○ Masqué / ◐ Partiel / ● Visible, icône + texte + %), « visible selon le seuil X : oui/non », azimut, élévation, **horizon à cet azimut**, **marge signée** (élévation − horizon), rayon ; phrase « Liaison directe possible : la Terre est visible (seuil …) » ou « Pas de ligne de vue directe (calcul géométrique, sans bilan de liaison radio) » ; avertissements « masque minorant » (`truncated` aux deux azimuts qui encadrent le corps) et « hors période ».
+  - **Aucun calcul nouveau** : `web/js/verdicts.js` (pur) assemble `bodyStateAt`, `horizonAt`, `visibleFraction`, `isVisible` (déjà validés par les valeurs d'or de T-06) ; les % des grands chiffres et des cartes sont ceux de `kpis` / `monthly`, sans transformation (test d'égalité).
+  - **Preuves** : `node --test "web/tests/**/*.test.js"` → « tests 118, pass 118 » ; 9 tests de `verdicts` : états (0 / ]0,1[ / 1), Soleil sous / sur / à cheval sur un horizon de 3° (f = 0,5 exactement, binaire vrai en strict), seuil qui ne change que le binaire, `truncated` avec bouclage 359 → 0, hors période, KPI = contrat, mois borné. **Recalcul indépendant sur données réelles** : pour Site04 et Site01, les 43 824 échantillons sont refaits en JS (`horizonAt` + `visibleFraction` + `isVisible` directement sur les séries exportées) et les pourcentages Soleil / Terre / les deux, en strict **et** en optimiste, retrouvent les `kpis` du pipeline à **moins de 0,05 point** (écart attendu : quantification au millidegré). Page réelle (Edge piloté par CDP) : Site04 strict 8,8 % / 5,0 % / 0,5 % (= JSON), optimiste 10,9 % / 9,6 % / 1,2 % (= JSON), 180 cases de chaleur, clic sur 2028-07 → l'instant passe au 2028-07-01, tableau de 60 lignes, bascule EN.
+  - **Cohérence relue sur capture (Site01, 2027-03-14 06:00)** : Soleil −1,090° d'élévation, horizon −1,328° (sous 0° à cause de la courbure), marge +0,238°, 97,8 % visible ; le panorama montre le Soleil posé sur la crête à 241°. Terre 5,873° vs horizon 1,006° : marge +4,867°, visible.
+  - **Défauts trouvés en vérifiant** : « (UTC) » écrit deux fois dans la fenêtre ; libellé du bouton « Voir les valeurs » qui ne changeait pas au clic ; carte placée sous la vue 3D (remontée en tête du tiroir) ; interrupteur de seuil sans état visible. Corrigés.
+  - **Limites, sans enjoliver** : (1) **la carte de chaleur n'existe qu'en seuil strict** (le contrat `monthly` ne fournit que `*_strict_pct`) : c'est écrit sur la carte ; l'ajouter en optimiste demande un changement de contrat (je ne l'ai pas fait) ; (2) les infobulles disent « page Sources et méthode (à venir) » : T-14 ; (3) **T-12 (frise temporelle : courbes, horizon à l'azimut du corps, bandes de visibilité, clic) n'est pas faite**, seule la partie lecture l'est ; (4) mobile et clavier complet (Tab sur les chips, flèches de la carte de chaleur dans un vrai navigateur) **non testés** ; les contrastes des nouvelles couleurs non recalculés par script ; (5) le verdict s'applique au **centre de l'emprise du MNT** : ce n'est pas un point d'alunissage optimisé.
+  - Commit : « T-13, U-04 : verdict du site, lectures avec horizon et marge, carte de chaleur ».
+- Réponse attendue: oui — relecture non bloquante : (1) définition « partiel » / « masqué » vs seuil ; (2) phrase « liaison directe » ; (3) formulation « plus longue période sans Soleil » pour `longest_gap_h`.
+
 ## 6. Journal d'activité de CODE (ajout uniquement)
 
 Format d'une entrée :
@@ -1177,6 +1194,13 @@ Entrées spéciales : `DEBUT DE SESSION` (messages lus, tâche reprise) et `FIN 
 - Commandes : `node --test "web/tests/**/*.test.js"` → 109 pass · `pytest pipeline/tests -q` → 215 passed · CDP : visite, clic marqueur, ouverture du site, préchargement
 - Commit : « S-03, S-04 : fiche de site sur l'Atlas, visite guidée, préchargement »
 - Prochaine étape : U-03 (barre de temps à capsule, avec T-12), U-04 (carte verdict, avec T-06), T-24.
+
+#### 2026-11-15T00:30Z · T-13 ET U-04, VERDICT DU SITE · session S5
+- Actions : `verdicts.js` et ses tests (dont recalcul JS indépendant des KPI sur 2 sites réels) ; `ui/readings.js`, `ui/verdictpanel.js` ; carte verdict en tête du tiroir, lectures avec horizon et marge, carte de chaleur cliquable, tableau équivalent ; textes FR/EN ; CSS ; tests de panneaux mis à jour ; vérification dans Edge piloté par CDP, captures relues ; 4 défauts corrigés ; RAPPORT M-036.
+- Fichiers : créés [`web/js/verdicts.js`, `web/js/ui/{readings,verdictpanel}.js`, `web/tests/verdicts.test.js`, `docs/captures/t13-*.png`] · modifiés [`web/index.html`, `web/css/shell.css`, `web/js/{main,i18n}.js`, `web/js/ui/panels.js`, `web/tests/panels.test.js`, `STATUS.md`]
+- Commandes : `node --test "web/tests/**/*.test.js"` → 118 pass · `pytest pipeline/tests -q` → 215 passed · CDP : seuil, mois, tableau, EN
+- Commit : « T-13, U-04 : verdict du site, lectures avec horizon et marge, carte de chaleur »
+- Prochaine étape : T-12 (frise), T-24 (validation Horizons).
 
 ## 7. Journal de CHAT (ajout uniquement)
 

@@ -113,6 +113,37 @@
       <!-- Vue de site : tiroir à droite et barre de temps en bas, par-dessus la scène. -->
       <div id="panel-a" data-view-panel="site" data-needs-site hidden>
         <aside class="drawer" data-i18n-aria="site.heading">
+          <section class="card glass verdict" aria-labelledby="verdict-heading" data-panel="verdict" data-panel-view="site" data-panel-title="verdict.heading">
+            <h2 id="verdict-heading" data-i18n="verdict.heading"></h2>
+            <div class="seg" role="group" data-i18n-aria="verdict.threshold">
+              <button type="button" class="btn thr-btn" data-threshold="strict" aria-pressed="true" data-i18n="verdict.strict"></button>
+              <button type="button" class="btn thr-btn" data-threshold="any" aria-pressed="false" data-i18n="verdict.any"></button>
+            </div>
+            <p id="threshold-note" class="hint"></p>
+            <div class="big-row">
+              <p class="big big-sun"><span class="big-num num" id="big-sun"></span><span class="big-label"><span class="icon icon-sun" aria-hidden="true"></span><span data-i18n="verdict.sunBig"></span></span></p>
+              <p class="big big-earth"><span class="big-num num" id="big-earth"></span><span class="big-label"><span class="icon icon-earth" aria-hidden="true"></span><span data-i18n="verdict.earthBig"></span></span></p>
+            </div>
+            <p id="verdict-window" class="hint"></p>
+            <p id="verdict-position" class="hint"></p>
+            <dl class="kpis">
+              <div class="kpi" data-tip="verdict.tip.both"><dt data-i18n="verdict.kpi.both"></dt><dd id="kpi-both" class="num"></dd></div>
+              <div class="kpi" data-tip="verdict.tip.sunGap"><dt data-i18n="verdict.kpi.sunGap"></dt><dd id="kpi-sun-gap" class="num"></dd></div>
+              <div class="kpi" data-tip="verdict.tip.earthGap"><dt data-i18n="verdict.kpi.earthGap"></dt><dd id="kpi-earth-gap" class="num"></dd></div>
+            </dl>
+            <p class="hint" data-i18n="verdict.kpiNote"></p>
+            <h3 data-i18n="verdict.monthly"></h3>
+            <div id="heat" class="heat"></div>
+            <p class="hint" data-i18n="verdict.monthlyNote"></p>
+            <button type="button" class="btn" id="verdict-table-toggle" aria-expanded="false" aria-controls="verdict-table"></button>
+            <div id="verdict-table" class="table-scroll" hidden>
+              <table class="readings">
+                <thead><tr><th scope="col" data-i18n="verdict.col.month"></th><th scope="col" data-i18n="body.sun"></th><th scope="col" data-i18n="body.earth"></th><th scope="col" data-i18n="verdict.kpi.both"></th></tr></thead>
+                <tbody id="verdict-table-body"></tbody>
+              </table>
+            </div>
+          </section>
+
           <section class="card glass" aria-labelledby="view3d-heading" data-panel="view3d" data-panel-view="site" data-panel-title="view3d.heading">
             <h2 id="view3d-heading" data-i18n="view3d.heading"></h2>
             <div class="toolbar">
@@ -143,28 +174,30 @@
 
           <section class="card glass" aria-labelledby="bodies-heading" data-panel="bodies" data-panel-view="site" data-panel-title="bodies.heading">
             <h2 id="bodies-heading" data-i18n="bodies.heading"></h2>
-            <div class="table-scroll">
-            <table class="readings">
-              <thead>
-                <tr>
-                  <th scope="col" data-i18n="reading.body"></th>
-                  <th scope="col" data-i18n="reading.az"></th>
-                  <th scope="col" data-i18n="reading.el"></th>
-                  <th scope="col" data-i18n="reading.radius"></th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr data-body="sun">
-                  <th scope="row"><span class="icon icon-sun" aria-hidden="true"></span><span data-i18n="body.sun"></span></th>
-                  <td data-field="az"></td><td data-field="el"></td><td data-field="radius"></td>
-                </tr>
-                <tr data-body="earth">
-                  <th scope="row"><span class="icon icon-earth" aria-hidden="true"></span><span data-i18n="body.earth"></span></th>
-                  <td data-field="az"></td><td data-field="el"></td><td data-field="radius"></td>
-                </tr>
-              </tbody>
-            </table>
-            </div>
+            <p id="direct-link" class="direct-link" role="status"></p>
+            <div id="reading-warnings" class="warning" role="status" hidden></div>
+            <article class="reading" data-reading="sun">
+              <h3><span class="icon icon-sun" aria-hidden="true"></span><span data-i18n="body.sun"></span> <span class="status" data-field="status"></span></h3>
+              <p class="hint" data-field="binary"></p>
+              <dl class="facts">
+                <dt data-i18n="reading.az"></dt><dd class="num" data-field="az"></dd>
+                <dt data-i18n="reading.el"></dt><dd class="num" data-field="el"></dd>
+                <dt data-i18n="reading.horizon"></dt><dd class="num" data-field="horizon"></dd>
+                <dt data-i18n="reading.margin"></dt><dd class="num" data-field="margin"></dd>
+                <dt data-i18n="reading.radius"></dt><dd class="num" data-field="radius"></dd>
+              </dl>
+            </article>
+            <article class="reading" data-reading="earth">
+              <h3><span class="icon icon-earth" aria-hidden="true"></span><span data-i18n="body.earth"></span> <span class="status" data-field="status"></span></h3>
+              <p class="hint" data-field="binary"></p>
+              <dl class="facts">
+                <dt data-i18n="reading.az"></dt><dd class="num" data-field="az"></dd>
+                <dt data-i18n="reading.el"></dt><dd class="num" data-field="el"></dd>
+                <dt data-i18n="reading.horizon"></dt><dd class="num" data-field="horizon"></dd>
+                <dt data-i18n="reading.margin"></dt><dd class="num" data-field="margin"></dd>
+                <dt data-i18n="reading.radius"></dt><dd class="num" data-field="radius"></dd>
+              </dl>
+            </article>
             <p class="hint" data-i18n="bodies.note"></p>
           </section>
 

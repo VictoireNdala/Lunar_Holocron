@@ -1,5 +1,5 @@
 // Initialisation de la page : chargement des données, état, langue, coque (U-02), vue de site (T-09, T-11).
-import { bodyStateAt, createDataSource, DataError, siteTimeRange } from './data.js';
+import { createDataSource, DataError, siteTimeRange } from './data.js';
 import { formatNumber, formatUtc, getLang, setLang, t } from './i18n.js';
 import { createPanel3d } from './panel3d.js';
 import { createPlayback, snapNow } from './playback.js';
@@ -10,7 +10,9 @@ import { preloadTier1 } from './preload.js';
 import { createMapPanel } from './ui/mappanel.js';
 import { createPanoramaPanel } from './ui/panoramapanel.js';
 import { createPanels } from './ui/panels.js';
+import { createReadings } from './ui/readings.js';
 import { createSiteLinks } from './ui/sitelinks.js';
+import { createVerdictPanel } from './ui/verdictpanel.js';
 import { createShell } from './ui/shell.js';
 import { decode, encode } from './urlstate.js';
 
@@ -19,7 +21,6 @@ const HOUR_MS = 3600 * 1000;
 const DEFAULT_DATA_ROOT = 'data/';
 const DATA_ROOT_PATTERN = /^(?:[a-z0-9_-]+\/)+$/;
 const TIME_INPUT_PATTERN = /^(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2})$/;
-const BODIES = ['sun', 'earth'];
 
 const $ = (id) => document.getElementById(id);
 document.documentElement.dataset.booted = '1'; // lu par le filet de sécurité de index.html
@@ -44,6 +45,8 @@ const shell = createShell(store);
 const panorama = createPanoramaPanel(store);
 const panels = createPanels();
 const siteLinks = createSiteLinks();
+const readings = createReadings();
+const verdict = createVerdictPanel(store);
 /** Période couverte : celle du site affiché (même période pour tous), à défaut celle de global.json. */
 const coveredRange = () => (site ? siteTimeRange(site) : atlas.timeRange());
 const playback = createPlayback({ store, getRange: coveredRange, clock: () => performance.now(), schedule: (fn) => requestAnimationFrame(fn), cancel: (h) => cancelAnimationFrame(h) });
@@ -138,18 +141,6 @@ function renderTime() {
   if (out) $('time-warning').textContent = t('time.outOfRange', { start: formatUtc(range.startMs), end: formatUtc(range.endMs) });
 }
 
-/** Azimut, élévation et rayon angulaire du Soleil et de la Terre (bodyStateAt). */
-function renderBodies() {
-  const { tMs } = store.get();
-  for (const body of BODIES) {
-    const s = bodyStateAt(site, body, tMs);
-    const row = document.querySelector(`tr[data-body="${body}"]`);
-    row.querySelector('[data-field="az"]').textContent = `${formatNumber(s.azDeg, 3)}°`;
-    row.querySelector('[data-field="el"]').textContent = `${formatNumber(s.elDeg, 3)}°`;
-    row.querySelector('[data-field="radius"]').textContent = `${formatNumber(s.radiusDeg, 3)}°`;
-  }
-}
-
 /**
  * Pastille d'honnêteté (UI-DESIGN § 5.5) : toujours visible, jamais masquable ; elle dit si les données sont fictives.
  * Prudence : « démonstration » tant que rien n'est chargé.
@@ -198,7 +189,8 @@ function renderAll() {
   if (!site) return;
   renderSiteInfo();
   renderTime();
-  renderBodies();
+  readings.render(site, store.get());
+  verdict.render(site, store.get());
 }
 
 /** Charge le site A puis rafraîchit l'affichage. */

@@ -4,7 +4,7 @@
 import { t } from '../i18n.js';
 
 /** Panneaux de la vue de site, dans l'ordre canonique (identifiant = attribut `data-panel`). */
-export const PANEL_IDS = Object.freeze(['view3d', 'bodies', 'site', 'panorama', 'time', 'layers']);
+export const PANEL_IDS = Object.freeze(['verdict', 'view3d', 'bodies', 'site', 'panorama', 'time', 'layers']);
 const STORAGE_HIDDEN = 'lh.panels.hidden';
 const STORAGE_RESTORE = 'lh.panels.restore';
 
