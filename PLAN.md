@@ -147,7 +147,20 @@ Tâches **S-01 à S-04** (§ 8 de `docs/SITES-REELS.md`) : positions lues dans l
   **T-24** validation scientifique (Horizons, PGDA, outil officiel, sensibilité) et `docs/VALIDATION-RESULTATS.md`.
 
 ### J5 — Livrables d'événement
-- **T-30** retirer ou isoler les sites de démonstration ; **T-31** page méthode finalisée avec résultats de validation ; **T-32** vidéo de démonstration (script court, enregistrement d'écran, sous-titres FR/EN) et soumission selon le guide du 13 novembre.
+- **T-30** *(remplacé par V2-01 : retirer, D-029)* retirer ou isoler les sites de démonstration ; **T-31** page méthode finalisée avec résultats de validation ; **T-32** vidéo de démonstration (script court, enregistrement d'écran, sous-titres FR/EN) et soumission selon le guide du 13 novembre.
+
+## Lot V2 — correctifs techniques demandés le 2026-11-15 (D-025 à D-030 ; spécification : `docs/BUILD-V2.md`)
+
+| Id | Tâche | Dépend de | Preuve de fin |
+|---|---|---|---|
+| V2-01 | Retirer tout le fictif du produit (§ 2) ; remplace T-30 | — | `grep` sans résultat hors tests ; pytest et node verts ; `validate web/data` OK |
+| V2-02 | Catalogue étendu 80 m (entités, missions, Apollo `flat`) + contrat 1.2 + **point libre** (§ 3) | V2-01 | tous les sites du § 3.2 avec `sources[]` ; écart client < 0,01° ; horizon 500 m mesuré |
+| V2-03 | Marqueurs interactifs, taille liée au zoom, regroupement, clavier (§ 4) | V2-02 | captures à 3 zooms ; tests des fonctions pures |
+| V2-04 | Soleil et Terre en vrais disques, phase de la Terre, coupe par le relief (§ 5) | — | captures avant/après ; tests de rayon et de phase |
+| V2-05 | Liaison : décompte, délai, coupures (§ 7.1-7.2) ; planificateur et couverture par sites (§ 7.3-7.4) | V2-02 | preuves du § 8 (test des 50 %, Horizons, coucher/lever) |
+| V2-06 | Fond polaire réel, empreintes fondues, sonde au survol (§ 6) | V2-02 (fichier 500 m) | captures sans bord carré ; test de la sonde |
+| V2-07 | Produits PGDA 5 m supplémentaires (13 + ceux du répertoire) | V2-02 | SHA-256 consignés ; sites en `5m` |
+| V2-08 | *Stretch* : raster de couverture ; polygones PSR (Q-015) | V2-05, V2-06 | **ne pas commencer sans accord de CHAT** |
 
 ## 4. Ordre conseillé pour une première session de travail
 
