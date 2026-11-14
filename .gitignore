@@ -30,3 +30,6 @@ Thumbs.db
 
 # Aperçus du relief réel (dérivés de data/raw, jamais versionnés)
 web/data/local/
+
+# Textures de la Lune (Atlas) : non versionnées tant que Q-013 (licence des données ASU) n'est pas tranchée
+web/assets/moon/*.jpg
