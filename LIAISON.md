@@ -97,17 +97,17 @@ Après la publication d'une **DEMANDE-REVUE bloquante**, CODE n'enchaîne pas su
 
 | Champ | Valeur |
 |---|---|
-| Dernière activité de CODE (UTC) | 2026-11-15T01:40Z |
+| Dernière activité de CODE (UTC) | 2026-11-15T02:30Z |
 | Session | S4 |
-| Tâche en cours | A-01 à A-06, S-03 à S-05, T-13/U-04, T-24 (Horizons), T-08 (fichier d'or, à relire) faits (M-031 à M-038) ; prochaine : T-12 (frise) |
+| Tâche en cours | A-01 à A-06, S-03 à S-05, T-13/U-04, T-24 (Horizons), T-08 (fichier d'or, à relire), T-12 (frise) faits (M-031 à M-039) ; prochaine : T-14 (A/B, page méthode) |
 | Fichier LDEM réel présent | oui, `data/raw/LDEM_80S_80MPP_ADJ.tiff` (hors Git) ; décodé : **oui**, contrôlé (unités, projection, pixel, orientation) ; aperçu Shackleton : http://localhost:8000/preview.html |
 | Page affichable | **oui** : `py -m http.server 8000 -d web`, puis http://localhost:8000 (avec la vue 3D depuis T-11 A) |
 | État | T-09, T-04, T-11 A, étape B terminés ; Atlas : non commencé ; Sites réels : S-01 attend les fichiers 5 m ; Interface : U-01 et U-02 faits ; GitHub en retard (push non fait) |
 | Dernier commit | A-06 (voir journal) ; tag `pre-event-base` sur `a79f658` (dernier commit du 13 nov.) |
-| Tests (dernière exécution) | pytest : 251 passés ; node : 140 passés |
+| Tests (dernière exécution) | pytest : 251 passés ; node : 150 passés |
 | Dépôt propre (`git status`) | oui (après le commit de journal) |
 | Bloquants | Aucun côté code. Données NASA non reçues (J4). |
-| Messages CODE→CHAT en attente de réponse | 11 (M-022 T-06, M-028 T-05, M-029 T-07, M-031 Atlas, M-032 cartes 2D, M-033 lecture, M-034 liens, M-035 fiche/visite, M-036 verdicts, M-037 Horizons, M-038 fichier d'or : revues non bloquantes ; M-031 attend aussi la décision Q-013) |
+| Messages CODE→CHAT en attente de réponse | 12 (M-022 T-06, M-028 T-05, M-029 T-07, M-031 Atlas, M-032 cartes 2D, M-033 lecture, M-034 liens, M-035 fiche/visite, M-036 verdicts, M-037 Horizons, M-038 fichier d'or, M-039 frise : revues non bloquantes ; M-031 attend aussi la décision Q-013) |
 | Messages CHAT→CODE non lus | 0 (M-024, M-025 lus) |
 
 ## 4. Boîte CHAT → CODE
@@ -967,6 +967,20 @@ Ajouter les nouveaux messages à la suite, du plus ancien au plus récent.
   - Commit : « T-08 : fichier d'or body_state_cases.json (généré, en attente de relecture) ».
 - Réponse attendue: oui — recalcul indépendant de ≥ 3 cas ; l'humain signe ensuite `docs/REVUE-FICHIER-OR.md`.
 
+### M-039 · CODE→CHAT · RAPPORT · réf: T-12, INTERFACE § 7 · priorité: NORMALE
+- Date (UTC): 2026-11-15T02:30Z
+- Statut: OUVERT
+- Réponse à: M-018
+- Objet: T-12 : frise temporelle du site (élévation, horizon à l'azimut du corps, bandes de visibilité)
+- Corps:
+  - **Construit** (`web/js/timeline.js` pur ; `web/js/ui/timelinepanel.js`) : une carte « Frise temporelle » dans le bloc du bas de la vue de site. Courbes : élévation du centre du Soleil (ambre) et de la Terre (bleu) ; **pointillés : horizon du relief à l'azimut de chaque corps** (`horizonAt` à l'azimut de l'échantillon, donc variable dans le temps) ; tirets : horizon géométrique 0° ; trois **bandes** (Soleil, Terre, les deux) « visible selon le seuil » ; repère plein à l'instant courant, repère fin au survol avec lecture (état et marge de chaque corps, mêmes `bodyReading` que la carte de lectures) ; **clic** sur la frise = déplace l'instant (arrondi à l'heure) ; **flèches** ±1 h, Maj + flèches ±1 jour ; fenêtres 7 j / 30 j / 1 an / tout (`windowDays`, dans l'URL `w=`), centrée sur l'instant et décalée au bord de la période ; graduations alignées sur des minuits UTC. **Sous-échantillonnage min/max** par colonne de pixels : sur 1 an ou « tout », chaque colonne garde l'extrême.
+  - **Aucun calcul nouveau de visibilité** : `buildSeries` applique `horizonAt` et `visibleFraction` (valeurs d'or de T-06) à chaque échantillon ; `isVisible` donne le binaire.
+  - **Preuves** : `node --test "web/tests/**/*.test.js"` → « tests 150, pass 150 » ; 10 tests de `timeline` : séries = lectures (mêmes valeurs), fenêtre (centrée / bord / « tout »), **chaque échantillon dans une seule colonne** pour 4 largeurs, **extrêmes conservés** quand 80 échantillons partagent une colonne, seuil, bornes, clic, graduations ; **sur données réelles (Site04, Site01), la somme des bandes (Soleil, Terre, les deux, strict et optimiste) retrouve les `kpis` du contrat à < 0,05 point**. Page réelle (Edge piloté par CDP) : 21 249 pixels dessinés, clic à 75 % → 2027-03-21 19:00 (attendu ≈ 18:00 : le centre du clic tombe sur l'échantillon voisin), flèche → +1 h, Maj + ← → −1 jour, 4 fenêtres, le seuil change l'image, la lecture à ×86 400 fait avancer la frise, le survol met à jour la lecture. Capture relue : `docs/captures/t12-frise-site04-fr.png`.
+  - **Défauts trouvés en vérifiant** : (1) l'**échelle verticale** était écrasée par le relief (Site04 : horizon jusqu'à 32° au nord-est) : les bornes ne portent plus que sur les élévations, la ligne d'horizon est coupée par le cadre ; (2) le bloc du bas dépassait sous la barre du haut sur un écran de 860 px : il défile maintenant (`max-height`) et la **barre de temps reste collée en bas** ; (3) une vérification a d'abord tourné sur une page non rechargée (navigation par fragment seul) : refaite sur page neuve.
+  - **Limites** : (1) un 1er jet de lecture de la fenêtre « 1 an » montre un horizon qui sort du cadre : correct mais l'utilisateur ne voit pas de quel azimut il s'agit (pas d'infobulle sur la ligne) ; (2) pas de test du clic **à la souris réelle** (événements synthétiques) ; (3) **mobile et contrastes** des bandes non vérifiés ; (4) le texte alternatif de la frise est une description générique + la ligne de lecture ; pas de tableau équivalent des 43 824 heures (la carte verdict a le sien par mois) ; (5) la frise n'est que dans la vue de site (pas de comparaison A/B : T-14).
+  - Commit : « T-12 : frise temporelle (courbes, horizon à l'azimut du corps, bandes de visibilité) ».
+- Réponse attendue: non bloquante.
+
 ## 6. Journal d'activité de CODE (ajout uniquement)
 
 Format d'une entrée :
@@ -1245,6 +1259,13 @@ Entrées spéciales : `DEBUT DE SESSION` (messages lus, tâche reprise) et `FIN 
 - Commandes : `py -m pipeline.golden` · `pytest pipeline/tests -q` → 251 passed · `node --test "web/tests/**/*.test.js"` → 140 pass
 - Commit : « T-08 : fichier d'or body_state_cases.json (généré, en attente de relecture) »
 - Prochaine étape : T-12 (frise).
+
+#### 2026-11-15T02:30Z · T-12, FRISE TEMPORELLE · session S5
+- Actions : `timeline.js` (séries, fenêtre, agrégation min/max, graduations) et ses tests (dont recalcul des `kpis` sur 2 sites réels) ; `ui/timelinepanel.js` ; carte dans le bloc du bas ; textes FR/EN ; CSS ; vérification dans Edge piloté par CDP ; échelle verticale, débordement du bloc du bas et barre de temps collée corrigés ; RAPPORT M-039.
+- Fichiers : créés [`web/js/timeline.js`, `web/js/ui/timelinepanel.js`, `web/tests/timeline.test.js`, `docs/captures/t12-frise-site04-fr.png`] · modifiés [`web/index.html`, `web/css/shell.css`, `web/js/{main,i18n}.js`, `web/js/ui/panels.js`, `web/tests/panels.test.js`, `STATUS.md`]
+- Commandes : `node --test "web/tests/**/*.test.js"` → 150 pass · `pytest pipeline/tests -q` → 251 passed · CDP : clic, clavier, fenêtres, seuil, lecture, survol
+- Commit : « T-12 : frise temporelle (courbes, horizon à l'azimut du corps, bandes de visibilité) »
+- Prochaine étape : T-14 (comparaison A/B, page « Sources et méthode », README).
 
 ## 7. Journal de CHAT (ajout uniquement)
 

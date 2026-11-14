@@ -12,6 +12,7 @@ import { createPanoramaPanel } from './ui/panoramapanel.js';
 import { createPanels } from './ui/panels.js';
 import { createReadings } from './ui/readings.js';
 import { createSiteLinks } from './ui/sitelinks.js';
+import { createTimelinePanel } from './ui/timelinepanel.js';
 import { createVerdictPanel } from './ui/verdictpanel.js';
 import { createShell } from './ui/shell.js';
 import { decode, encode } from './urlstate.js';
@@ -46,6 +47,7 @@ const panorama = createPanoramaPanel(store);
 const panels = createPanels();
 const siteLinks = createSiteLinks();
 const readings = createReadings();
+const timeline = createTimelinePanel(store);
 const verdict = createVerdictPanel(store);
 /** Période couverte : celle du site affiché (même période pour tous), à défaut celle de global.json. */
 const coveredRange = () => (site ? siteTimeRange(site) : atlas.timeRange());
@@ -191,6 +193,7 @@ function renderAll() {
   renderTime();
   readings.render(site, store.get());
   verdict.render(site, store.get());
+  if (store.get().view === 'site') timeline.render(site, store.get());
 }
 
 /** Charge le site A puis rafraîchit l'affichage. */

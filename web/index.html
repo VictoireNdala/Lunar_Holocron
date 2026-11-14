@@ -247,6 +247,20 @@
           <p class="pano-foot"><span id="pano-readout" class="num" aria-live="polite"></span> <span id="pano-enlarged"></span></p>
           <p class="hint" data-i18n="pano.legend"></p>
         </section>
+        <section class="timeline glass" aria-labelledby="tl-heading" data-panel="timeline" data-panel-view="site" data-view-only="site" data-panel-title="timeline.heading">
+          <header class="tl-head">
+            <h2 id="tl-heading" data-i18n="timeline.heading"></h2>
+            <div class="seg" role="group" data-i18n-aria="timeline.window">
+              <button type="button" class="btn win-btn" data-win="7" aria-pressed="false" data-i18n="timeline.win.7"></button>
+              <button type="button" class="btn win-btn" data-win="30" aria-pressed="true" data-i18n="timeline.win.30"></button>
+              <button type="button" class="btn win-btn" data-win="365" aria-pressed="false" data-i18n="timeline.win.365"></button>
+              <button type="button" class="btn win-btn" data-win="all" aria-pressed="false" data-i18n="timeline.win.all"></button>
+            </div>
+          </header>
+          <canvas id="tl-canvas" class="tl-canvas" tabindex="0" role="img" data-i18n-aria="timeline.aria"></canvas>
+          <p id="tl-readout" class="pano-foot num" aria-live="off"></p>
+          <p class="hint" data-i18n="timeline.legend"></p>
+        </section>
         <section class="timebar glass" aria-labelledby="time-heading" data-panel="time" data-panel-view="site atlas world south north" data-panel-title="time.heading">
           <h2 id="time-heading" class="visually-hidden" data-i18n="time.heading"></h2>
           <form id="time-form" class="time-form" novalidate>

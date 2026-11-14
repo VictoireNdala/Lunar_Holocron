@@ -64,9 +64,11 @@
 .dock {
   position: absolute; left: var(--s-3); right: calc(380px + var(--s-3) * 2); bottom: var(--s-3);
   display: flex; flex-direction: column; gap: var(--s-3); pointer-events: none;
+  max-height: calc(100% - 128px); overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--line-strong) transparent; /* jamais sous la barre du haut */
 }
-.dock > * { pointer-events: auto; }
+.dock > * { pointer-events: auto; flex: none; }
 .timebar { display: flex; flex-wrap: wrap; gap: var(--s-3) var(--s-4); align-items: center; padding: var(--s-3) var(--s-4); }
+.dock .timebar { position: sticky; bottom: 0; z-index: 3; background: var(--bg-1); } /* la barre de temps reste visible quand le bloc défile */
 .panorama { padding: var(--s-3) var(--s-4); }
 .pano-head { display: flex; flex-wrap: wrap; gap: var(--s-2) var(--s-3); align-items: center; margin-bottom: var(--s-2); }
 .pano-head h2 { margin: 0 var(--s-2) 0 0; }
@@ -133,6 +135,16 @@
 .speed-btn[aria-pressed="true"], .proj-btn[aria-pressed="true"], .thr-btn[aria-pressed="true"] { background: var(--text); color: var(--bg-0); font-weight: 600; }
 .proj-seg { margin-bottom: var(--s-2); flex-wrap: wrap; }
 .timebar .hint { flex-basis: 100%; margin: 0; }
+
+/* --- Frise temporelle (T-12) --- */
+.timeline { padding: var(--s-3) var(--s-4); }
+.tl-head { display: flex; flex-wrap: wrap; gap: var(--s-2) var(--s-3); align-items: center; margin-bottom: var(--s-2); padding-right: 38px; }
+.tl-head h2 { margin: 0 var(--s-2) 0 0; }
+.tl-head .seg .btn { min-height: 32px; padding: 4px 10px; display: inline-flex; align-items: center; }
+.win-btn[aria-pressed="true"] { background: var(--text); color: var(--bg-0); font-weight: 600; }
+.tl-canvas { display: block; width: 100%; height: 130px; border-radius: 10px; border: 1px solid var(--line); cursor: crosshair; background: var(--bg-2); }
+.tl-canvas:focus-visible { outline: 2px solid var(--text); outline-offset: 2px; }
+.timeline .hint { margin-top: var(--s-1); font-size: var(--fs-12); }
 
 /* --- Verdict du site et lectures (T-13, U-04) --- */
 .big-row { display: flex; flex-wrap: wrap; gap: var(--s-3) var(--s-6); margin: var(--s-3) 0 var(--s-1); }
@@ -208,7 +220,8 @@
   #main .dock { order: -1; }
   #panel-a { display: flex; flex-direction: column-reverse; }
   .drawer { position: static; width: auto; overflow: visible; padding: var(--s-3); }
-  .dock { position: static; margin: var(--s-3) var(--s-3) 0; }
+  .dock { position: static; margin: var(--s-3) var(--s-3) 0; max-height: none; overflow: visible; }
+  .dock .timebar { position: static; }
   .pano-canvas { height: 160px; }
   .empty-view { position: static; transform: none; width: auto; margin: var(--s-4) var(--s-3); }
   .stage .footer { position: static; max-width: none; padding: var(--s-4) var(--s-3); text-shadow: none; }
