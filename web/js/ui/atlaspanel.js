@@ -55,7 +55,7 @@ export function createAtlasPanel(store, source, selectSite) {
     const text = failure ? t(failure) : '';
     note.textContent = text;
     if (text && failureDetail) { // erreur du globe : le message réel est visible pour qui sait le lire, sans encombrer les autres
-      const d = document.createElement('details');
+      const d = document.createElement('details'); d.open = true; // ouvert : le message réel est lisible sans clic
       const s = document.createElement('summary'); s.textContent = t('atlas.errorDetail');
       const c = document.createElement('code'); c.textContent = failureDetail;
       d.append(s, c); note.append(d);

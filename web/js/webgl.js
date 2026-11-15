@@ -20,14 +20,17 @@ export function detectWebGL(makeCanvas = () => document.createElement('canvas'))
   try {
     const canvas = makeCanvas();
     const attrs = { failIfMajorPerformanceCaveat: false };
-    let gl = canvas.getContext('webgl2', attrs);
-    if (gl) result.version = 2;
+    // three.js r170 (vendor/three) EXIGE WebGL 2 : un navigateur qui n'offre que WebGL 1 ne peut pas afficher la 3D (sinon « Error creating WebGL context » au premier rendu).
+    const gl2 = canvas.getContext('webgl2', attrs);
+    let gl = gl2;
+    if (gl2) result.version = 2;
     else {
-      gl = canvas.getContext('webgl', attrs) ?? canvas.getContext('experimental-webgl', attrs);
-      if (gl) result.version = 1;
+      const gl1 = canvas.getContext('webgl', attrs) ?? canvas.getContext('experimental-webgl', attrs);
+      if (gl1) { result.version = 1; result.error = 'WebGL 1 seulement : WebGL 2 est requis par three.js'; }
+      gl = gl1;
     }
     if (gl) {
-      result.available = true;
+      result.available = result.version === 2;
       try {
         const ext = gl.getExtension('WEBGL_debug_renderer_info');
         result.vendor = ext ? gl.getParameter(ext.UNMASKED_VENDOR_WEBGL) : (gl.getParameter(gl.VENDOR) ?? null);

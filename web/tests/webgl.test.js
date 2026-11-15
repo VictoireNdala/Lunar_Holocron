@@ -17,7 +17,10 @@ test('détection : WebGL 2, puis WebGL 1, avec diagnostic ; le contexte de test 
   assert.equal(calls, 1);
   assert.match(webglInfoText(info), /WebGL 2 · renderer: ACME GPU 9000 · vendor: ACME/);
   resetWebGLDetection();
-  assert.equal(detectWebGL(() => ({ getContext: (t) => (t === 'webgl' ? fakeGl() : null) })).version, 1);
+  const only1 = detectWebGL(() => ({ getContext: (t) => (t === 'webgl' ? fakeGl() : null) }));
+  assert.equal(only1.version, 1);
+  assert.equal(only1.available, false, 'three.js r170 exige WebGL 2 : WebGL 1 seul = 3D indisponible');
+  assert.match(only1.error, /WebGL 2/);
 });
 
 test('absence simulée (getContext renvoie null) ou exception : jamais d\'exception, available = false avec la raison', () => {
