@@ -52,8 +52,16 @@ def real_specs(path: Path, cfg: PipelineConfig, only: set[str] | None = None) ->
             index_extra={"tier": s["tier"], "pgda_id": s["pgda_id"], "lola_priority_site": s["lola_priority_site"],
                          "nasa_2024_region": s["nasa_2024_region"], "footprint_half_km": footprint_half_km(dem_path)},
             extra={"kind": "lola_site", "position_basis": "dem_center", "approximate": False, "terrain_tier": "5m", "status": "candidate",
-                   "sources": [{"label": f"PGDA produit 78, {s['pgda_id']} (centre de l'emprise du GeoTIFF)", "url": s["dem"]["source"], "read_utc": "2026-11-14"}]}))
+                   "sources": [{"label": f"PGDA produit 78, {s['pgda_id']} (centre de l'emprise du GeoTIFF)", "url": s["dem"]["source"], "read_utc": "2026-11-14"}, *_region_sources(s)]}))
     return specs, skipped
+
+
+def _region_sources(s: dict[str, Any]) -> list[dict[str, str]]:
+    """Source de l'étiquette « région Artemis III » d'un produit : le nom de la région est lu dans le résumé NTRS 20250011660 (aucune coordonnée n'y figure)."""
+    if not s.get("nasa_2024_region"):
+        return []
+    return [{"label": f"NASA, régions candidates Artemis III (NTRS 20250011660, résumé) : « {s['nasa_2024_region']} » ; rapprochement par le NOM du produit PGDA, pas par une coordonnée publiée",
+             "url": "https://ntrs.nasa.gov/citations/20250011660", "read_utc": "2026-11-15"}]
 
 
 def _real_dem_info(s: dict[str, Any]) -> dict[str, Any]:

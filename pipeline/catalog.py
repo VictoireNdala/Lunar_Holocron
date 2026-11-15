@@ -48,20 +48,23 @@ def catalog_specs(path: Path, cfg: PipelineConfig, only: set[str] | None = None)
     doc = json.loads(path.read_text(encoding="utf-8"))
     specs: list[SiteSpec] = []
 
-    def add(entry: dict[str, Any], kind: str, basis: str, sources: list[dict[str, str]], extra_fields: dict[str, Any], tier_rank: int) -> None:
+    def add(entry: dict[str, Any], kind: str, basis: str, sources: list[dict[str, str]], extra_fields: dict[str, Any], tier_rank: int, index_more: dict[str, Any] | None = None) -> None:
         if only is not None and entry["id"] not in only:
             return
         dem, info, tier, modeled = _terrain_for(entry["lat_deg"], entry["lon_deg"], cfg)
         extra = {"kind": kind, "position_basis": basis, "approximate": False, "terrain_tier": tier, "sources": sources, **extra_fields}
         specs.append(SiteSpec(
-            id=entry["id"], name={"fr": entry["name"], "en": entry["name"]}, lat_deg=entry["lat_deg"], lon_deg=entry["lon_deg"], dem=dem, dem_info=info,
-            engine="spice", terrain_real=modeled, terrain_modeled=modeled, verified=False, extra=extra, index_extra={"tier": tier_rank}))
+            id=entry["id"], name={"fr": entry.get("name_fr", entry.get("name")), "en": entry.get("name_en", entry.get("name"))}, lat_deg=entry["lat_deg"], lon_deg=entry["lon_deg"], dem=dem, dem_info=info,
+            engine="spice", terrain_real=modeled, terrain_modeled=modeled, verified=False, extra=extra, index_extra={"tier": tier_rank, **(index_more or {})}))
 
     for f in doc["features"]:
         fields: dict[str, Any] = {"status": "reference"}
         if f.get("diameter_km"):
             fields["position_uncertainty_km"] = round(f["diameter_km"] / 2, 2)  # rayon de l'entité : taille de l'empreinte à dessiner
         add(f, "feature", f["position_basis"], _require_sources(f), fields, 3)
+    for r in doc.get("nasa_regions", []):  # régions Artemis III sans produit PGDA de même nom : centre de l'entité IAU, TOUJOURS approximatif
+        add(r, "nasa_region", r["position_basis"], _require_sources(r), {"status": "candidate", "approximate": True, "position_uncertainty_km": r["radius_km"]}, 3,
+            {"nasa_2024_region": r["region"]})
     for m in doc.get("missions", []):  # missions : coordonnées lues sur les pages LROC citées ; `approximate` et `status` viennent de la source
         fields = {"status": m["status"], "mission": m["mission"], "approximate": bool(m.get("approximate", False))}
         add(m, "mission", m["position_basis"], _require_sources(m), fields, 4)

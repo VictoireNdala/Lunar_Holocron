@@ -80,3 +80,18 @@ def test_catalogue_builds_one_spec_per_entry_with_the_right_tier() -> None:
     assert by_id["feature-faustini"].extra["terrain_tier"] == "80m" and by_id["feature-faustini"].terrain_modeled
     assert by_id["apollo-11"].extra["terrain_tier"] == "flat" and not by_id["apollo-11"].terrain_modeled and not by_id["apollo-11"].terrain_real
     assert all(s.extra["sources"] for s in specs)
+
+
+def test_nasa_regions_names_from_ntrs_and_always_approximate() -> None:
+    """Régions Artemis III (NTRS 20250011660) : noms lus à la source, position TOUJOURS approximative et sourcée ; celles qui n'ont ni produit PGDA ni entité IAU ne sont pas placées."""
+    doc = json.loads(CATALOG.read_text(encoding="utf-8"))
+    placed = {r["region"] for r in doc["nasa_regions"]}
+    assert placed == {"Mons Mouton", "de Gerlache Rim 2"}
+    for r in doc["nasa_regions"]:
+        assert _require_sources(r) and r["approximate"] is True and r["position_basis"] == "feature_center" and r["radius_km"] > 0
+        assert any("20250011660" in s["url"] for s in r["sources"]) and any("planetarynames" in s["url"] for s in r["sources"])
+        assert r["name_fr"] != r["name_en"]
+    tagged = {s["pgda_id"]: s["nasa_2024_region"] for s in json.loads((ROOT / "config" / "sites_real.json").read_text(encoding="utf-8"))["sites"] if s["nasa_2024_region"]}
+    assert tagged == {"Site06": "Nobile Rim 1", "DM2": "Nobile Rim 2", "Site23": "Malapert Massif", "Haworth": "Haworth"}
+    names = {"Peak near Cabeus B", "Mons Mouton Plateau", "Slater Plain"}  # sans source de position : non placées
+    assert not names & (placed | set(tagged.values()))

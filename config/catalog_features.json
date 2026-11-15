@@ -1,5 +1,5 @@
 {
-  "_comment": "V2-02 (D-026) : entités nommées et sites Apollo LUS PAR CODE à la source le 2026-11-14 (lecture par un agent de lecture web ; valeurs recopiées telles qu'imprimées). Aucune valeur n'est écrite de mémoire. Les fiches IAU contiennent plusieurs blocs de géométrie non étiquetés sur la page : le bloc 1 est retenu comme centre, les autres sont gardés dans `alternatives` pour montrer l'écart (D-026 : montrer l'écart plutôt que choisir en silence). Les 12 entités suivantes n'ont PAS été lues et ne sont donc pas dans ce fichier : Shoemaker, Haworth, de Gerlache, Sverdrup, Amundsen, Wiechert J, Idel'son L, Slater, Malapert, Kocher, Leibnitz, Mons Mouton. Les missions (IM-1, IM-2, Chandrayaan-3, Chang'e-7) ne sont pas non plus lues : elles attendent leur lecture à la source. ; 2026-11-15 : les 10 entités ajoutées et la confirmation des 7 premières viennent du fichier de points centraux du Gazetteer (champs center_lat, center_lon, diameter), lu par CODE ; coordonnées planétographiques, +Est, ramenées à -180 / 180. ; missions : coordonnées lues sur les pages LROC citées (2026-11-15), jamais de mémoire ; IM-2 = zone visée, pas la position finale.",
+  "_comment": "V2-02 (D-026) : entités nommées et sites Apollo LUS PAR CODE à la source le 2026-11-14 (lecture par un agent de lecture web ; valeurs recopiées telles qu'imprimées). Aucune valeur n'est écrite de mémoire. Les fiches IAU contiennent plusieurs blocs de géométrie non étiquetés sur la page : le bloc 1 est retenu comme centre, les autres sont gardés dans `alternatives` pour montrer l'écart (D-026 : montrer l'écart plutôt que choisir en silence). Les 12 entités suivantes n'ont PAS été lues et ne sont donc pas dans ce fichier : Shoemaker, Haworth, de Gerlache, Sverdrup, Amundsen, Wiechert J, Idel'son L, Slater, Malapert, Kocher, Leibnitz, Mons Mouton. Les missions (IM-1, IM-2, Chandrayaan-3, Chang'e-7) ne sont pas non plus lues : elles attendent leur lecture à la source. ; 2026-11-15 : les 10 entités ajoutées et la confirmation des 7 premières viennent du fichier de points centraux du Gazetteer (champs center_lat, center_lon, diameter), lu par CODE ; coordonnées planétographiques, +Est, ramenées à -180 / 180. ; missions : coordonnées lues sur les pages LROC citées (2026-11-15), jamais de mémoire ; IM-2 = zone visée, pas la position finale. ; régions NASA (2026-11-15) : noms lus dans le résumé NTRS 20250011660 ; NASA ne publie aucune coordonnée de région dans ce texte : 4 régions portent le nom d'un produit PGDA (étiquette `nasa_2024_region` sur le site 5 m), 2 sont placées au centre de l'entité IAU homonyme (approximatif) ; NON placées faute de source : Peak near Cabeus B, Mons Mouton Plateau, Slater Plain.",
   "read_utc": "2026-11-15",
   "coordinate_system": "IAU Gazetteer : Planetographic, +East, -180 - 180 (imprimé sur chaque fiche)",
   "features": [
@@ -568,6 +568,56 @@
         {
           "label": "LROC, « IM-2 Landing Region » : site d'alunissage visé (−84,78° ; 29,13° E), à 160 km du pôle Sud",
           "url": "https://lroc.im-ldi.com/images/1401",
+          "read_utc": "2026-11-15"
+        }
+      ]
+    }
+  ],
+  "nasa_regions": [
+    {
+      "id": "nasa-region-mons-mouton",
+      "name_fr": "Mons Mouton (région Artemis III, approximative)",
+      "name_en": "Mons Mouton (Artemis III region, approximate)",
+      "region": "Mons Mouton",
+      "lat_deg": -84.6,
+      "lon_deg": 31.0,
+      "radius_km": 65.0,
+      "position_basis": "feature_center",
+      "approximate": true,
+      "verified": false,
+      "sources": [
+        {
+          "label": "NASA, « Artemis III Site Selection Update: Downselection From Thirteen to Nine Candidate Regions » (NTRS 20250011660, résumé) : liste des neuf régions candidates (octobre 2024) ; aucune coordonnée publiée dans ce texte",
+          "url": "https://ntrs.nasa.gov/citations/20250011660",
+          "read_utc": "2026-11-15"
+        },
+        {
+          "label": "IAU Gazetteer, Mons Mouton (16070), centre et diamètre de 130 km, fichier de points centraux",
+          "url": "https://planetarynames.wr.usgs.gov/Feature/16070",
+          "read_utc": "2026-11-15"
+        }
+      ]
+    },
+    {
+      "id": "nasa-region-de-gerlache-rim-2",
+      "name_fr": "de Gerlache, bord 2 (région Artemis III, approximative)",
+      "name_en": "de Gerlache Rim 2 (Artemis III region, approximate)",
+      "region": "de Gerlache Rim 2",
+      "lat_deg": -88.485,
+      "lon_deg": -88.345,
+      "radius_km": 16.36,
+      "position_basis": "feature_center",
+      "approximate": true,
+      "verified": false,
+      "sources": [
+        {
+          "label": "NASA, « Artemis III Site Selection Update: Downselection From Thirteen to Nine Candidate Regions » (NTRS 20250011660, résumé) : liste des neuf régions candidates (octobre 2024) ; aucune coordonnée publiée dans ce texte",
+          "url": "https://ntrs.nasa.gov/citations/20250011660",
+          "read_utc": "2026-11-15"
+        },
+        {
+          "label": "IAU Gazetteer, de Gerlache (1439), centre et diamètre de 32,71 km, fichier de points centraux",
+          "url": "https://planetarynames.wr.usgs.gov/Feature/1439",
           "read_utc": "2026-11-15"
         }
       ]
