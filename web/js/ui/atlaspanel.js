@@ -3,7 +3,9 @@
 // Hors ligne : texture locale ; sans elle, repli gris avec message.
 import { DataError, globalSeries } from '../data.js';
 import { interpolateSubPoint } from '../atlas/sphere.js';
-import { computeGradients } from '../atlas/relief.js';
+import { computeGradients, gradientAt } from '../atlas/relief.js';
+import { baseFromGrid, createPyramid } from '../atlas/pyramid.js';
+import { southPolarInverse } from '../atlas/sphere.js';
 import { formatNumber, getLang, t } from '../i18n.js';
 
 export const TEXTURE_URL = 'assets/moon/lroc_color_2k.jpg';
@@ -17,6 +19,7 @@ export function createAtlasPanel(store, source, selectSite) {
   let starting = null;
   let globalPromise = null;
   let polarPromise = null;
+  let pyramidPromise = null;
   let sitesPromise = null;
   let failure = null;
   let latLon = null;
@@ -133,6 +136,12 @@ export function createAtlasPanel(store, source, selectSite) {
     ensurePolar() {
       polarPromise ??= source.loadPolarGrid().then((grid) => ({ grid, grads: computeGradients(grid) })).catch(() => null);
       return polarPromise;
+    },
+    /** Pyramide de tuiles du fond polaire (240, 160, 80 m autour des sites) ou null si elle manque : le fond garde alors la grille 480 m. */
+    ensurePyramid() {
+      pyramidPromise ??= Promise.all([source.loadPolarTiles(), this.ensurePolar()]).then(([manifest, relief]) => createPyramid(manifest, (s, tx, ty) => source.loadPolarTile(s, tx, ty),
+        relief ? baseFromGrid(relief.grid, relief.grads, gradientAt, southPolarInverse) : null)).catch(() => null);
+      return pyramidPromise;
     },
     /** Période couverte par global.json ({ startMs, endMs }), ou null tant qu'il n'est pas chargé. */
     timeRange() {

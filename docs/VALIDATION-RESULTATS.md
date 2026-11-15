@@ -59,6 +59,19 @@ Géométrie seulement (relais, stations au sol, bilan de liaison et trajectoire 
 | Délai de propagation aller simple (distance ÷ c) contre la portée Horizons (`QUANTITIES='20'`), 4 sites × 3 dates × 24 h = 288 valeurs | écart maximal **0,738 ms**, moyen 0,342 ms | < 1 ms | borné par l'**arrondi au millidegré du rayon angulaire** de la Terre dans le fichier de site (± 5·10⁻⁴ de la distance) : on ne peut pas faire mieux avec ce format |
 | Délais calculés sur 5 ans (Site01) | entre 1,18 s et 1,37 s (aller simple) | plausible | distance Terre–Lune 356 000 – 407 000 km |
 
+**Fond polaire : pyramide de tuiles (M-051 § 2.2).**
+
+| Mesure | Résultat |
+|---|---|
+| Décodage JavaScript = décodage Python (codes exacts et somme de contrôle de chaque tuile), 9 tuiles réelles des 3 niveaux | **égal** (`pyramid.test.js`, référence `tests/reference/polar_tile_probe.json` produite par `make_polar_tile_probe.py`) |
+| Gradient d'un plan incliné de part et d'autre d'une frontière de tuiles | exact à 10⁻³ près (pas de couture) |
+| Reconstruction deux fois | tuiles et manifeste **identiques octet pour octet** |
+| Poids de la pyramide | **11,4 Mo** (240 m : 148 tuiles, 2,9 Mo ; 160 m : 184 tuiles, 3,5 Mo ; 80 m : 287 tuiles, 4,9 Mo) ; 2 octets par échantillon avant compression, ≈ 1 après |
+| Poids des données **commitées** (`git ls-files web/data`) avec la pyramide | ≈ 43 Mo (budget de 60 Mo respecté) ; **79 Mo en local** avec les 23 sites 5 m supplémentaires non commités (Q-017) |
+| Vue réelle à ×43 (Edge) | craters et petits reliefs nets, **sans strie** (capture `docs/captures/atlas-v206-pyramide-x43.png`, non versionnée : texture NASA, Q-013) comparée à la grille 480 m seule (`atlas-v206-avant-pyramide-x43.png`) |
+
+Limites : le détail n'existe que **dans les fenêtres autour des sites** (ailleurs le fond reste à 480 m, plus flou) ; les niveaux sont des moyennes par blocs du LDEM 80 m, sans reconstruction de relief plus fin ; passage d'un niveau à l'autre sans fondu (la netteté change à la frontière d'une tuile) ; l'ombrage reste illustratif (azimut réel du Soleil, élévation d'étude de 15°, sans ombres portées) ; la **sonde** (altitude, pente au survol) lit encore la grille 480 m ; la cause exacte des « stries radiales » vues par CHAT sur la grille 480 m n'a pas été isolée : la pyramide les fait disparaître dans les fenêtres couvertes, elles peuvent subsister ailleurs à fort zoom.
+
 **Planificateur et couche « Liaison » de l'Atlas (V2-05 §§ 7.3-7.4).**
 
 | Mesure | Résultat |

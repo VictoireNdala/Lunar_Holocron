@@ -116,7 +116,7 @@ export function buildBase(proj, tex, relief = null) {
         const p = southPolar(ll.latDeg, ll.lonDeg, R_REF_M);
         const a = edgeAlpha(Math.hypot(p.x, p.y)); // fondu : jamais de bord net à la limite de la grille
         if (a > 0) {
-          const g = gradientAt(relief.grid, relief.grads, ll.latDeg, ll.lonDeg);
+          const g = relief.gradientXY ? relief.gradientXY(p.x, p.y) : gradientAt(relief.grid, relief.grads, ll.latDeg, ll.lonDeg); // pyramide de tuiles si fournie
           if (Number.isFinite(g.gx)) { gx[k] = g.gx; gy[k] = g.gy; ra[k] = Math.round(a * 255); }
         }
       }

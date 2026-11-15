@@ -203,6 +203,10 @@ Ajoutés sans rien retirer (un fichier 1.0 ou 1.1 reste valide ; l'interface ign
 - **`link_bits`** (entrée d'`index.json`, optionnel, 1.2) : visibilité horaire **stricte** du Soleil et de la Terre, `{ encoding: "bitset-lsb-first-base64", mode: "strict", n, sun_strict, earth_strict }` (bit 0 = premier échantillon, poids faible d'abord ; 5 478 octets par corps pour 43 824 heures). Sert à la couche « Liaison » de l'Atlas sans charger les fichiers de site. **`validate` le recalcule** depuis le fichier de site et refuse tout écart.
 - Azimuts `truncated` : au nord de 80° S le LDEM ne couvre plus le disque de 150 km ; les azimuts concernés sont marqués (minorant), pas masqués.
 
+## 7 quater. Pyramide de tuiles du fond polaire (`polar/tiles.json`, M-051 § 2.2)
+
+Dérivé du LDEM 80 m (PGDA 90), hors des fichiers de site, **optionnel** (sans elle l'interface garde la grille 480 m). Manifeste `polar/tiles.json` : `tile` (`core_px` 128, `border_px` 2, `stored_px` 132, chemin `tiles/{spacing_m}/{tx}_{ty}.bin`), `z` (`min_m`, `max_m`, `nodata_code` 65535, `max_code` 65534), `levels[]` (`spacing_m` 240 / 160 / 80, `x0_m`, `y0_m` : centre de l'échantillon (0, 0) dans le plan stéréographique polaire Sud, `n_rows`, `n_cols`, `window_half_km`, `tiles` : liste des `[tx, ty]` existants, `bytes`) et `total_bytes`. Un niveau ne couvre que des **fenêtres autour des sites** du catalogue (±45 km à 240 m, ±25 km à 160 m, ±12 km à 80 m) ; ailleurs, le repli est un niveau plus grossier puis la grille 480 m. Tuile = 132 × 132 codes uint16 linéaires (cœur 128 + bordure de 2 échantillons, pour des gradients sans couture) ; codage : différences horizontales modulo 65536, octets de poids faible puis de poids fort séparés, deflate brut (RFC 1951). `tx` croît vers l'est (x), `ty` vers le sud (y décroissant). Reproductible octet pour octet ; décodage JavaScript = décodage Python vérifié sur 9 tuiles réelles.
+
 ## 8. Évolution du contrat
 
 - Ajouter un champ **optionnel** : version mineure (`1.1`), l'interface ignore les champs inconnus.

@@ -18,6 +18,7 @@ from pipeline.ephemeris_spice import kernels_available
 from pipeline.export import PipelineConfig, SiteSpec, build_site, write_index
 from pipeline.global_state import build_global, write_global
 from pipeline.polar_grid import build_polar_grid, DEFAULT_SOURCE
+from pipeline.polar_tiles import build_polar_tiles
 from pipeline.catalog import catalog_specs
 from pipeline.sites import real_specs
 
@@ -83,6 +84,8 @@ def main(argv: list[str] | None = None) -> int:
     if DEFAULT_SOURCE.is_file() and only is None:
         build_polar_grid(DEFAULT_SOURCE, args.out / "polar")
         print("  polar/ldem_south_500m : grille 480 m (point libre, fond polaire)")
+        meta = build_polar_tiles([(e["lat_deg"], e["lon_deg"]) for e in entries], DEFAULT_SOURCE, args.out / "polar")
+        print(f"  polar/tiles : pyramide 240 / 160 / 80 m autour des sites ({meta['total_bytes'] / 1e6:.1f} Mo)")
     print(f"terminé en {time.perf_counter() - t0:.0f} s ; validation :")
     return validate.main([str(args.out)])
 

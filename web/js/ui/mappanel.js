@@ -5,6 +5,7 @@ import { MAP_KINDS, buildBase, drawMap, makeProjection, shade, textureData } fro
 import { zoneAt } from '../atlas/markerdraw.js';
 import { FAMILIES, glyphOf, keyboardOrder, nearestInDirection } from '../atlas/markers.js';
 import { probeAt } from '../atlas/relief.js';
+import { viewMetrics } from '../atlas/pyramid.js';
 import { colorForPct, coveragePct, decodeBits, indexAt } from '../atlas/linkoverlay.js';
 import { windowRange } from '../timeline.js';
 import { bodyReading } from '../verdicts.js';
@@ -37,6 +38,7 @@ export function createMapPanel(store, atlas, openSite, getSite = () => null) {
       base: null, baseView: null, baseId: 0, proj: null, shaded: null, shadeKey: '', zones: [], hoveredId: null, focusedId: null, timer: null };
   }
   let tex = null;
+  let pyramid = null; // pyramide de tuiles du fond polaire (null : grille 480 m seule)
   let relief = null; // { grid, grads } : relief LOLA 480 m du pôle Sud
   let texFailed = false;
   let texPromise = null;
@@ -75,7 +77,7 @@ export function createMapPanel(store, atlas, openSite, getSite = () => null) {
     if (m.size !== `${w}x${h}`) { m.canvas.width = w; m.canvas.height = h; m.size = `${w}x${h}`; m.base = null; }
     if (!m.base || rebuild) {
       m.baseView = { ...m.view };
-      m.base = buildBase(makeProjection(kind, w, h, undefined, m.baseView), tex, relief);
+      m.base = buildBase(makeProjection(kind, w, h, undefined, m.baseView), tex, kind === 'south' && relief && pyramid && m.level ? { ...relief, gradientXY: (x, y) => pyramid.gradientXY(x, y, m.level) } : relief);
       m.baseId = ++baseCounter;
       m.shadeKey = '';
     }
@@ -117,12 +119,22 @@ export function createMapPanel(store, atlas, openSite, getSite = () => null) {
     return { zoom: view.zoom, panX: Math.max(-limX, Math.min(limX, view.panX)), panY: Math.max(-limY, Math.min(limY, view.panY)) };
   }
 
+  /** Charge les tuiles utiles à la vue courante (niveau choisi selon le zoom) puis refait le fond ; sans pyramide ou sans mesure : fond 480 m. */
+  async function refreshBase(m) {
+    const vm = m.kind === 'south' && pyramid && m.proj ? viewMetrics(m.proj) : null;
+    const view = m.view;
+    const level = vm ? await pyramid.prepare(vm.bbox, vm.pxPerM) : null;
+    if (m.view !== view) return; // un nouveau geste a eu lieu pendant le chargement : son propre minuteur refera le fond
+    m.level = level;
+    render(m.kind, true);
+  }
+
   /** Change la vue ; le fond est rééchantillonné peu après le dernier geste. */
   function setView(m, view) {
     m.view = clampPan(m, { ...view, zoom: Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, view.zoom)) });
     render(m.kind);
     clearTimeout(m.timer);
-    m.timer = setTimeout(() => render(m.kind, true), REBUILD_DELAY_MS);
+    m.timer = setTimeout(() => refreshBase(m), REBUILD_DELAY_MS);
   }
 
   /** Zoom d'un facteur autour d'un pixel (le point sous le curseur reste fixe). */
@@ -322,6 +334,7 @@ export function createMapPanel(store, atlas, openSite, getSite = () => null) {
     buildLegend();
     sitesCache = await atlas.ensureSites();
     [, , relief] = await Promise.all([loadTexture(), atlas.ensureGlobal(), atlas.ensurePolar()]);
+    pyramid = await atlas.ensurePyramid();
     atlas.setStatus(texFailed ? 'atlas.textureMissing' : null);
     for (const m of Object.values(maps)) { m.base = null; } // la texture vient d'arriver : refaire le fond
     if (current() === kind) render(kind);

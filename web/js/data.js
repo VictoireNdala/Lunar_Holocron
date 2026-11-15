@@ -154,6 +154,7 @@ export function createDataSource(root, fetchFn = (url) => globalThis.fetch(url))
   let indexPromise = null;
   let globalPromise = null;
   let polarPromise = null;
+  let tilesPromise = null;
   const sites = new Map();
   const terrains = new Map();
 
@@ -189,6 +190,18 @@ export function createDataSource(root, fetchFn = (url) => globalThis.fetch(url))
     return polarPromise;
   }
 
+  /** Manifeste de la pyramide de tuiles du fond polaire (polar/tiles.json) ; échoue si le dossier n'en a pas (le fond garde alors le 480 m). */
+  function loadPolarTiles() {
+    tilesPromise ??= request(fetchFn, `${root}polar/tiles.json`, 'json');
+    tilesPromise.catch(() => { tilesPromise = null; });
+    return tilesPromise;
+  }
+
+  /** Octets d'une tuile (fichier .bin compressé). */
+  async function loadPolarTile(spacingM, tx, ty) {
+    return new Uint8Array(await request(fetchFn, `${root}polar/tiles/${spacingM}/${tx}_${ty}.bin`, 'binary'));
+  }
+
   async function entryOf(id) {
     const entry = (await loadIndex()).sites.find((s) => s.id === id);
     if (!entry) throw new DataError('unknown-site', { details: [id] });
@@ -218,5 +231,5 @@ export function createDataSource(root, fetchFn = (url) => globalThis.fetch(url))
     return terrains.get(id);
   }
 
-  return { root, loadIndex, loadSite, loadTerrain, loadGlobal, loadPolarGrid };
+  return { root, loadIndex, loadSite, loadTerrain, loadGlobal, loadPolarGrid, loadPolarTiles, loadPolarTile };
 }
