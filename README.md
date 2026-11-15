@@ -19,6 +19,28 @@
 
 **Live application:** <https://victoirendala.github.io/Lunar_Holocron/> · **Demo video:** *to be added*
 
+## Screenshots
+
+Taken in Chrome on the team lead's machine (2026-11-15, application served locally; the browser frame is cropped). The same views are available in the live application.
+
+![South Pole map: real LOLA relief, 5 m footprints, named features, probe tooltip](docs/screenshots/south-pole-map.png)
+*South Pole map at ×7.6: real LOLA relief as the background, each 5 m terrain product drawn as its real square footprint, named features as circles, and the hover probe (elevation, slope, distance and bearing from the displayed site, horizon in that direction, Sun and Earth visibility).*
+
+![Site view: 360° panorama with the real horizon, Sun and Earth discs, verdict](docs/screenshots/site-panorama-verdict.png)
+*Site view of "Connecting ridge" (Site01): the 360° panorama with the horizon mask from the terrain model, the (schematic) Earth with its real phase, the timeline, and the strict-threshold verdict (46.5 % Sun, 44.0 % Earth over 2026–2030).*
+
+![3D view from the ground at Site01 with the Earth above the horizon](docs/screenshots/site-3d-ground-view.png)
+*3D ground view at Site01 with the surrounding context terrain and the Earth near the horizon (rendering is illustrative; verdicts come from the horizon mask, never from this view).*
+
+![Link view: Earth visibility intervals and landing-window planner](docs/screenshots/link-view-planner.png)
+*Direct-to-Earth link view: when the Earth is visible or absent, with window edges marked as truncated, and the landing-window planner whose parameters are entered by the user (geometry only: no relays, stations or link budget).*
+
+![Planner calendar: share of the best stay starting each day](docs/screenshots/planner-calendar.png)
+*Planner calendar: for each day, the share of time with both Sun and Earth visible during the best stay starting that day.*
+
+![Atlas globe with the 55 sites near the South Pole](docs/screenshots/atlas-globe.png)
+*Atlas globe with the Sun/Earth sub-points and the day/night limit; the 55 sites cluster near the South Pole (the 2D maps separate them).*
+
 ## Why
 
 Near the lunar South Pole the Sun skims the horizon and the Earth rises and sets with the Moon’s libration.

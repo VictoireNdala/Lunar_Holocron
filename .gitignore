@@ -39,3 +39,6 @@ docs/captures/atlas-*.png
 
 # Enregistrements de la démonstration (fichiers de plusieurs dizaines de Mo) : à héberger ailleurs, jamais versionnés
 video/
+
+# Captures brutes de l'humain (avec le cadre du navigateur) : seules les copies recadrées de docs/screenshots/ sont versionnées
+screen/
