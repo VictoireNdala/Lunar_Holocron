@@ -62,6 +62,9 @@ def catalog_specs(path: Path, cfg: PipelineConfig, only: set[str] | None = None)
         if f.get("diameter_km"):
             fields["position_uncertainty_km"] = round(f["diameter_km"] / 2, 2)  # rayon de l'entité : taille de l'empreinte à dessiner
         add(f, "feature", f["position_basis"], _require_sources(f), fields, 3)
+    for m in doc.get("missions", []):  # missions : coordonnées lues sur les pages LROC citées ; `approximate` et `status` viennent de la source
+        fields = {"status": m["status"], "mission": m["mission"], "approximate": bool(m.get("approximate", False))}
+        add(m, "mission", m["position_basis"], _require_sources(m), fields, 4)
     apollo = doc["apollo"]
     apollo_sources = [{**apollo["source"], "label": apollo["source"]["label"]}]
     apollo_sources = [{"label": s["label"], "url": s["url"], "read_utc": s["read_utc"]} for s in apollo_sources]

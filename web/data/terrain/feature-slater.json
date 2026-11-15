@@ -1,0 +1,1 @@
+{"center":{"lat_deg":-88.079,"lon_deg":111.288},"frame":"local-enu","grid":{"n":257,"size_m":20000.0,"spacing_m":78.125},"id":"feature-slater","schema_version":"1.2","synthetic":false,"z":{"byte_order":"little","col_order":"west-to-east","encoding":"uint16-linear","file":"feature-slater.bin","max_m":1621.6407240426634,"min_m":-182.68804321833886,"row_order":"north-to-south"}}

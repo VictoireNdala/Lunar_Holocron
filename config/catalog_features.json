@@ -1,76 +1,576 @@
 {
-  "_comment": "V2-02 (D-026) : entités nommées et sites Apollo LUS PAR CODE à la source le 2026-11-14 (lecture par un agent de lecture web ; valeurs recopiées telles qu'imprimées). Aucune valeur n'est écrite de mémoire. Les fiches IAU contiennent plusieurs blocs de géométrie non étiquetés sur la page : le bloc 1 est retenu comme centre, les autres sont gardés dans `alternatives` pour montrer l'écart (D-026 : montrer l'écart plutôt que choisir en silence). Les 12 entités suivantes n'ont PAS été lues et ne sont donc pas dans ce fichier : Shoemaker, Haworth, de Gerlache, Sverdrup, Amundsen, Wiechert J, Idel'son L, Slater, Malapert, Kocher, Leibnitz, Mons Mouton. Les missions (IM-1, IM-2, Chandrayaan-3, Chang'e-7) ne sont pas non plus lues : elles attendent leur lecture à la source.",
-  "read_utc": "2026-11-14",
+  "_comment": "V2-02 (D-026) : entités nommées et sites Apollo LUS PAR CODE à la source le 2026-11-14 (lecture par un agent de lecture web ; valeurs recopiées telles qu'imprimées). Aucune valeur n'est écrite de mémoire. Les fiches IAU contiennent plusieurs blocs de géométrie non étiquetés sur la page : le bloc 1 est retenu comme centre, les autres sont gardés dans `alternatives` pour montrer l'écart (D-026 : montrer l'écart plutôt que choisir en silence). Les 12 entités suivantes n'ont PAS été lues et ne sont donc pas dans ce fichier : Shoemaker, Haworth, de Gerlache, Sverdrup, Amundsen, Wiechert J, Idel'son L, Slater, Malapert, Kocher, Leibnitz, Mons Mouton. Les missions (IM-1, IM-2, Chandrayaan-3, Chang'e-7) ne sont pas non plus lues : elles attendent leur lecture à la source. ; 2026-11-15 : les 10 entités ajoutées et la confirmation des 7 premières viennent du fichier de points centraux du Gazetteer (champs center_lat, center_lon, diameter), lu par CODE ; coordonnées planétographiques, +Est, ramenées à -180 / 180. ; missions : coordonnées lues sur les pages LROC citées (2026-11-15), jamais de mémoire ; IM-2 = zone visée, pas la position finale.",
+  "read_utc": "2026-11-15",
   "coordinate_system": "IAU Gazetteer : Planetographic, +East, -180 - 180 (imprimé sur chaque fiche)",
   "features": [
     {
-      "id": "feature-shackleton", "name": "Shackleton", "kind": "feature",
-      "lat_deg": -89.67, "lon_deg": 129.78, "diameter_km": 20.92,
-      "alternatives": [{"lat_deg": -89.63, "lon_deg": 132.32, "diameter_km": 21.0}, {"lat_deg": -89.9, "lon_deg": 0.0, "diameter_km": 19.0, "note": "bloc ponctuel, longitude 0 : non exploitable près du pôle"}],
+      "id": "feature-shackleton",
+      "name": "Shackleton",
+      "kind": "feature",
+      "lat_deg": -89.67,
+      "lon_deg": 129.78,
+      "diameter_km": 20.92,
+      "alternatives": [
+        {
+          "lat_deg": -89.63,
+          "lon_deg": 132.32,
+          "diameter_km": 21.0
+        },
+        {
+          "lat_deg": -89.9,
+          "lon_deg": 0.0,
+          "diameter_km": 19.0,
+          "note": "bloc ponctuel, longitude 0 : non exploitable près du pôle"
+        }
+      ],
       "approval": "Adopted by IAU, 1994",
-      "sources": [{"label": "IAU Gazetteer of Planetary Nomenclature, Shackleton (5450)", "url": "https://planetarynames.wr.usgs.gov/Feature/5450", "read_utc": "2026-11-14"}],
-      "verified": false, "position_basis": "feature_center"
+      "sources": [
+        {
+          "label": "IAU Gazetteer of Planetary Nomenclature, Shackleton (5450)",
+          "url": "https://planetarynames.wr.usgs.gov/Feature/5450",
+          "read_utc": "2026-11-14"
+        },
+        {
+          "label": "IAU Gazetteer, fichier de points centraux MOON_nomenclature_center_pts.zip (champs center_lat, center_lon, diameter ; lu le 2026-11-15)",
+          "url": "https://planetarynames.wr.usgs.gov/shapefiles/MOON_nomenclature_center_pts.zip",
+          "read_utc": "2026-11-15"
+        }
+      ],
+      "verified": false,
+      "position_basis": "feature_center"
     },
     {
-      "id": "feature-nobile", "name": "Nobile", "kind": "feature",
-      "lat_deg": -85.28, "lon_deg": 53.27, "diameter_km": 79.27,
-      "alternatives": [{"lat_deg": -85.2, "lon_deg": 53.5, "diameter_km": 73.0}, {"lat_deg": -85.24, "lon_deg": 53.65, "diameter_km": 73.54}],
+      "id": "feature-nobile",
+      "name": "Nobile",
+      "kind": "feature",
+      "lat_deg": -85.28,
+      "lon_deg": 53.27,
+      "diameter_km": 79.27,
+      "alternatives": [
+        {
+          "lat_deg": -85.2,
+          "lon_deg": 53.5,
+          "diameter_km": 73.0
+        },
+        {
+          "lat_deg": -85.24,
+          "lon_deg": 53.65,
+          "diameter_km": 73.54
+        }
+      ],
       "approval": "non vérifié : la page a été lue tronquée ; statut et date non lus",
-      "sources": [{"label": "IAU Gazetteer, Nobile (4321) — lecture partielle (page tronquée), premier bloc verbatim", "url": "https://planetarynames.wr.usgs.gov/Feature/4321", "read_utc": "2026-11-14"}],
-      "verified": false, "position_basis": "feature_center"
+      "sources": [
+        {
+          "label": "IAU Gazetteer, Nobile (4321) — lecture partielle (page tronquée), premier bloc verbatim",
+          "url": "https://planetarynames.wr.usgs.gov/Feature/4321",
+          "read_utc": "2026-11-14"
+        },
+        {
+          "label": "IAU Gazetteer, fichier de points centraux MOON_nomenclature_center_pts.zip (champs center_lat, center_lon, diameter ; lu le 2026-11-15)",
+          "url": "https://planetarynames.wr.usgs.gov/shapefiles/MOON_nomenclature_center_pts.zip",
+          "read_utc": "2026-11-15"
+        }
+      ],
+      "verified": false,
+      "position_basis": "feature_center"
     },
     {
-      "id": "feature-scott", "name": "Scott", "kind": "feature",
-      "lat_deg": -82.35, "lon_deg": 48.52, "diameter_km": 107.82,
-      "alternatives": [{"lat_deg": -82.54, "lon_deg": 48.79, "diameter_km": 101.81}],
+      "id": "feature-scott",
+      "name": "Scott",
+      "kind": "feature",
+      "lat_deg": -82.35,
+      "lon_deg": 48.52,
+      "diameter_km": 107.82,
+      "alternatives": [
+        {
+          "lat_deg": -82.54,
+          "lon_deg": 48.79,
+          "diameter_km": 101.81
+        }
+      ],
       "approval": "non vérifié : page tronquée",
-      "sources": [{"label": "IAU Gazetteer, Scott (5395) — lecture partielle (page tronquée), premier bloc verbatim", "url": "https://planetarynames.wr.usgs.gov/Feature/5395", "read_utc": "2026-11-14"}],
-      "verified": false, "position_basis": "feature_center"
+      "sources": [
+        {
+          "label": "IAU Gazetteer, Scott (5395) — lecture partielle (page tronquée), premier bloc verbatim",
+          "url": "https://planetarynames.wr.usgs.gov/Feature/5395",
+          "read_utc": "2026-11-14"
+        },
+        {
+          "label": "IAU Gazetteer, fichier de points centraux MOON_nomenclature_center_pts.zip (champs center_lat, center_lon, diameter ; lu le 2026-11-15)",
+          "url": "https://planetarynames.wr.usgs.gov/shapefiles/MOON_nomenclature_center_pts.zip",
+          "read_utc": "2026-11-15"
+        }
+      ],
+      "verified": false,
+      "position_basis": "feature_center"
     },
     {
-      "id": "feature-mons-amundsen", "name": "Mons Amundsen", "kind": "feature",
-      "lat_deg": -82.57, "lon_deg": 75.71, "diameter_km": 38.0,
+      "id": "feature-mons-amundsen",
+      "name": "Mons Amundsen",
+      "kind": "feature",
+      "lat_deg": -82.57,
+      "lon_deg": 75.71,
+      "diameter_km": 38.0,
       "alternatives": [],
       "approval": "Adopted by IAU, 2025-03-31",
-      "sources": [{"label": "IAU Gazetteer, Mons Amundsen (16397)", "url": "https://planetarynames.wr.usgs.gov/Feature/16397", "read_utc": "2026-11-14"}],
-      "verified": false, "position_basis": "feature_center"
+      "sources": [
+        {
+          "label": "IAU Gazetteer, Mons Amundsen (16397)",
+          "url": "https://planetarynames.wr.usgs.gov/Feature/16397",
+          "read_utc": "2026-11-14"
+        },
+        {
+          "label": "IAU Gazetteer, fichier de points centraux MOON_nomenclature_center_pts.zip (champs center_lat, center_lon, diameter ; lu le 2026-11-15)",
+          "url": "https://planetarynames.wr.usgs.gov/shapefiles/MOON_nomenclature_center_pts.zip",
+          "read_utc": "2026-11-15"
+        }
+      ],
+      "verified": false,
+      "position_basis": "feature_center"
     },
     {
-      "id": "feature-mons-cabeus", "name": "Mons Cabeus", "kind": "feature",
-      "lat_deg": -83.67, "lon_deg": -36.16, "diameter_km": 43.0,
+      "id": "feature-mons-cabeus",
+      "name": "Mons Cabeus",
+      "kind": "feature",
+      "lat_deg": -83.67,
+      "lon_deg": -36.16,
+      "diameter_km": 43.0,
       "alternatives": [],
       "approval": "Adopted by IAU, 2025-03-31",
-      "sources": [{"label": "IAU Gazetteer, Mons Cabeus (16396)", "url": "https://planetarynames.wr.usgs.gov/Feature/16396", "read_utc": "2026-11-14"}],
-      "verified": false, "position_basis": "feature_center"
+      "sources": [
+        {
+          "label": "IAU Gazetteer, Mons Cabeus (16396)",
+          "url": "https://planetarynames.wr.usgs.gov/Feature/16396",
+          "read_utc": "2026-11-14"
+        },
+        {
+          "label": "IAU Gazetteer, fichier de points centraux MOON_nomenclature_center_pts.zip (champs center_lat, center_lon, diameter ; lu le 2026-11-15)",
+          "url": "https://planetarynames.wr.usgs.gov/shapefiles/MOON_nomenclature_center_pts.zip",
+          "read_utc": "2026-11-15"
+        }
+      ],
+      "verified": false,
+      "position_basis": "feature_center"
     },
     {
-      "id": "feature-cabeus", "name": "Cabeus", "kind": "feature",
-      "lat_deg": -85.33, "lon_deg": -42.13, "diameter_km": 100.58,
-      "alternatives": [{"lat_deg": -85.28, "lon_deg": -41.81, "diameter_km": 100.58}, {"lat_deg": -84.9, "lon_deg": -35.5, "diameter_km": 98.0, "note": "valeur citée par CHAT (BUILD-V2 § 3.2) ; c'est le bloc ponctuel de la fiche, PAS le bloc 1 : écart de 6,6° en longitude"}],
+      "id": "feature-cabeus",
+      "name": "Cabeus",
+      "kind": "feature",
+      "lat_deg": -85.33,
+      "lon_deg": -42.13,
+      "diameter_km": 100.58,
+      "alternatives": [
+        {
+          "lat_deg": -85.28,
+          "lon_deg": -41.81,
+          "diameter_km": 100.58
+        },
+        {
+          "lat_deg": -84.9,
+          "lon_deg": -35.5,
+          "diameter_km": 98.0,
+          "note": "valeur citée par CHAT (BUILD-V2 § 3.2) ; c'est le bloc ponctuel de la fiche, PAS le bloc 1 : écart de 6,6° en longitude"
+        }
+      ],
       "approval": "Adopted by IAU, 1935",
-      "sources": [{"label": "IAU Gazetteer, Cabeus (953)", "url": "https://planetarynames.wr.usgs.gov/Feature/953", "read_utc": "2026-11-14"}],
-      "verified": false, "position_basis": "feature_center"
+      "sources": [
+        {
+          "label": "IAU Gazetteer, Cabeus (953)",
+          "url": "https://planetarynames.wr.usgs.gov/Feature/953",
+          "read_utc": "2026-11-14"
+        },
+        {
+          "label": "IAU Gazetteer, fichier de points centraux MOON_nomenclature_center_pts.zip (champs center_lat, center_lon, diameter ; lu le 2026-11-15)",
+          "url": "https://planetarynames.wr.usgs.gov/shapefiles/MOON_nomenclature_center_pts.zip",
+          "read_utc": "2026-11-15"
+        }
+      ],
+      "verified": false,
+      "position_basis": "feature_center"
     },
     {
-      "id": "feature-faustini", "name": "Faustini", "kind": "feature",
-      "lat_deg": -87.18, "lon_deg": 84.31, "diameter_km": 42.48,
-      "alternatives": [{"lat_deg": -87.18, "lon_deg": 85.02, "diameter_km": 42.48}, {"lat_deg": -87.3, "lon_deg": 77.0, "diameter_km": 39.0, "note": "valeur citée par CHAT (BUILD-V2 § 3.2) ; c'est le bloc ponctuel de la fiche, pas le bloc 1"}],
+      "id": "feature-faustini",
+      "name": "Faustini",
+      "kind": "feature",
+      "lat_deg": -87.18,
+      "lon_deg": 84.31,
+      "diameter_km": 42.48,
+      "alternatives": [
+        {
+          "lat_deg": -87.18,
+          "lon_deg": 85.02,
+          "diameter_km": 42.48
+        },
+        {
+          "lat_deg": -87.3,
+          "lon_deg": 77.0,
+          "diameter_km": 39.0,
+          "note": "valeur citée par CHAT (BUILD-V2 § 3.2) ; c'est le bloc ponctuel de la fiche, pas le bloc 1"
+        }
+      ],
       "approval": "Adopted by IAU, 1994",
-      "sources": [{"label": "IAU Gazetteer, Faustini (1919)", "url": "https://planetarynames.wr.usgs.gov/Feature/1919", "read_utc": "2026-11-14"}],
-      "verified": false, "position_basis": "feature_center"
+      "sources": [
+        {
+          "label": "IAU Gazetteer, Faustini (1919)",
+          "url": "https://planetarynames.wr.usgs.gov/Feature/1919",
+          "read_utc": "2026-11-14"
+        },
+        {
+          "label": "IAU Gazetteer, fichier de points centraux MOON_nomenclature_center_pts.zip (champs center_lat, center_lon, diameter ; lu le 2026-11-15)",
+          "url": "https://planetarynames.wr.usgs.gov/shapefiles/MOON_nomenclature_center_pts.zip",
+          "read_utc": "2026-11-15"
+        }
+      ],
+      "verified": false,
+      "position_basis": "feature_center"
+    },
+    {
+      "id": "feature-shoemaker",
+      "name": "Shoemaker",
+      "kind": "feature",
+      "lat_deg": -88.137,
+      "lon_deg": 45.911,
+      "diameter_km": 51.82,
+      "approval": "Adopted by IAU, 2000",
+      "sources": [
+        {
+          "label": "IAU Gazetteer, Shoemaker (fiche et fichier de centres)",
+          "url": "https://planetarynames.wr.usgs.gov/Feature/5494",
+          "read_utc": "2026-11-15"
+        },
+        {
+          "label": "IAU Gazetteer, fichier de points centraux MOON_nomenclature_center_pts.zip (champs center_lat, center_lon, diameter ; lu le 2026-11-15)",
+          "url": "https://planetarynames.wr.usgs.gov/shapefiles/MOON_nomenclature_center_pts.zip",
+          "read_utc": "2026-11-15"
+        }
+      ],
+      "verified": false,
+      "position_basis": "feature_center"
+    },
+    {
+      "id": "feature-haworth",
+      "name": "Haworth",
+      "kind": "feature",
+      "lat_deg": -87.45,
+      "lon_deg": -5.17,
+      "diameter_km": 51.42,
+      "approval": "Adopted by IAU, 2008",
+      "sources": [
+        {
+          "label": "IAU Gazetteer, Haworth (fiche et fichier de centres)",
+          "url": "https://planetarynames.wr.usgs.gov/Feature/14502",
+          "read_utc": "2026-11-15"
+        },
+        {
+          "label": "IAU Gazetteer, fichier de points centraux MOON_nomenclature_center_pts.zip (champs center_lat, center_lon, diameter ; lu le 2026-11-15)",
+          "url": "https://planetarynames.wr.usgs.gov/shapefiles/MOON_nomenclature_center_pts.zip",
+          "read_utc": "2026-11-15"
+        }
+      ],
+      "verified": false,
+      "position_basis": "feature_center"
+    },
+    {
+      "id": "feature-de-gerlache",
+      "name": "de Gerlache",
+      "kind": "feature",
+      "lat_deg": -88.485,
+      "lon_deg": -88.345,
+      "diameter_km": 32.71,
+      "approval": "Adopted by IAU, 2000",
+      "sources": [
+        {
+          "label": "IAU Gazetteer, de Gerlache (fiche et fichier de centres)",
+          "url": "https://planetarynames.wr.usgs.gov/Feature/1439",
+          "read_utc": "2026-11-15"
+        },
+        {
+          "label": "IAU Gazetteer, fichier de points centraux MOON_nomenclature_center_pts.zip (champs center_lat, center_lon, diameter ; lu le 2026-11-15)",
+          "url": "https://planetarynames.wr.usgs.gov/shapefiles/MOON_nomenclature_center_pts.zip",
+          "read_utc": "2026-11-15"
+        }
+      ],
+      "verified": false,
+      "position_basis": "feature_center"
+    },
+    {
+      "id": "feature-sverdrup",
+      "name": "Sverdrup",
+      "kind": "feature",
+      "lat_deg": -88.321,
+      "lon_deg": -153.387,
+      "diameter_km": 32.83,
+      "approval": "Adopted by IAU, 2000",
+      "sources": [
+        {
+          "label": "IAU Gazetteer, Sverdrup (fiche et fichier de centres)",
+          "url": "https://planetarynames.wr.usgs.gov/Feature/5782",
+          "read_utc": "2026-11-15"
+        },
+        {
+          "label": "IAU Gazetteer, fichier de points centraux MOON_nomenclature_center_pts.zip (champs center_lat, center_lon, diameter ; lu le 2026-11-15)",
+          "url": "https://planetarynames.wr.usgs.gov/shapefiles/MOON_nomenclature_center_pts.zip",
+          "read_utc": "2026-11-15"
+        }
+      ],
+      "verified": false,
+      "position_basis": "feature_center"
+    },
+    {
+      "id": "feature-amundsen",
+      "name": "Amundsen",
+      "kind": "feature",
+      "lat_deg": -84.44,
+      "lon_deg": 83.069,
+      "diameter_km": 103.39,
+      "approval": "Adopted by IAU, 1964",
+      "sources": [
+        {
+          "label": "IAU Gazetteer, Amundsen (fiche et fichier de centres)",
+          "url": "https://planetarynames.wr.usgs.gov/Feature/247",
+          "read_utc": "2026-11-15"
+        },
+        {
+          "label": "IAU Gazetteer, fichier de points centraux MOON_nomenclature_center_pts.zip (champs center_lat, center_lon, diameter ; lu le 2026-11-15)",
+          "url": "https://planetarynames.wr.usgs.gov/shapefiles/MOON_nomenclature_center_pts.zip",
+          "read_utc": "2026-11-15"
+        }
+      ],
+      "verified": false,
+      "position_basis": "feature_center"
+    },
+    {
+      "id": "feature-slater",
+      "name": "Slater",
+      "kind": "feature",
+      "lat_deg": -88.079,
+      "lon_deg": 111.288,
+      "diameter_km": 25.12,
+      "approval": "Adopted by IAU, 2015",
+      "sources": [
+        {
+          "label": "IAU Gazetteer, Slater (fiche et fichier de centres)",
+          "url": "https://planetarynames.wr.usgs.gov/Feature/15325",
+          "read_utc": "2026-11-15"
+        },
+        {
+          "label": "IAU Gazetteer, fichier de points centraux MOON_nomenclature_center_pts.zip (champs center_lat, center_lon, diameter ; lu le 2026-11-15)",
+          "url": "https://planetarynames.wr.usgs.gov/shapefiles/MOON_nomenclature_center_pts.zip",
+          "read_utc": "2026-11-15"
+        }
+      ],
+      "verified": false,
+      "position_basis": "feature_center"
+    },
+    {
+      "id": "feature-malapert",
+      "name": "Malapert",
+      "kind": "feature",
+      "lat_deg": -85.0,
+      "lon_deg": 11.403,
+      "diameter_km": 72.38,
+      "approval": "Adopted by IAU, 1935",
+      "sources": [
+        {
+          "label": "IAU Gazetteer, Malapert (fiche et fichier de centres)",
+          "url": "https://planetarynames.wr.usgs.gov/Feature/3603",
+          "read_utc": "2026-11-15"
+        },
+        {
+          "label": "IAU Gazetteer, fichier de points centraux MOON_nomenclature_center_pts.zip (champs center_lat, center_lon, diameter ; lu le 2026-11-15)",
+          "url": "https://planetarynames.wr.usgs.gov/shapefiles/MOON_nomenclature_center_pts.zip",
+          "read_utc": "2026-11-15"
+        }
+      ],
+      "verified": false,
+      "position_basis": "feature_center"
+    },
+    {
+      "id": "feature-mons-malapert",
+      "name": "Mons Malapert",
+      "kind": "feature",
+      "lat_deg": -85.98,
+      "lon_deg": -1.67,
+      "diameter_km": 67.0,
+      "approval": "Adopted by IAU, 2024",
+      "sources": [
+        {
+          "label": "IAU Gazetteer, Mons Malapert (fiche et fichier de centres)",
+          "url": "https://planetarynames.wr.usgs.gov/Feature/16338",
+          "read_utc": "2026-11-15"
+        },
+        {
+          "label": "IAU Gazetteer, fichier de points centraux MOON_nomenclature_center_pts.zip (champs center_lat, center_lon, diameter ; lu le 2026-11-15)",
+          "url": "https://planetarynames.wr.usgs.gov/shapefiles/MOON_nomenclature_center_pts.zip",
+          "read_utc": "2026-11-15"
+        }
+      ],
+      "verified": false,
+      "position_basis": "feature_center"
+    },
+    {
+      "id": "feature-idelson-l",
+      "name": "Idel'son L",
+      "kind": "feature",
+      "lat_deg": -83.992,
+      "lon_deg": 118.563,
+      "diameter_km": 28.04,
+      "approval": "Adopted by IAU, 2006",
+      "sources": [
+        {
+          "label": "IAU Gazetteer, Idel'son L (fiche et fichier de centres)",
+          "url": "https://planetarynames.wr.usgs.gov/Feature/10114",
+          "read_utc": "2026-11-15"
+        },
+        {
+          "label": "IAU Gazetteer, fichier de points centraux MOON_nomenclature_center_pts.zip (champs center_lat, center_lon, diameter ; lu le 2026-11-15)",
+          "url": "https://planetarynames.wr.usgs.gov/shapefiles/MOON_nomenclature_center_pts.zip",
+          "read_utc": "2026-11-15"
+        }
+      ],
+      "verified": false,
+      "position_basis": "feature_center"
+    },
+    {
+      "id": "feature-wiechert-j",
+      "name": "Wiechert J",
+      "kind": "feature",
+      "lat_deg": -85.202,
+      "lon_deg": -177.637,
+      "diameter_km": 34.89,
+      "approval": "Adopted by IAU, 2006",
+      "sources": [
+        {
+          "label": "IAU Gazetteer, Wiechert J (fiche et fichier de centres)",
+          "url": "https://planetarynames.wr.usgs.gov/Feature/13888",
+          "read_utc": "2026-11-15"
+        },
+        {
+          "label": "IAU Gazetteer, fichier de points centraux MOON_nomenclature_center_pts.zip (champs center_lat, center_lon, diameter ; lu le 2026-11-15)",
+          "url": "https://planetarynames.wr.usgs.gov/shapefiles/MOON_nomenclature_center_pts.zip",
+          "read_utc": "2026-11-15"
+        }
+      ],
+      "verified": false,
+      "position_basis": "feature_center"
     }
   ],
   "apollo": {
     "reference": "Latitude and longitude referenced to DE421 Mean Earth/Polar Axis Lunar Reference frame (légende imprimée de la page ; aucune époque imprimée)",
-    "source": {"label": "NASA NSSDC, Apollo Landing Sites", "url": "https://nssdc.gsfc.nasa.gov/planetary/lunar/apolloland.html", "read_utc": "2026-11-14", "page_updated": "06 March 2017"},
+    "source": {
+      "label": "NASA NSSDC, Apollo Landing Sites",
+      "url": "https://nssdc.gsfc.nasa.gov/planetary/lunar/apolloland.html",
+      "read_utc": "2026-11-14",
+      "page_updated": "06 March 2017"
+    },
     "note": "La page imprime 3 décimales ; CHAT cite 5 décimales (Wagner et al. 2017, LROC) : à lire à la source LROC avant d'affiner. Ces sites ne sont pas des sites polaires : relief non modélisé (terrain_tier flat).",
     "sites": [
-      {"id": "apollo-11", "name": "Apollo 11", "lat_deg": 0.674, "lon_deg": 23.473},
-      {"id": "apollo-12", "name": "Apollo 12", "lat_deg": -3.013, "lon_deg": -23.422},
-      {"id": "apollo-14", "name": "Apollo 14", "lat_deg": -3.646, "lon_deg": -17.472},
-      {"id": "apollo-15", "name": "Apollo 15", "lat_deg": 26.132, "lon_deg": 3.633},
-      {"id": "apollo-16", "name": "Apollo 16", "lat_deg": -8.973, "lon_deg": 15.501},
-      {"id": "apollo-17", "name": "Apollo 17", "lat_deg": 20.191, "lon_deg": 30.772}
+      {
+        "id": "apollo-11",
+        "name": "Apollo 11",
+        "lat_deg": 0.674,
+        "lon_deg": 23.473
+      },
+      {
+        "id": "apollo-12",
+        "name": "Apollo 12",
+        "lat_deg": -3.013,
+        "lon_deg": -23.422
+      },
+      {
+        "id": "apollo-14",
+        "name": "Apollo 14",
+        "lat_deg": -3.646,
+        "lon_deg": -17.472
+      },
+      {
+        "id": "apollo-15",
+        "name": "Apollo 15",
+        "lat_deg": 26.132,
+        "lon_deg": 3.633
+      },
+      {
+        "id": "apollo-16",
+        "name": "Apollo 16",
+        "lat_deg": -8.973,
+        "lon_deg": 15.501
+      },
+      {
+        "id": "apollo-17",
+        "name": "Apollo 17",
+        "lat_deg": 20.191,
+        "lon_deg": 30.772
+      }
     ]
-  }
+  },
+  "missions": [
+    {
+      "id": "mission-im1-odysseus",
+      "name": "IM-1 Odysseus",
+      "lat_deg": -80.13,
+      "lon_deg": 1.44,
+      "height_m": 2579,
+      "status": "landed",
+      "mission": "IM-1 Odysseus (Intuitive Machines, CLPS) : posé le 2024-02-22 à 23:23:53 UTC",
+      "position_basis": "mission_lroc",
+      "approximate": false,
+      "verified": false,
+      "sources": [
+        {
+          "label": "LROC, « Intuitive Machines IM-1 On The Moon! » : Odysseus au repos à 80,13° S ; 1,44° E, altitude 2 579 m (image NAC M1463440322L)",
+          "url": "https://lroc.im-ldi.com/images/1360",
+          "read_utc": "2026-11-15"
+        }
+      ]
+    },
+    {
+      "id": "mission-chandrayaan3",
+      "name": "Chandrayaan-3 (Statio Shiv Shakti)",
+      "lat_deg": -69.3741,
+      "lon_deg": 32.32,
+      "height_m": 532,
+      "status": "landed",
+      "mission": "Chandrayaan-3 (ISRO) : posé le 2023-08-23",
+      "position_basis": "mission_lroc",
+      "approximate": false,
+      "verified": false,
+      "alternatives": [
+        {
+          "lat_deg": -69.3734,
+          "lon_deg": 32.3198,
+          "note": "centre de Statio Shiv Shakti, fichier de points centraux du Gazetteer de l'IAU (approuvé le 2024-03-19), lu le 2026-11-15"
+        }
+      ],
+      "sources": [
+        {
+          "label": "LROC, « Chandrayaan-3 Landing Site » : 69,3741° S ; 32,32° E, altitude 532 m (image NAC M1447750764LR)",
+          "url": "https://lroc.im-ldi.com/images/1314",
+          "read_utc": "2026-11-15"
+        },
+        {
+          "label": "IAU Gazetteer, Statio Shiv Shakti (fichier de points centraux MOON_nomenclature_center_pts.zip)",
+          "url": "https://planetarynames.wr.usgs.gov/shapefiles/MOON_nomenclature_center_pts.zip",
+          "read_utc": "2026-11-15"
+        }
+      ]
+    },
+    {
+      "id": "mission-im2-athena-cible",
+      "name": "IM-2 Athena (zone visée)",
+      "lat_deg": -84.78,
+      "lon_deg": 29.13,
+      "status": "planned",
+      "mission": "IM-2 Athena (Intuitive Machines, CLPS) : ZONE VISÉE près de Mons Mouton ; la page source précède l'événement (alunissage prévu le 2025-03-06) : l'issue et la position finale n'ont pas été lues à la source",
+      "position_basis": "mission_lroc",
+      "approximate": true,
+      "verified": false,
+      "sources": [
+        {
+          "label": "LROC, « IM-2 Landing Region » : site d'alunissage visé (−84,78° ; 29,13° E), à 160 km du pôle Sud",
+          "url": "https://lroc.im-ldi.com/images/1401",
+          "read_utc": "2026-11-15"
+        }
+      ]
+    }
+  ]
 }

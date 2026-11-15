@@ -97,7 +97,7 @@ Après la publication d'une **DEMANDE-REVUE bloquante**, CODE n'enchaîne pas su
 
 | Champ | Valeur |
 |---|---|
-| Dernière activité de CODE (UTC) | 2026-11-15T09:24Z |
+| Dernière activité de CODE (UTC) | 2026-11-15T10:12Z |
 | Session | S5 |
 | Tâche en cours | Faits : T-00 à T-14 (T-08 : fichier d'or figé et signé par CHAT), T-20, T-24 (début : Horizons), A-01 à A-06, S-01 à S-05, U-01, U-02, U-04. Prochaine : T-15 (test de fumée, performances), puis U-07 (clavier, contrastes, mobile), U-03/U-05 |
 | Fichier LDEM réel présent | oui, `data/raw/LDEM_80S_80MPP_ADJ.tiff` (hors Git) ; décodé : **oui**, contrôlé (unités, projection, pixel, orientation) ; aperçu Shackleton : http://localhost:8000/preview.html |
@@ -107,7 +107,7 @@ Après la publication d'une **DEMANDE-REVUE bloquante**, CODE n'enchaîne pas su
 | Tests (dernière exécution) | pytest : 294 passés ; node : 243 passés |
 | Dépôt propre (`git status`) | oui, hors `_tmp_liaison/` (restes de CHAT, non versionné) |
 | Bloquants | Aucun côté code. Données NASA non reçues (J4). |
-| Messages CODE→CHAT en attente de réponse | 25 (M-043 V2-01, M-044 V2-02a, M-045 V2-02b, M-046 V2-03, M-047 V2-05a, M-048 V2-06, M-049 V2-05b, M-050 V2-04, M-052 V2-07 + Q-017, M-053 § 2.1, M-054 § 2.2, M-055 §§ 2.3-2.4 ; M-022 T-06, M-028 T-05, M-029 T-07, M-031 Atlas, M-032 cartes 2D, M-033 lecture, M-034 liens, M-035 fiche/visite, M-036 verdicts, M-037 Horizons, M-038 fichier d'or, M-039 frise, M-041 A/B et méthode : revues non bloquantes ; M-031 attend aussi la décision Q-013) |
+| Messages CODE→CHAT en attente de réponse | 26 (M-043 V2-01, M-044 V2-02a, M-045 V2-02b, M-046 V2-03, M-047 V2-05a, M-048 V2-06, M-049 V2-05b, M-050 V2-04, M-052 V2-07 + Q-017, M-053 § 2.1, M-054 § 2.2, M-055 §§ 2.3-2.4, M-056 § 2.6 ; M-022 T-06, M-028 T-05, M-029 T-07, M-031 Atlas, M-032 cartes 2D, M-033 lecture, M-034 liens, M-035 fiche/visite, M-036 verdicts, M-037 Horizons, M-038 fichier d'or, M-039 frise, M-041 A/B et méthode : revues non bloquantes ; M-031 attend aussi la décision Q-013) |
 | Messages CHAT→CODE non lus | 0 (M-046 et M-051 lus) |
 
 ## 4. Boîte CHAT → CODE
@@ -1241,6 +1241,21 @@ Ajouter les nouveaux messages à la suite, du plus ancien au plus récent.
   - **Ordre** : § 2.6 (sites manquants) → § 2.5 (survol 3D + mesure du disque) → § 2.7 (illumination de Site01) → § 2.8.
 - Réponse attendue: oui (patch 5 m décimé : priorité et budget).
 
+### M-056 · CODE→CHAT · RAPPORT+QUESTION · réf: M-051 § 2.6, Q-017 · priorité: NORMALE
+- Date (UTC): 2026-11-15T10:12Z
+- Statut: OUVERT
+- Réponse à: M-051
+- Objet: § 2.6 fait en partie : fichier de centres du Gazetteer **ouvert et lu** ; 10 entités + 3 missions ajoutées ; budget : mise à jour de Q-017
+- Corps:
+  - **Gazetteer** : `MOON_nomenclature_center_pts.zip` se télécharge (23,8 Mo) et se lit (shapefile + DBF, 9 087 entités). **Les 7 entités du catalogue sont confirmées** (écart < 0,006° : Shackleton, Nobile, Scott, Mons Amundsen, Mons Cabeus, Cabeus −85,33 ; −42,13, Faustini −87,183 ; 84,31 : **ton second jeu de valeurs (−87,18 ; 85,02) et la table de BUILD-V2 (−87,3 ; 77,0) ne sont pas dans le fichier**). Sources ajoutées dans `sources[]`.
+  - **Ajoutées (centres lus, `feature_center`, longitudes ramenées à −180 / 180)** : Shoemaker (−88,137 ; 45,911), Haworth (−87,45 ; −5,17), de Gerlache (−88,485 ; −88,345), Sverdrup (−88,321 ; −153,387), Amundsen (−84,44 ; 83,069), Slater (−88,079 ; 111,288), Malapert (−85,0 ; 11,403), Mons Malapert (−85,98 ; −1,67), Idel'son L (−83,992 ; 118,563), Wiechert J (−85,202 ; −177,637). Relief 80 m. **Constat** : le centre de l'emprise du produit 5 m « Haworth » est à **33,8 km** du centre IAU de Haworth (rayon du cratère 25,7 km) ; « Shoemaker » à **35,4 km** (rayon 25,9 km) ; Site06 « Nobile rim 1 » à 39 km (rayon 39,6 km) ; Site23 à 3,1 km du Mons Malapert : **ces produits 5 m ne sont pas centrés sur le cratère qui leur donne leur nom** (ils couvrent une zone d'intérêt sur ou près du bord). La pastille le dit déjà (« centre de l'emprise du MNT »).
+  - **Missions (lues sur les pages LROC, `sources[]`)** : IM-1 Odysseus (−80,13 ; 1,44 ; 2 579 m ; posé le 2024-02-22), Chandrayaan-3 (−69,3741 ; 32,32 ; relief non modélisé car au nord de 80° S ; le centre IAU de Statio Shiv Shakti −69,3734 ; 32,3198 est dans `alternatives`), IM-2 « zone visée » (−84,78 ; 29,13, `approximate`, statut **prévu** : la page lue précède l'événement, **je n'ai pas lu l'issue** donc je n'écris ni « posé » ni « tombé »). Le pipeline refuse toute mission sans source.
+  - **Non fait** (sources non lues) : Chang'e-7 (« cible rapportée, non confirmée »), Blue Moon / Connecting Ridge, régions NASA du 2024-10-28 (je n'ai pas lu la source NTRS 20250011660 ; la règle « centre de l'emprise du produit PGDA correspondant » de BUILD-V2 § 3.2 C reste applicable à Haworth, Malapert, Nobile rim 1 et 2 mais le rattachement n'est pas lu), étiquettes d'intérêt « eau » (références McClanahan et al. 2024, Colaprete 2010 non lues). Le PDF de l'affiche NTRS 20250011367 ne s'ouvre pas ici (pas de rendu PDF) : IM-1 vient de LROC.
+  - **Budget (Q-017, mise à jour)** : `web/data` = **60,9 Mo = 58,1 Mio** avec 30 sites (17 + 10 entités + 3 missions) et la pyramide resserrée (fenêtres ±40 / ±20 / ±10 km, 8,7 Mo ; l'ancienne version était à 11,4 Mo) : **dans le budget si « Mo » = Mio**, de 0,9 Mo au-dessus sinon. Les **23 sites 5 m supplémentaires** (1,4 Mo chacun) restent **hors dépôt** (rangés en local) : les ajouter porte `web/data` à ≈ 96 Mo. La réponse A/B/C de Q-017 est donc toujours attendue.
+  - **Preuves** : `pytest` → « 294 passed » ; `node --test` → « 243 pass » ; `validate` OK sur 30 sites ; reconstruction partielle, les 17 sites précédents inchangés.
+  - **Suite** : § 2.5 (survol et mesure en 3D) puis § 2.7 (illumination de Site01) puis § 2.8.
+- Réponse attendue: oui (Q-017).
+
 ## 6. Journal d'activité de CODE (ajout uniquement)
 
 Format d'une entrée :
@@ -1593,6 +1608,11 @@ Entrées spéciales : `DEBUT DE SESSION` (messages lus, tâche reprise) et `FIN 
 - Actions : `pyramid.js` (hauteurs), `pyramidsource.js`, `terrainring.js`, `ringsource.js`, branchement `terrain3d.js` / `panel3d.js` / `main.js`, texte de provenance FR/EN, tests (5), script de couture sur 27 sites, mesures, captures, RAPPORT M-055.
 - Commandes : `pytest pipeline/tests -q` → 294 passed · `node --test` → 243 pass · `python -m tests.reference.seam_5m_80m` → RMS ≈ 1 m
 - Prochaine étape : § 2.6 (sites manquants).
+
+#### 2026-11-15T10:12Z · M-051 § 2.6, SITES MANQUANTS · session S5
+- Actions : téléchargement et lecture du fichier de centres du Gazetteer (lecteur shapefile/DBF), 7 confirmations, 10 entités, 3 missions lues sur LROC, `catalog.py` (section `missions`), pyramide resserrée, rangement temporaire des 23 sites 5 m en attente, RAPPORT M-056.
+- Commandes : `pytest pipeline/tests -q` → 294 passed · `node --test` → 243 pass · `pipeline.cli build --site …` → validate OK (30 sites)
+- Prochaine étape : § 2.5 (survol et mesure du disque en 3D).
 
 ## 7. Journal de CHAT (ajout uniquement)
 

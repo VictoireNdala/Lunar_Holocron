@@ -27,7 +27,7 @@ TILE_PX = 128
 BORDER_PX = 2
 STORED_PX = TILE_PX + 2 * BORDER_PX
 # pas (m) → (facteur de blocs du LDEM 80 m, demi-côté (km) de la fenêtre couverte autour de chaque site) ; réglage de budget (Q-017)
-LEVELS: dict[int, tuple[int, float]] = {240: (3, 45.0), 160: (2, 25.0), 80: (1, 12.0)}
+LEVELS: dict[int, tuple[int, float]] = {240: (3, 40.0), 160: (2, 20.0), 80: (1, 10.0)}
 OUT_DIR = Path("web/data/polar")
 
 
