@@ -76,7 +76,11 @@ try {
   }
 
   // 7. pas d'erreur, pas de requête hors origine, mémoire
-  check('aucun console.error ni exception pendant la visite', errors.length === 0, errors.slice(0, 3).join(' | '));
+  // Les textures de l'Atlas (NASA SVS) ne sont pas versionnées (Q-013) : sur une copie propre leur 404 est attendu et l'application le dit à l'écran ; tout autre message est un échec.
+  const textureMissing = errors.filter((e) => /assets\/moon\//.test(e));
+  const real = errors.filter((e) => !/assets\/moon\//.test(e));
+  if (textureMissing.length) console.log(`note  texture de l'Atlas absente (attendu sur une copie propre, Q-013) : ${textureMissing.length} requête(s) 404`);
+  check('aucun console.error ni exception pendant la visite (hors texture de l’Atlas non versionnée)', real.length === 0, real.slice(0, 3).join(' | '));
   check('aucune requête hors de l\'origine locale (aucune dépendance réseau)', foreign.length === 0, foreign.slice(0, 3).join(' | '));
   const heapMb = await ev('Math.round((performance.memory?.usedJSHeapSize ?? 0) / 1048576)');
   check('mémoire JavaScript < 400 Mo', heapMb > 0 && heapMb < 400, `${heapMb} Mo`);
