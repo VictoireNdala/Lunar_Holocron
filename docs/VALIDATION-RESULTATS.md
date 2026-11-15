@@ -59,6 +59,21 @@ Géométrie seulement (relais, stations au sol, bilan de liaison et trajectoire 
 | Délai de propagation aller simple (distance ÷ c) contre la portée Horizons (`QUANTITIES='20'`), 4 sites × 3 dates × 24 h = 288 valeurs | écart maximal **0,738 ms**, moyen 0,342 ms | < 1 ms | borné par l'**arrondi au millidegré du rayon angulaire** de la Terre dans le fichier de site (± 5·10⁻⁴ de la distance) : on ne peut pas faire mieux avec ce format |
 | Délais calculés sur 5 ans (Site01) | entre 1,18 s et 1,37 s (aller simple) | plausible | distance Terre–Lune 356 000 – 407 000 km |
 
+**Vue 3D : disques du Soleil et de la Terre, et sonde (M-051 § 2.5).**
+
+Mesure dans Edge (SwiftShader), caméra au sol, ouverture 60°, canvas de 900 × 600 px, Soleil de rayon angulaire 0,2665° et Terre de 0,95° (valeurs de test ; script `tests/reference/browser_measure_3d_discs.js`). Diamètre du **disque** (sans halo) projeté par la caméra réelle, comparé à (rayon angulaire × agrandissement) × pixels par radian au centre de l'image ; largeur lue sur les pixels rendus (≥ 55 % du maximum de luminosité de la rangée).
+
+| Cas | Projection (px) | Attendu (px) | Écart | Largeur lue sur les pixels |
+|---|---|---|---|---|
+| Soleil ×1 (taille réelle, plancher de lisibilité 0,25° < rayon réel) | 4,86 | 4,83 | 0,03 | 4 px |
+| Soleil ×4 (illustratif) | 19,44 | 19,34 | 0,11 | 18 px |
+| Soleil ×8 (illustratif) | 38,90 | 38,69 | 0,21 | 38 px |
+| Terre ×1 | 17,27 | 17,23 | 0,04 | non lu |
+
+Lecture : par projection l'écart est **inférieur à 0,25 px** (tolérance 1 px respectée) ; sur les pixels rendus, l'écart va de 0,8 à 1,3 px (bord adouci et assombrissement centre-bord : un seuil à 55 % n'est pas un bord exact), **donc la tolérance de 1 px n'est établie que par projection**, pas par lecture de pixels. Le plancher du sprite de la vue 3D est passé de 1° à 0,25° : à ×1 le Soleil est **à l'échelle** (seul le halo déborde).
+
+Sonde dans la vue 3D : mêmes mots et mêmes unités que sur la carte (`formatProbe`, testé : `probetext.test.js`) ; **souris** (raycast sur le maillage central et l'anneau) et **clavier** (flèches de 500 m, Échap) ; marqueur magenta au point sondé ; contrôle Edge : au clavier 0,7 km au cap 45°, pente 30,1°, horizon dans cette direction 26,8°, « Soleil visible non, Terre visible non » ; à la souris 5,1 km au cap 140°. Limite : l'altitude et la pente viennent de la **grille 480 m** (comme sur la carte) ; seul « écart de hauteur au site » vient du maillage 3D ; au clavier, la sonde reste dans le terrain central (±10 km).
+
 **Couture 5 m / 80 m (M-051 § 2.4).** Différence de hauteur MNT 5 m (PGDA 78) − LDEM 80 m (PGDA 90) sur la couronne de recouvrement (distance de Tchebychev de 6,5 à 8 km du centre, grille de 40 m, interpolation bilinéaire dans les deux produits) ; script `tests/reference/seam_5m_80m.py`, résultats `tests/reference/seam_5m_80m.json`, test `pipeline/tests/test_seam_reference.py`.
 
 | Site (niveau 1) | Points | Biais (m) | RMS (m) | Maximum (m) |

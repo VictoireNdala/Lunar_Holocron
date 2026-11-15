@@ -5,6 +5,7 @@ import { MAP_KINDS, buildBase, drawMap, makeProjection, shade, textureData } fro
 import { zoneAt } from '../atlas/markerdraw.js';
 import { FAMILIES, glyphOf, keyboardOrder, nearestInDirection } from '../atlas/markers.js';
 import { probeAt } from '../atlas/relief.js';
+import { formatProbe } from '../atlas/probetext.js';
 import { viewMetrics } from '../atlas/pyramid.js';
 import { colorForPct, coveragePct, decodeBits, indexAt } from '../atlas/linkoverlay.js';
 import { windowRange } from '../timeline.js';
@@ -198,13 +199,7 @@ export function createMapPanel(store, atlas, openSite, getSite = () => null) {
     const visible = site ? (body) => bodyReading(site, body, store.get().tMs, store.get().threshold).visible : null;
     const p = probeAt(relief.grid, relief.grads, ll.latDeg, ll.lonDeg, site, visible);
     if (!p) return null;
-    const yn = (v) => t(v ? 'probe.yes' : 'probe.no');
-    let text = t('probe.relief', { h: formatNumber(p.heightM, 0), s: formatNumber(p.slopeDeg ?? 0, 1) });
-    if (p.distanceKm !== undefined) {
-      text += ` · ${t('probe.site', { d: formatNumber(p.distanceKm, 1), az: formatNumber(p.azimuthDeg, 0), hz: formatNumber(p.horizonDeg, 1) })}`;
-      if (p.visible) text += ` · ${t('probe.bodies', { sun: yn(p.visible.sun), earth: yn(p.visible.earth) })}`;
-    }
-    return text;
+    return formatProbe(p, t, formatNumber);
   }
 
   function activate(m, zone) {

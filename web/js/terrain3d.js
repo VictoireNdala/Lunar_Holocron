@@ -13,7 +13,7 @@ const OVERVIEW_FOV_DEG = 45;
 // Soleil et Terre placés juste au-delà du bord de la grille (demi-diagonale ≈ 0,71 × côté), dans leur direction vue du site :
 // la direction est exacte pour la caméra au sol ; en vue d'ensemble, ils apparaissent au-dessus du bord de terrain correspondant.
 const SKY_DISTANCE_FACTOR = 0.9;
-const MIN_SPRITE_RADIUS_DEG = 1.0; // rayon apparent minimal des sprites (agrandis, signalé dans l'interface)
+const MIN_SPRITE_RADIUS_DEG = 0.25; // plancher de lisibilité du rayon apparent : sous le rayon réel du Soleil (≈ 0,27°) : les disques sont donc à l'échelle ; seul le halo déborde
 const BELOW_HORIZON_OPACITY = 0.35; // corps sous l'horizon géométrique : sprite atténué
 const SUN_INTENSITY = 2.5;
 const STUDY_INTENSITY = 1.3; // éclairage d'étude (relief lisible même quand le Soleil est sous l'horizon)
@@ -55,6 +55,11 @@ export function createTerrainView(container, { onQualityChange = () => {} } = {}
   const sprites = textures.map((map) => new THREE.Sprite(new THREE.SpriteMaterial({ map, depthWrite: false })));
   sprites.forEach((s) => scene.add(s));
 
+  const probeMarker = new THREE.Mesh(new THREE.SphereGeometry(1, 16, 12), new THREE.MeshBasicMaterial({ color: 0xff3df2, depthTest: false }));
+  probeMarker.visible = false;
+  probeMarker.renderOrder = 10;
+  scene.add(probeMarker);
+  const raycaster = new THREE.Raycaster();
   const marker = new THREE.Mesh(new THREE.CylinderGeometry(1, 1, 1, 12), new THREE.MeshBasicMaterial({ color: 0x00e5ff }));
   scene.add(marker);
 
@@ -234,6 +239,46 @@ export function createTerrainView(container, { onQualityChange = () => {} } = {}
     setBodies(sun, earth) { bodies = { sun, earth }; placeBodies(); requestRender(); },
     /** Agrandissement illustratif des disques (1 = taille réelle, avec plancher de lisibilité). */
     setBodyScale(n) { bodyScale = n; placeBodies(); requestRender(); },
+    /**
+     * Mesure de la taille à l'écran d'un corps (sprite) : diamètre du DISQUE en pixels, projeté avec la caméra réelle, et valeur attendue
+     * (rayon angulaire × agrandissement) × pixels par radian au centre de l'image. `null` si le corps n'est pas affiché.
+     */
+    measureBody(name) {
+      const k = name === 'sun' ? 0 : 1;
+      const b = bodies[name];
+      if (!b || !sprites[k].visible) return null;
+      camera.updateMatrixWorld(); camera.updateProjectionMatrix();
+      const p = sprites[k].position.clone();
+      const right = new THREE.Vector3().setFromMatrixColumn(camera.matrixWorld, 0).normalize();
+      const w = sprites[k].scale.x / (name === 'sun' ? 2.4 : 1 / 0.9); // largeur du disque (le sprite contient aussi le halo ou la marge)
+      const a = p.clone().addScaledVector(right, -w / 2).project(camera);
+      const c = p.clone().addScaledVector(right, w / 2).project(camera);
+      const H = renderer.domElement.height;
+      const diameterPx = Math.abs(c.x - a.x) * renderer.domElement.width / 2;
+      const rEff = Math.max(b.radiusDeg * bodyScale, MIN_SPRITE_RADIUS_DEG);
+      const expectedPx = 2 * Math.tan(rEff * Math.PI / 180) * (H / 2) / Math.tan(camera.fov * Math.PI / 360);
+      return { diameterPx, expectedPx, enlarged: rEff > b.radiusDeg, scale: rEff / b.radiusDeg };
+    },
+    /** Point du terrain sous le curseur (pixels client) : { e, n, u } en m dans le repère local du site (exagération retirée), ou null. */
+    pickAt(clientX, clientY) {
+      const r = renderer.domElement.getBoundingClientRect();
+      if (!r.width || !r.height || clientX < r.left || clientX > r.right || clientY < r.top || clientY > r.bottom) return null;
+      raycaster.setFromCamera(new THREE.Vector2(((clientX - r.left) / r.width) * 2 - 1, -((clientY - r.top) / r.height) * 2 + 1), camera);
+      const hit = raycaster.intersectObjects([mesh, ringMesh].filter(Boolean), false)[0];
+      if (!hit) return null;
+      return { e: hit.point.x, n: -hit.point.z, u: hit.point.y / exaggeration };
+    },
+    /** Marqueur de sonde au point local (e, n, u) ; null pour l'enlever. */
+    setProbe(point) {
+      if (!point) { probeMarker.visible = false; requestRender(); return; }
+      const s = size();
+      probeMarker.scale.setScalar(s * 0.004);
+      probeMarker.position.set(point.e, point.u * exaggeration + s * 0.004, -point.n);
+      probeMarker.visible = true;
+      requestRender();
+    },
+    /** Élément DOM sur lequel brancher la souris et le clavier. */
+    get element() { return renderer.domElement; },
     /** Active ou coupe l'éclairage d'étude (illustratif, fixe) qui rend le relief lisible. */
     setStudyLight(on) { studyLight.visible = Boolean(on); requestRender(); },
     /** Éclairage d'aperçu illustratif (aucun sprite) quand aucun Soleil n'est fourni ; null pour l'enlever. */
@@ -263,6 +308,8 @@ export function createTerrainView(container, { onQualityChange = () => {} } = {}
       ringMesh?.material.dispose();
       marker.geometry.dispose();
       marker.material.dispose();
+      probeMarker.geometry.dispose();
+      probeMarker.material.dispose();
       sprites.forEach((s) => s.material.dispose());
       textures.forEach((t) => t.dispose());
       sunLight.shadow.map?.dispose();

@@ -49,7 +49,7 @@ const selectSite = (id) => store.set({ selectedSiteId: id });
 const atlas = createAtlasPanel(store, source, selectSite);
 const maps = createMapPanel(store, atlas, selectSite, () => site);
 const atlasSites = createAtlasSites(store, atlas, openSite);
-const panel3d = createPanel3d(store);
+const panel3d = createPanel3d(store, source);
 const shell = createShell(store);
 const panorama = createPanoramaPanel(store);
 const panels = createPanels();
