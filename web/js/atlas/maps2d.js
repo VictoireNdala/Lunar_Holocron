@@ -6,6 +6,8 @@ import {
   terminatorCircle,
 } from './sphere.js';
 import { drawSites } from './markerdraw.js';
+import { edgeAlpha, gradientAt, reliefFactor } from './relief.js';
+import { R_REF_M } from '../constants.js';
 
 const DEG = Math.PI / 180;
 const R_UNIT = 1; // rayon de la sphère unité : les stéréographiques sont mises à l'échelle en pixels
@@ -91,11 +93,15 @@ function sample(tex, latDeg, lonDeg) {
 }
 
 /** Fond de carte : texture rééchantillonnée dans la projection + vecteur unitaire de chaque pixel (pour l'ombre de nuit). */
-export function buildBase(proj, tex) {
+export function buildBase(proj, tex, relief = null) {
   const { w, h } = proj;
   const rgb = new Uint8ClampedArray(w * h * 4);
   const normals = new Float32Array(w * h * 3);
   const valid = new Uint8Array(w * h);
+  const useRelief = relief !== null && proj.kind === 'south'; // relief LOLA 480 m : pôle Sud seulement
+  const gx = useRelief ? new Float32Array(w * h) : null;
+  const gy = useRelief ? new Float32Array(w * h) : null;
+  const ra = useRelief ? new Uint8Array(w * h) : null;
   for (let y = 0; y < h; y += 1) {
     for (let x = 0; x < w; x += 1) {
       const ll = proj.fromPixel(x + 0.5, y + 0.5);
@@ -106,9 +112,17 @@ export function buildBase(proj, tex) {
       normals.set([v.x, v.y, v.z], 3 * k);
       const c = tex ? sample(tex, ll.latDeg, ll.lonDeg) : [96, 96, 96];
       rgb.set([c[0], c[1], c[2], 255], 4 * k);
+      if (useRelief) {
+        const p = southPolar(ll.latDeg, ll.lonDeg, R_REF_M);
+        const a = edgeAlpha(Math.hypot(p.x, p.y)); // fondu : jamais de bord net à la limite de la grille
+        if (a > 0) {
+          const g = gradientAt(relief.grid, relief.grads, ll.latDeg, ll.lonDeg);
+          if (Number.isFinite(g.gx)) { gx[k] = g.gx; gy[k] = g.gy; ra[k] = Math.round(a * 255); }
+        }
+      }
     }
   }
-  return { rgb, normals, valid, w, h };
+  return { rgb, normals, valid, w, h, gx, gy, ra };
 }
 
 /** Pixels du fond assombris la nuit (Soleil à l'horizon plat au point sub-solaire donné) ; fonction pure, testée. */
@@ -120,7 +134,8 @@ export function shadePixels(base, sun) {
     if (!base.valid[k]) continue;
     const sinEl = n[3 * k] * s.x + n[3 * k + 1] * s.y + n[3 * k + 2] * s.z;
     const night = Math.min(1, Math.max(0, 0.5 - sinEl * NIGHT_SOFTNESS * 0.5)); // 0 de jour, 1 de nuit, transition fine au terminateur
-    const f = 1 - NIGHT_MAX_ALPHA * night;
+    let f = 1 - NIGHT_MAX_ALPHA * night;
+    if (base.ra && base.ra[k]) { const a = base.ra[k] / 255; f *= 1 - a + a * reliefFactor(base.gx[k], base.gy[k], sun.lonDeg); } // ombrage par incidence locale (illustratif, sans ombres portées)
     out[4 * k] *= f; out[4 * k + 1] *= f; out[4 * k + 2] *= f;
   }
   return out;

@@ -1,0 +1,49 @@
+{
+ "description": "Valeurs de la sonde recalcul\u00e9es par Python (bilin\u00e9aire dans le plan polaire, pente par diff\u00e9rences finies de largeur 1 maille, haversine). G\u00e9n\u00e9r\u00e9 par tests/reference/make_probe_cases.py.",
+ "site_id": "site04-shackleton-rim",
+ "tolerance": {
+  "height_m": 0.01,
+  "slope_deg": 0.35,
+  "distance_km": 0.001,
+  "azimuth_deg": 0.001,
+  "horizon_deg": 0.001
+ },
+ "cases": [
+  {
+   "lat_deg": -89.2,
+   "lon_deg": 30.0,
+   "height_m": -969.402580588639,
+   "slope_deg": 16.432867630049298,
+   "distance_km": 30.933519582377986,
+   "azimuth_deg": 196.98540367704786,
+   "horizon_deg": 3.0298540367704785
+  },
+  {
+   "lat_deg": -86.5,
+   "lon_deg": -100.0,
+   "height_m": -2057.2532945277844,
+   "slope_deg": 8.906244399362498,
+   "distance_km": 104.1480527426055,
+   "azimuth_deg": 75.56501468026761,
+   "horizon_deg": 31.86565014680268
+  },
+  {
+   "lat_deg": -88.1,
+   "lon_deg": 123.0,
+   "height_m": -1084.849889168406,
+   "slope_deg": 9.381617906613158,
+   "distance_km": 55.01564264099852,
+   "azimuth_deg": 288.1755284917658,
+   "horizon_deg": 1.211223575411709
+  },
+  {
+   "lat_deg": -84.0,
+   "lon_deg": 80.0,
+   "height_m": -3268.8464085183873,
+   "slope_deg": 6.758076785068904,
+   "distance_km": 184.2626944778618,
+   "azimuth_deg": 249.7874722546622,
+   "horizon_deg": 0.49299778037297526
+  }
+ ]
+}

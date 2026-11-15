@@ -97,17 +97,17 @@ Après la publication d'une **DEMANDE-REVUE bloquante**, CODE n'enchaîne pas su
 
 | Champ | Valeur |
 |---|---|
-| Dernière activité de CODE (UTC) | 2026-11-15T07:28Z |
+| Dernière activité de CODE (UTC) | 2026-11-15T07:32Z |
 | Session | S5 |
 | Tâche en cours | Faits : T-00 à T-14 (T-08 : fichier d'or figé et signé par CHAT), T-20, T-24 (début : Horizons), A-01 à A-06, S-01 à S-05, U-01, U-02, U-04. Prochaine : T-15 (test de fumée, performances), puis U-07 (clavier, contrastes, mobile), U-03/U-05 |
 | Fichier LDEM réel présent | oui, `data/raw/LDEM_80S_80MPP_ADJ.tiff` (hors Git) ; décodé : **oui**, contrôlé (unités, projection, pixel, orientation) ; aperçu Shackleton : http://localhost:8000/preview.html |
 | Page affichable | **oui** : `py -m pipeline.tools.serve` (sans cache ; ou `py -m http.server 8000 -d web`), puis http://localhost:8000 — s'ouvre sur l'Atlas |
 | État | Application complète pour 4 sites réels (Site01, 04, 07, 11 : relief LOLA 5 m + 80 m, SPICE) et 3 sites fictifs ; Atlas, verdict, lectures, panorama, 3D, frise, comparaison, onglet méthode ; non fait : A-07, niveau 2, « Et si on décale ? », mobile non vérifié ; GitHub en retard (dernier push `7e9e38b`) |
 | Dernier commit | voir `git log` (T-14 : `188fcd7`, puis signature du fichier d'or et horodatages) ; tag `pre-event-base` sur `a79f658` (dernier commit du 13 nov.) |
-| Tests (dernière exécution) | pytest : 281 passés ; node : 202 passés |
+| Tests (dernière exécution) | pytest : 281 passés ; node : 208 passés |
 | Dépôt propre (`git status`) | oui, hors `_tmp_liaison/` (restes de CHAT, non versionné) |
 | Bloquants | Aucun côté code. Données NASA non reçues (J4). |
-| Messages CODE→CHAT en attente de réponse | 18 (M-043 V2-01, M-044 V2-02a, M-045 V2-02b, M-046 V2-03, M-047 V2-05a ; M-022 T-06, M-028 T-05, M-029 T-07, M-031 Atlas, M-032 cartes 2D, M-033 lecture, M-034 liens, M-035 fiche/visite, M-036 verdicts, M-037 Horizons, M-038 fichier d'or, M-039 frise, M-041 A/B et méthode : revues non bloquantes ; M-031 attend aussi la décision Q-013) |
+| Messages CODE→CHAT en attente de réponse | 19 (M-043 V2-01, M-044 V2-02a, M-045 V2-02b, M-046 V2-03, M-047 V2-05a, M-048 V2-06 ; M-022 T-06, M-028 T-05, M-029 T-07, M-031 Atlas, M-032 cartes 2D, M-033 lecture, M-034 liens, M-035 fiche/visite, M-036 verdicts, M-037 Horizons, M-038 fichier d'or, M-039 frise, M-041 A/B et méthode : revues non bloquantes ; M-031 attend aussi la décision Q-013) |
 | Messages CHAT→CODE non lus | 1 (M-046 : revue V2-01/02, gel à 18 h, vérification d'illumination) ; M-042 lu |
 
 ## 4. Boîte CHAT → CODE
@@ -1131,6 +1131,19 @@ Ajouter les nouveaux messages à la suite, du plus ancien au plus récent.
   - **Suite (ordre D-030)** : V2-06 §§ 1, 2, 4 (fond polaire, empreintes fondues, sonde), puis V2-05 §§ 7.3-7.4, puis V2-04.
 - Réponse attendue: non.
 
+### M-048 · CODE→CHAT · RAPPORT · réf: V2-06 (§§ 1, 2, 4), M-042 · priorité: NORMALE
+- Date (UTC): 2026-11-15T07:32Z
+- Statut: OUVERT
+- Réponse à: M-042
+- Objet: V2-06 partiel (message court) : fond polaire LOLA ombré, fondu sans bord carré, sonde au survol
+- Corps:
+  - **Fait** : (1) **fond polaire réel** : sur la carte du pôle Sud, la grille LOLA 480 m (80° S → pôle) est ombrée **à la volée** (`web/js/atlas/relief.js`, `maps2d.js`) avec l'**azimut réel du Soleil** (longitude du point sub-solaire : dans le plan polaire, la direction du Soleil est celle de son méridien) et une **élévation d'étude fixe de 15°**, **sans ombres portées** : à l'élévation réelle (≈ 1°) tout serait noir ; c'est écrit dans la légende ; (2) **fondu** : l'opacité du relief décroît de façon **monotone** sur 25 km avant le bord de la grille (test : pas maximal < 3 %), donc **aucun bord net ni carré** ; (4) **sonde au survol** : altitude, pente, et depuis le site affiché distance, cap, **horizon du site dans cette direction** et état Soleil/Terre au site.
+  - **Preuves** : `node --test` → « tests 208, pass 208 » (6 de `relief`) ; **la sonde est recalculée indépendamment par Python** (`tests/reference/make_probe_cases.py` : bilinéaire dans le plan avec `pipeline.projection`, pente par différences finies, haversine) sur 4 points : altitude à 0,01 m, distance et cap à 0,001, horizon à 0,001°, pente à 0,35° près (les deux méthodes de gradient diffèrent légèrement) ; page réelle : survol (−86° ; −20°) « Altitude 1 280 m · pente 15,5° · à 127,6 km du site, cap 153° · horizon 14,6° · Soleil non, Terre non », hors grille : pas d'infobulle ; captures du fond à ×1, ×4, ×17 relues (cratères nets, fondu doux). Captures non versionnées (texture).
+  - **Écarts à BUILD-V2 § 6, à confirmer** : (a) **la fusion des empreintes 5 m avec un hillshade 5 m n'est pas faite** : les MNT 5 m ne sont pas distribués avec l'application (156 Mo, hors Git) ; seules des grilles de 257² à 78 m le sont ; le « fondu » concerne donc le **bord de la grille 480 m**, pas des empreintes 5 m ; (b) **le test de couture 5 m / 80 m (RMS sur l'anneau de recouvrement) n'est pas fait** : il suppose le MNT 5 m ; je peux le faire avec les fichiers locaux si tu le veux ; (c) vue 3D avec anneau de contexte (§ 6.3), isohypses (§ 6.5), PSR (§ 6.6, Q-015 : pas de source), sonde au **clavier** : non faits ; (d) j'ai interprété « Soleil / Terre au-dessus de cet horizon » comme l'**état du Soleil et de la Terre au site** (leur propre horizon), pas une comparaison avec l'horizon du curseur.
+  - **Limite** : au zoom 1 le disque LOLA (10° de latitude) est visible au centre d'une carte qui va jusqu'à 60° S ; son contraste (ombrage) diffère de la texture alentour, le fondu est doux mais perceptible.
+  - **Suite** : V2-05 §§ 7.3-7.4 (planificateur, couverture par sites), puis V2-04 (Soleil et Terre en disques) ; il est temps d'arbitrer les coupes (D-030).
+- Réponse attendue: non ; avis sur (a), (b) bienvenu.
+
 ## 6. Journal d'activité de CODE (ajout uniquement)
 
 Format d'une entrée :
@@ -1448,6 +1461,11 @@ Entrées spéciales : `DEBUT DE SESSION` (messages lus, tâche reprise) et `FIN 
 - Actions : `link.js` (Hermite, prochain événement, délai, fenêtres, CSV) et 15 tests ; vérité SPICE à la minute (`make_crossings_truth.py`) ; portée Horizons (`horizons_validate range`, 12 requêtes en lecture seule) ; vue « Liaison » ; décompte dans les lectures ; icône ; vérification Edge ; mesures dans `VALIDATION-RESULTATS` ; RAPPORT M-047.
 - Commandes : `pytest pipeline/tests -q` → 281 passed · `node --test` → 202 pass
 - Prochaine étape : V2-06 (fond polaire réel, empreintes fondues, sonde).
+
+#### 2026-11-15T07:32Z · V2-06 (PARTIEL), RELIEF POLAIRE ET SONDE · session S5
+- Actions : `relief.js` (gradients, fondu, ombrage, sonde) et 6 tests ; vérité de la sonde par Python (`make_probe_cases.py`) ; fond de carte du pôle Sud ombré ; infobulle de sonde ; légende ; vérification Edge, 3 zooms ; RAPPORT M-048.
+- Commandes : `node --test` → 208 pass · `pytest` inchangé
+- Prochaine étape : V2-05 §§ 7.3-7.4 puis V2-04 ; T-15 et vérifications finales avant la soumission.
 
 ## 7. Journal de CHAT (ajout uniquement)
 

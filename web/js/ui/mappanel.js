@@ -4,6 +4,8 @@ import { getLang, formatNumber, t } from '../i18n.js';
 import { MAP_KINDS, buildBase, drawMap, makeProjection, shade, textureData } from '../atlas/maps2d.js';
 import { zoneAt } from '../atlas/markerdraw.js';
 import { FAMILIES, glyphOf, keyboardOrder, nearestInDirection } from '../atlas/markers.js';
+import { probeAt } from '../atlas/relief.js';
+import { bodyReading } from '../verdicts.js';
 import { TEXTURE_URL } from './atlaspanel.js';
 
 const MAX_POLAR_PX = 820; // plafond de taille des cartes polaires (coût du rééchantillonnage)
@@ -19,7 +21,7 @@ function cssVar(name) {
 }
 
 /** Crée les trois cartes ; `atlas` = API partagée (sites, positions, couches, lecture). */
-export function createMapPanel(store, atlas, openSite) {
+export function createMapPanel(store, atlas, openSite, getSite = () => null) {
   const maps = {};
   for (const kind of MAP_KINDS) {
     const scene = document.querySelector(`[data-scene="${kind}"]`);
@@ -33,6 +35,7 @@ export function createMapPanel(store, atlas, openSite) {
       base: null, baseView: null, baseId: 0, proj: null, shaded: null, shadeKey: '', zones: [], hoveredId: null, focusedId: null, timer: null };
   }
   let tex = null;
+  let relief = null; // { grid, grads } : relief LOLA 480 m du pôle Sud
   let texFailed = false;
   let texPromise = null;
   let sitesCache = [];
@@ -69,7 +72,7 @@ export function createMapPanel(store, atlas, openSite) {
     if (m.size !== `${w}x${h}`) { m.canvas.width = w; m.canvas.height = h; m.size = `${w}x${h}`; m.base = null; }
     if (!m.base || rebuild) {
       m.baseView = { ...m.view };
-      m.base = buildBase(makeProjection(kind, w, h, undefined, m.baseView), tex);
+      m.base = buildBase(makeProjection(kind, w, h, undefined, m.baseView), tex, relief);
       m.baseId = ++baseCounter;
       m.shadeKey = '';
     }
@@ -146,6 +149,22 @@ export function createMapPanel(store, atlas, openSite) {
     return `${s.name} · ${family}${tier ? ` · ${tier}` : ''} · ${formatNumber(s.latDeg, 3)}° ; ${formatNumber(s.lonDeg, 3)}°${s.synthetic ? ` · ${t('atlas.fictitious')}` : ''}`;
   }
 
+  /** Sonde au survol (carte du pôle Sud) : altitude, pente et, depuis le site affiché, distance, cap, horizon dans cette direction et état du Soleil et de la Terre. */
+  function probeText(ll) {
+    if (!ll) return null;
+    const site = getSite();
+    const visible = site ? (body) => bodyReading(site, body, store.get().tMs, store.get().threshold).visible : null;
+    const p = probeAt(relief.grid, relief.grads, ll.latDeg, ll.lonDeg, site, visible);
+    if (!p) return null;
+    const yn = (v) => t(v ? 'probe.yes' : 'probe.no');
+    let text = t('probe.relief', { h: formatNumber(p.heightM, 0), s: formatNumber(p.slopeDeg ?? 0, 1) });
+    if (p.distanceKm !== undefined) {
+      text += ` · ${t('probe.site', { d: formatNumber(p.distanceKm, 1), az: formatNumber(p.azimuthDeg, 0), hz: formatNumber(p.horizonDeg, 1) })}`;
+      if (p.visible) text += ` · ${t('probe.bodies', { sun: yn(p.visible.sun), earth: yn(p.visible.earth) })}`;
+    }
+    return text;
+  }
+
   function activate(m, zone) {
     if (zone.members) { zoomOnPoint(m, 3, zone.x, zone.y); return; }
     store.set({ pickedPoint: null });
@@ -184,8 +203,9 @@ export function createMapPanel(store, atlas, openSite) {
       const zone = zoneAt(m.zones, p.x, p.y);
       const hovered = zone && !zone.members ? zone.id : null;
       m.canvas.style.cursor = zone ? 'pointer' : 'crosshair';
-      if (zone) {
-        m.tip.textContent = describe(zone);
+      const probe = !zone && kind === 'south' && relief ? probeText(m.proj.fromPixel(p.x, p.y)) : null;
+      if (zone || probe) {
+        m.tip.textContent = zone ? describe(zone) : probe;
         m.tip.style.left = `${p.left + 12}px`; m.tip.style.top = `${p.top + 12}px`; m.tip.hidden = false;
       } else {
         m.tip.hidden = true;
@@ -267,7 +287,7 @@ export function createMapPanel(store, atlas, openSite) {
   async function show(kind) {
     buildLegend();
     sitesCache = await atlas.ensureSites();
-    await Promise.all([loadTexture(), atlas.ensureGlobal()]);
+    [, , relief] = await Promise.all([loadTexture(), atlas.ensureGlobal(), atlas.ensurePolar()]);
     atlas.setStatus(texFailed ? 'atlas.textureMissing' : null);
     for (const m of Object.values(maps)) { m.base = null; } // la texture vient d'arriver : refaire le fond
     if (current() === kind) render(kind);

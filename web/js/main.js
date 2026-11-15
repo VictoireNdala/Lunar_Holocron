@@ -45,7 +45,7 @@ const store = createStore(initialState);
 const openSite = (id) => store.set({ siteIdA: id, view: 'site', selectedSiteId: null });
 const selectSite = (id) => store.set({ selectedSiteId: id });
 const atlas = createAtlasPanel(store, source, selectSite);
-const maps = createMapPanel(store, atlas, selectSite);
+const maps = createMapPanel(store, atlas, selectSite, () => site);
 const atlasSites = createAtlasSites(store, atlas, openSite);
 const panel3d = createPanel3d(store);
 const shell = createShell(store);

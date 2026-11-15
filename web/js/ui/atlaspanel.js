@@ -3,6 +3,7 @@
 // Hors ligne : texture locale ; sans elle, repli gris avec message.
 import { DataError, globalSeries } from '../data.js';
 import { interpolateSubPoint } from '../atlas/sphere.js';
+import { computeGradients } from '../atlas/relief.js';
 import { formatNumber, getLang, t } from '../i18n.js';
 
 export const TEXTURE_URL = 'assets/moon/lroc_color_2k.jpg';
@@ -15,6 +16,7 @@ export function createAtlasPanel(store, source, selectSite) {
   let sites = [];
   let starting = null;
   let globalPromise = null;
+  let polarPromise = null;
   let sitesPromise = null;
   let failure = null;
   let latLon = null;
@@ -127,6 +129,11 @@ export function createAtlasPanel(store, source, selectSite) {
     /** Démarre le globe au premier affichage (three.js chargé à la demande). */
     show() { starting ??= start(); return starting; },
     ensureSites, ensureGlobal, subPoints, layerState,
+    /** Grille polaire 480 m et ses gradients ({ grid, grads }) ; null si elle manque (la carte garde alors la texture seule). */
+    ensurePolar() {
+      polarPromise ??= source.loadPolarGrid().then((grid) => ({ grid, grads: computeGradients(grid) })).catch(() => null);
+      return polarPromise;
+    },
     /** Période couverte par global.json ({ startMs, endMs }), ou null tant qu'il n'est pas chargé. */
     timeRange() {
       if (!globalDoc) return null;
