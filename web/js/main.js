@@ -14,6 +14,7 @@ import { createPanels } from './ui/panels.js';
 import { createComparePanel } from './ui/comparepanel.js';
 import { createFreePointPanel } from './ui/freepointpanel.js';
 import { createLinkPanel } from './ui/linkpanel.js';
+import { createPlannerPanel } from './ui/plannerpanel.js';
 import { createReadings } from './ui/readings.js';
 import { renderMethodPage } from './ui/methodpage.js';
 import { createSiteLinks } from './ui/sitelinks.js';
@@ -56,6 +57,7 @@ const readings = createReadings();
 const compare = createComparePanel(store);
 const freePoint = createFreePointPanel(store);
 const linkPanel = createLinkPanel(store);
+const planner = createPlannerPanel(store);
 let siteB = null;
 const timeline = createTimelinePanel(store);
 const verdict = createVerdictPanel(store);
@@ -218,6 +220,7 @@ function renderAll() {
   verdict.render(site, store.get());
   freePoint.render(site, store.get());
   linkPanel.render(site, store.get());
+  planner.render(site);
   for (const body of ['earth', 'sun']) {
     const c = linkPanel.countdown.describe(site, body, store.get().tMs, store.get().threshold, store.get().minAngleDeg);
     $(`count-${body}`).textContent = c.text;

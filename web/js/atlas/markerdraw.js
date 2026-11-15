@@ -50,7 +50,7 @@ function drawCluster(ctx, x, y, count, text, bg, font) {
  * Dessine tous les marqueurs et renvoie les zones d'interaction : [{ id, x, y, r, members? }] (un groupe porte `members`, dans l'ordre de priorité).
  * `zoom` : facteur de zoom de la carte ; `ids` : { selected, hovered, focused }.
  */
-export function drawSites(ctx, proj, sites, zoom, style, ids = {}) {
+export function drawSites(ctx, proj, sites, zoom, style, ids = {}, overlayOf = null) {
   const size = markerSizePx(zoom);
   const items = [];
   for (const s of sites) {
@@ -72,6 +72,8 @@ export function drawSites(ctx, proj, sites, zoom, style, ids = {}) {
   const single = new Map(items.map((it) => [it.id, it]));
   const drawn = [...singles.map((it) => it), ...items.filter((it) => pinned.has(it.id))];
   for (const it of drawn) {
+    const ov = overlayOf ? overlayOf(it.s) : null;
+    if (ov) drawLinkHalo(ctx, it.x, it.y, size, ov);
     drawGlyph(ctx, it.glyph.shape, it.glyph.color, it.glyph.fill, it.x, it.y, size);
     if (it.id === ids.selected) { ctx.save(); ctx.lineWidth = 2.5; ctx.strokeStyle = style.text; ctx.beginPath(); ctx.arc(it.x, it.y, size + 6, 0, 2 * Math.PI); ctx.stroke(); ctx.restore(); }
     if (it.id === ids.focused) { ctx.save(); ctx.setLineDash([3, 3]); ctx.lineWidth = 2; ctx.strokeStyle = style.text; ctx.beginPath(); ctx.arc(it.x, it.y, size + 9, 0, 2 * Math.PI); ctx.stroke(); ctx.restore(); }
@@ -97,6 +99,16 @@ export function drawSites(ctx, proj, sites, zoom, style, ids = {}) {
   }
   ctx.restore();
   return { zones, single };
+}
+
+/** Halo de la couche « Liaison » : plein et vert = liaison possible, pointillé et orange = bloquée ; en couverture, trait épais coloré par la part du temps. */
+function drawLinkHalo(ctx, x, y, size, ov) {
+  ctx.save();
+  ctx.lineWidth = ov.kind === 'coverage' ? 5 : 3;
+  ctx.strokeStyle = ov.color;
+  if (ov.kind === 'now' && !ov.possible) ctx.setLineDash([3, 3]);
+  ctx.beginPath(); ctx.arc(x, y, size + 5, 0, 2 * Math.PI); ctx.stroke();
+  ctx.restore();
 }
 
 /** Zone cliquable la plus proche d'un pixel (rayon de sélection = rayon de la zone) ; null si aucune. */

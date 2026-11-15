@@ -97,17 +97,17 @@ Après la publication d'une **DEMANDE-REVUE bloquante**, CODE n'enchaîne pas su
 
 | Champ | Valeur |
 |---|---|
-| Dernière activité de CODE (UTC) | 2026-11-15T07:32Z |
+| Dernière activité de CODE (UTC) | 2026-11-15T07:41Z |
 | Session | S5 |
 | Tâche en cours | Faits : T-00 à T-14 (T-08 : fichier d'or figé et signé par CHAT), T-20, T-24 (début : Horizons), A-01 à A-06, S-01 à S-05, U-01, U-02, U-04. Prochaine : T-15 (test de fumée, performances), puis U-07 (clavier, contrastes, mobile), U-03/U-05 |
 | Fichier LDEM réel présent | oui, `data/raw/LDEM_80S_80MPP_ADJ.tiff` (hors Git) ; décodé : **oui**, contrôlé (unités, projection, pixel, orientation) ; aperçu Shackleton : http://localhost:8000/preview.html |
 | Page affichable | **oui** : `py -m pipeline.tools.serve` (sans cache ; ou `py -m http.server 8000 -d web`), puis http://localhost:8000 — s'ouvre sur l'Atlas |
 | État | Application complète pour 4 sites réels (Site01, 04, 07, 11 : relief LOLA 5 m + 80 m, SPICE) et 3 sites fictifs ; Atlas, verdict, lectures, panorama, 3D, frise, comparaison, onglet méthode ; non fait : A-07, niveau 2, « Et si on décale ? », mobile non vérifié ; GitHub en retard (dernier push `7e9e38b`) |
 | Dernier commit | voir `git log` (T-14 : `188fcd7`, puis signature du fichier d'or et horodatages) ; tag `pre-event-base` sur `a79f658` (dernier commit du 13 nov.) |
-| Tests (dernière exécution) | pytest : 281 passés ; node : 208 passés |
+| Tests (dernière exécution) | pytest : 283 passés ; node : 223 passés |
 | Dépôt propre (`git status`) | oui, hors `_tmp_liaison/` (restes de CHAT, non versionné) |
 | Bloquants | Aucun côté code. Données NASA non reçues (J4). |
-| Messages CODE→CHAT en attente de réponse | 19 (M-043 V2-01, M-044 V2-02a, M-045 V2-02b, M-046 V2-03, M-047 V2-05a, M-048 V2-06 ; M-022 T-06, M-028 T-05, M-029 T-07, M-031 Atlas, M-032 cartes 2D, M-033 lecture, M-034 liens, M-035 fiche/visite, M-036 verdicts, M-037 Horizons, M-038 fichier d'or, M-039 frise, M-041 A/B et méthode : revues non bloquantes ; M-031 attend aussi la décision Q-013) |
+| Messages CODE→CHAT en attente de réponse | 20 (M-043 V2-01, M-044 V2-02a, M-045 V2-02b, M-046 V2-03, M-047 V2-05a, M-048 V2-06, M-049 V2-05b ; M-022 T-06, M-028 T-05, M-029 T-07, M-031 Atlas, M-032 cartes 2D, M-033 lecture, M-034 liens, M-035 fiche/visite, M-036 verdicts, M-037 Horizons, M-038 fichier d'or, M-039 frise, M-041 A/B et méthode : revues non bloquantes ; M-031 attend aussi la décision Q-013) |
 | Messages CHAT→CODE non lus | 1 (M-046 : revue V2-01/02, gel à 18 h, vérification d'illumination) ; M-042 lu |
 
 ## 4. Boîte CHAT → CODE
@@ -1144,6 +1144,19 @@ Ajouter les nouveaux messages à la suite, du plus ancien au plus récent.
   - **Suite** : V2-05 §§ 7.3-7.4 (planificateur, couverture par sites), puis V2-04 (Soleil et Terre en disques) ; il est temps d'arbitrer les coupes (D-030).
 - Réponse attendue: non ; avis sur (a), (b) bienvenu.
 
+### M-049 · CODE→CHAT · RAPPORT · réf: V2-05 (§§ 7.3, 7.4), M-042 · priorité: NORMALE
+- Date (UTC): 2026-11-15T07:41Z
+- Statut: OUVERT
+- Réponse à: M-042
+- Objet: V2-05b terminé en version réduite (message court) : planificateur d'alunissage et couche « Liaison » de l'Atlas
+- Corps:
+  - **Planificateur** (`web/js/planner.js` pur, `ui/plannerpanel.js`, section « Planifier » de la vue Liaison) : entrées **saisies** (durée de séjour par défaut 7 j = valeur de départ d'un paramètre, jamais un chiffre de mission ; contraintes facultatives Soleil ≥ x %, Terre ≥ y %, coupure de la Terre ≤ z h, pas de coucher du Soleil avant H heures ; durée de transfert facultative) ; un instant d'alunissage candidat **toutes les 6 h** de la date du jour (ou du début de période) à la fin, séjour contenu dans la période ; pour chacun : % Soleil, % Terre, % les deux, plus longues coupures, **temps avant le premier coucher** et **avant la première perte de lien** ; **classement à formule affichée** (faisables d'abord, puis « les deux » décroissant, coupure de la Terre croissante, date) ; **carte de chaleur calendaire** (mois × jour, meilleur séjour commençant ce jour-là, cliquable) ; **10 meilleures fenêtres distinctes** (≥ 24 h) avec « Aller à cette date » ; chronologie lancement (si transfert saisi) → alunissage → fin de séjour.
+  - **Couche « Liaison » de l'Atlas** (§ 7.4.1-7.4.2) : sélecteur Aucune / État maintenant / Couverture sur la fenêtre ; halo plein vert (possible) ou pointillé orange (bloquée) ; en couverture, halo viridis (sûr pour le daltonisme) + légende ; infobulle « liaison directe 53,1 % du temps sur la fenêtre ». **Échantillonnage par sites**, écrit dans la légende. Pour ne pas charger 17 fichiers de 1,4 Mo, l'**index porte maintenant des bitsets** (`link_bits`, contrat 1.2 optionnel, 5,5 Ko par corps et par site ; l'index passe de 25 Ko à 260 Ko) ; **`validate` les recalcule** depuis le site et refuse un écart.
+  - **Preuves** : `node --test` → « tests 223, pass 223 » (10 de `planner` : indicateurs d'une fenêtre construite, contraintes, classement, séparation, calendrier ; **séjour = toute la période ⇒ égal aux `kpis`** sur 3 sites réels ; 5 de `linkoverlay` : **bitsets décodés = visibilité stricte calculée en JavaScript sur les séries, échantillon par échantillon, 17 sites × 2 corps, 0 écart**) ; `pytest` → « 283 passed » (2 de `test_link_bits`) ; reconstruction : **seul `index.json` change** (les 17 sites sont identiques octet pour octet) ; page réelle : calcul 82 ms, contraintes (Soleil ≥ 90 % et Terre ≥ 90 % : 343 fenêtres sur 7 277), clic sur le calendrier, « Aller à cette date », 0 erreur JS ; capture de la couche couverture relue.
+  - **Non fait** : comparaison de 2 à 4 sites dans le planificateur (tableau multi-sites) ; raster de couverture 2 km (§ 7.4.3, *stretch*) ; la couche est en seuil **strict** seulement (seul seuil de l'index) ; mobile non testé.
+  - **Ordre D-030** : il reste V2-04 (Soleil et Terre en vrais disques) ; puis, avant la soumission, T-15 (test de fumée), la vérification clavier / contraste / mobile, les revues de CHAT en attente, la mise à jour des documents périmés (`PIPELINE.md`, `TESTS-VALIDATION.md`, `INTERFACE.md`) et la décision de pousser sur GitHub (accord de l'humain requis).
+- Réponse attendue: non.
+
 ## 6. Journal d'activité de CODE (ajout uniquement)
 
 Format d'une entrée :
@@ -1466,6 +1479,11 @@ Entrées spéciales : `DEBUT DE SESSION` (messages lus, tâche reprise) et `FIN 
 - Actions : `relief.js` (gradients, fondu, ombrage, sonde) et 6 tests ; vérité de la sonde par Python (`make_probe_cases.py`) ; fond de carte du pôle Sud ombré ; infobulle de sonde ; légende ; vérification Edge, 3 zooms ; RAPPORT M-048.
 - Commandes : `node --test` → 208 pass · `pytest` inchangé
 - Prochaine étape : V2-05 §§ 7.3-7.4 puis V2-04 ; T-15 et vérifications finales avant la soumission.
+
+#### 2026-11-15T07:41Z · V2-05b, PLANIFICATEUR ET COUCHE LIAISON · session S5
+- Actions : bitsets de visibilité dans l'index (`kpi.visibility_bits`, schéma, `validate`) et reconstruction ; `planner.js` + 10 tests ; `linkoverlay.js` + 5 tests ; section « Planifier » ; couche « Liaison » des cartes ; mesures dans `VALIDATION-RESULTATS` ; vérification Edge ; RAPPORT M-049.
+- Commandes : `pytest pipeline/tests -q` → 283 passed · `node --test` → 223 pass · `pipeline.cli build` → seul index.json modifié
+- Prochaine étape : V2-04 (Soleil et Terre), puis T-15 et vérifications finales.
 
 ## 7. Journal de CHAT (ajout uniquement)
 

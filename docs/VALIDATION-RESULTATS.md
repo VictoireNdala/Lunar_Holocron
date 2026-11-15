@@ -59,6 +59,16 @@ Géométrie seulement (relais, stations au sol, bilan de liaison et trajectoire 
 | Délai de propagation aller simple (distance ÷ c) contre la portée Horizons (`QUANTITIES='20'`), 4 sites × 3 dates × 24 h = 288 valeurs | écart maximal **0,738 ms**, moyen 0,342 ms | < 1 ms | borné par l'**arrondi au millidegré du rayon angulaire** de la Terre dans le fichier de site (± 5·10⁻⁴ de la distance) : on ne peut pas faire mieux avec ce format |
 | Délais calculés sur 5 ans (Site01) | entre 1,18 s et 1,37 s (aller simple) | plausible | distance Terre–Lune 356 000 – 407 000 km |
 
+**Planificateur et couche « Liaison » de l'Atlas (V2-05 §§ 7.3-7.4).**
+
+| Mesure | Résultat |
+|---|---|
+| Séjour de toute la période : parts Soleil, Terre, les deux et plus longues coupures du planificateur = `kpis` (3 sites réels, strict) | **égalité** (écart < 10⁻⁹ sur les %, égalité exacte sur les durées) |
+| Bitsets de l'index décodés en JavaScript = visibilité stricte calculée sur les séries, **échantillon par échantillon**, 17 sites × Soleil et Terre | **0 écart** ; popcount / n = `kpis.<corps>.strict.visible_pct` à 10⁻⁹ près ; test Python : recalcul identique et `validate` refuse un bit modifié |
+| Temps d'un calcul de planification (7 277 instants candidats, séjour de 7 jours, 1 site) | ≈ 80 ms mesurés dans Edge sans GPU |
+
+Limites : la couche « Liaison » est un **échantillonnage par sites** (entre les sites, on ne sait rien) en seuil **strict** seulement (c'est le seul dans l'index) ; le planificateur compare des instants d'alunissage sur un seul site à la fois (pas de tableau multi-sites) ; paramètres de séjour, contraintes et transfert **saisis par l'utilisateur**.
+
 **Nettoyage de la vérité-terrain.** Aux instants où le corps frôle l'horizon, la quantification au millidegré fait osciller l'état (coucher, lever, coucher en 2 minutes). Ces couples de changements distants de moins de 10 minutes sont retirés de la référence (`tests/reference/make_crossings_truth.py`), sinon la mesure compterait du bruit de quantification comme une erreur de calcul. Sans ce nettoyage, 2 événements sur 71 auraient été mal appariés.
 
 **Limites.** Un double franchissement de l'horizon à l'intérieur d'une même heure (frôlement) n'est pas vu : les séries sont horaires. L'angle minimal utile est un paramètre de l'utilisateur (0 à 5°), pas une valeur normative.

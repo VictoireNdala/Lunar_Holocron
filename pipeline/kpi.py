@@ -72,3 +72,16 @@ def compute_kpis(horizon_elev_deg: ArrayLike, bodies: dict[str, dict[str, ArrayL
         n = int(sel.sum())
         monthly.append({"ym": str(ym), **{f"{k}_strict_pct": 100.0 * int(vis[k]["strict"][sel].sum()) / n for k in ("sun", "earth", "both")}})
     return kpis, monthly
+
+
+def visibility_bits(horizon_elev_deg: ArrayLike, bodies: dict[str, dict[str, ArrayLike]]) -> dict[str, Any]:
+    """Visibilité horaire (seuil STRICT) du Soleil et de la Terre en bitsets (bit 0 = premier échantillon, poids faible d'abord), base64 :
+    sert à l'Atlas (état de la liaison à l'instant t, couverture sur une fenêtre) sans charger les fichiers de site. 43 824 échantillons = 5 478 octets par corps."""
+    import base64
+
+    out: dict[str, Any] = {"encoding": "bitset-lsb-first-base64", "mode": "strict"}
+    for body in BODIES:
+        vis = is_visible(body_fraction(horizon_elev_deg, bodies[body]), "strict")
+        out["n"] = int(vis.size)
+        out[f"{body}_strict"] = base64.b64encode(np.packbits(vis.astype(np.uint8), bitorder="little").tobytes()).decode("ascii")
+    return out

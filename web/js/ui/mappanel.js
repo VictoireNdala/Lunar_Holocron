@@ -5,6 +5,8 @@ import { MAP_KINDS, buildBase, drawMap, makeProjection, shade, textureData } fro
 import { zoneAt } from '../atlas/markerdraw.js';
 import { FAMILIES, glyphOf, keyboardOrder, nearestInDirection } from '../atlas/markers.js';
 import { probeAt } from '../atlas/relief.js';
+import { colorForPct, coveragePct, decodeBits, indexAt } from '../atlas/linkoverlay.js';
+import { windowRange } from '../timeline.js';
 import { bodyReading } from '../verdicts.js';
 import { TEXTURE_URL } from './atlaspanel.js';
 
@@ -39,6 +41,7 @@ export function createMapPanel(store, atlas, openSite, getSite = () => null) {
   let texFailed = false;
   let texPromise = null;
   let sitesCache = [];
+  const decodedBits = new Map(); // bitsets de la Terre décodés une fois par site
   let baseCounter = 0;
   const current = () => document.body.dataset.view;
   const sitesNow = () => sitesCache.map((s) => ({ ...s, name: s.name[getLang()] ?? s.name.en }));
@@ -91,6 +94,7 @@ export function createMapPanel(store, atlas, openSite, getSite = () => null) {
     const backdrop = { canvas: m.shaded, k: ratio, e: w / 2 + p1x - ratio * (w / 2 + p0x), f: h / 2 + p1y - ratio * (h / 2 + p0y) };
     const layers = atlas.layerState();
     const result = drawMap(m.ctx, m.proj, {
+      overlayOf: linkOverlay(),
       backdrop, sun: sp?.sun ?? { latDeg: 0, lonDeg: 0 }, earth: sp?.earth ?? { latDeg: 0, lonDeg: 0 }, sites: sitesNow(),
       selectedId: store.get().selectedSiteId, hoveredId: m.hoveredId, focusedId: m.focusedId, picked: store.get().pickedPoint,
       layers: sp ? layers : { ...layers, terminator: false, earthZone: false },
@@ -136,6 +140,32 @@ export function createMapPanel(store, atlas, openSite, getSite = () => null) {
     setView(m, { zoom: z1, panX: -(x - c.x - m.view.panX) * k, panY: -(y - c.y - m.view.panY) * k });
   }
 
+  /** Fonction de halo pour la couche « Liaison » (aucune | état maintenant | couverture sur la fenêtre), ou null. */
+  function linkOverlay() {
+    const mode = document.getElementById('layer-link')?.value ?? 'off';
+    const range = atlas.timeRange();
+    if (mode === 'off' || !range) return null;
+    const { tMs, windowDays } = store.get();
+    const n = Math.round((range.endMs - range.startMs) / 3_600_000) + 1;
+    const i = indexAt(tMs, range.startMs, 3_600_000, n);
+    const win = windowRange(tMs, windowDays, range);
+    const [w0, w1] = [indexAt(win.startMs, range.startMs, 3_600_000, n), indexAt(win.endMs, range.startMs, 3_600_000, n)];
+    return (s) => {
+      if (!s.link_bits) return null;
+      if (!decodedBits.has(s.id)) decodedBits.set(s.id, decodeBits(s.link_bits.earth_strict, s.link_bits.n));
+      const d = decodedBits.get(s.id);
+      if (mode === 'now') { const possible = d.flags[Math.min(i, d.n - 1)] === 1; return { kind: 'now', possible, color: possible ? '#3ddc97' : '#ff9f43' }; }
+      const pct = coveragePct(d, w0, w1);
+      return { kind: 'coverage', pct, color: colorForPct(pct) };
+    };
+  }
+
+  function overlayText(s) {
+    const ov = linkOverlay()?.(s);
+    if (!ov) return '';
+    return ov.kind === 'now' ? ` · ${t(ov.possible ? 'linklayer.possible' : 'linklayer.blocked')}` : ` · ${t('linklayer.coverage', { pct: formatNumber(ov.pct, 1) })}`;
+  }
+
   function priorityOf(zone) {
     const ids = zone.members ?? [zone.id];
     return Math.min(...ids.map((id) => { const s = sitesCache.find((e) => e.id === id); return s ? glyphOf(s).priority : 9; }));
@@ -146,7 +176,7 @@ export function createMapPanel(store, atlas, openSite, getSite = () => null) {
     const s = sitesNow().find((e) => e.id === zone.id);
     const family = t(glyphOf(s).labelKey);
     const tier = s.terrain_tier ? t(`marker.tier.${s.terrain_tier}`) : '';
-    return `${s.name} · ${family}${tier ? ` · ${tier}` : ''} · ${formatNumber(s.latDeg, 3)}° ; ${formatNumber(s.lonDeg, 3)}°${s.synthetic ? ` · ${t('atlas.fictitious')}` : ''}`;
+    return `${s.name} · ${family}${tier ? ` · ${tier}` : ''} · ${formatNumber(s.latDeg, 3)}° ; ${formatNumber(s.lonDeg, 3)}°${s.synthetic ? ` · ${t('atlas.fictitious')}` : ''}${overlayText(s)}`;
   }
 
   /** Sonde au survol (carte du pôle Sud) : altitude, pente et, depuis le site affiché, distance, cap, horizon dans cette direction et état du Soleil et de la Terre. */
@@ -265,6 +295,10 @@ export function createMapPanel(store, atlas, openSite, getSite = () => null) {
     }
     new ResizeObserver(() => { if (current() === kind && tex !== undefined) render(kind); }).observe(m.scene);
   }
+  document.getElementById('layer-link').addEventListener('change', () => {
+    document.getElementById('link-legend').hidden = document.getElementById('layer-link').value !== 'coverage';
+    if (MAP_KINDS.includes(current())) render(current());
+  });
   for (const id of ['layer-terminator', 'layer-earth', 'layer-graticule', 'layer-sites']) {
     document.getElementById(id).addEventListener('change', () => { if (MAP_KINDS.includes(current())) render(current()); });
   }
@@ -300,7 +334,7 @@ export function createMapPanel(store, atlas, openSite, getSite = () => null) {
     /** Réagit aux changements d'état : instant, langue, sélection. */
     update(changed) {
       const view = current();
-      if (MAP_KINDS.includes(view) && (changed.includes('tMs') || changed.includes('lang') || changed.includes('view') || changed.includes('selectedSiteId') || changed.includes('pickedPoint'))) render(view);
+      if (MAP_KINDS.includes(view) && (changed.includes('tMs') || changed.includes('lang') || changed.includes('view') || changed.includes('selectedSiteId') || changed.includes('pickedPoint') || changed.includes('windowDays'))) render(view);
     },
   };
 }

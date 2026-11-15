@@ -20,7 +20,7 @@ from pipeline.timegrid import BODIES, utc_grid
 from pipeline.config import MOON_FRAME, R_REF_M
 from pipeline.dem import Dem
 from pipeline.horizon import HorizonConfig, compute_horizon
-from pipeline.kpi import compute_kpis
+from pipeline.kpi import compute_kpis, visibility_bits
 from pipeline.terrain_grid import build_terrain_grid, encode_uint16
 
 SCHEMA_VERSION = "1.2"
@@ -110,6 +110,7 @@ def build_site(spec: SiteSpec, cfg: PipelineConfig, out_dir: Path) -> dict[str, 
     elev, truncated = compute_horizon(spec.dem, spec.lat_deg, spec.lon_deg, eye, cfg.horizon)
     bodies = _series(spec, cfg, ground + eye)
     kpis, monthly = compute_kpis(elev, bodies, cfg.start_utc, cfg.step_s)
+    link_bits = visibility_bits(elev, bodies)
     grid = build_terrain_grid(spec.dem, spec.lat_deg, spec.lon_deg, cfg.terrain_size_m, cfg.terrain_n)
     z_min, z_max, raw = encode_uint16(grid.z_m)
 
@@ -145,7 +146,7 @@ def build_site(spec: SiteSpec, cfg: PipelineConfig, out_dir: Path) -> dict[str, 
     (out_dir / "terrain" / f"{spec.id}.bin").write_bytes(raw)
     return {"id": spec.id, "name": spec.name, "lat_deg": spec.lat_deg, "lon_deg": spec.lon_deg, "synthetic": synthetic,
             "verified": spec.verified, "site_file": f"sites/{spec.id}.json", "terrain_file": f"terrain/{spec.id}.json",
-            **flags, **spec.index_extra}
+            **flags, **spec.index_extra, "link_bits": link_bits}
 
 
 def write_index(entries: list[dict[str, Any]], out_dir: Path, cfg: PipelineConfig) -> None:

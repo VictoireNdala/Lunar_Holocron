@@ -343,6 +343,17 @@
       <aside class="drawer" data-view-panel="atlas world south north" hidden>
         <section class="card glass" aria-labelledby="layers-heading" data-panel="layers" data-panel-view="atlas world south north" data-panel-title="atlas.layers">
           <h2 id="layers-heading" data-i18n="atlas.layers"></h2>
+          <label class="field"><span data-i18n="linklayer.label"></span>
+            <select id="layer-link">
+              <option value="off" data-i18n="linklayer.off"></option>
+              <option value="now" data-i18n="linklayer.now"></option>
+              <option value="coverage" data-i18n="linklayer.coverageOption"></option>
+            </select></label>
+          <div id="link-legend" class="link-legend" hidden>
+            <span class="link-legend-bar" aria-hidden="true"></span>
+            <span class="link-legend-scale"><span>0 %</span><span>50 %</span><span>100 %</span></span>
+            <p class="hint" data-i18n="linklayer.note"></p>
+          </div>
           <div class="atlas-sites">
             <button type="button" class="btn" id="tour-start" data-i18n="tour.start"></button>
             <article id="site-sheet" class="sheet" aria-live="polite" hidden>
@@ -447,6 +458,40 @@
           </div>
           <p id="link-trunc" class="hint" hidden></p>
           <p class="hint" data-i18n="link.edgeNote"></p>
+        </section>
+        <section class="link-section" aria-labelledby="plan-h">
+          <h3 id="plan-h" data-i18n="plan.title"></h3>
+          <p class="warning" role="note" data-i18n="plan.limits"></p>
+          <div class="plan-form">
+            <label class="field"><span data-i18n="plan.stay"></span><input id="plan-stay" type="number" min="1" max="60" step="1" value="7" inputmode="numeric"></label>
+            <label class="field"><span data-i18n="plan.sun"></span><input id="plan-sun" type="number" min="0" max="100" step="1" inputmode="decimal" placeholder="—"></label>
+            <label class="field"><span data-i18n="plan.earth"></span><input id="plan-earth" type="number" min="0" max="100" step="1" inputmode="decimal" placeholder="—"></label>
+            <label class="field"><span data-i18n="plan.gap"></span><input id="plan-gap" type="number" min="0" step="1" inputmode="numeric" placeholder="—"></label>
+            <label class="field"><span data-i18n="plan.sunset"></span><input id="plan-sunset" type="number" min="0" step="1" inputmode="numeric" placeholder="—"></label>
+            <label class="field"><span data-i18n="plan.transfer"></span><input id="plan-transfer" type="number" min="0" step="0.5" inputmode="decimal" placeholder="—"></label>
+            <label class="field"><span data-i18n="plan.from"></span>
+              <select id="plan-from"><option value="now" data-i18n="plan.fromNow"></option><option value="start" data-i18n="plan.fromStart"></option></select></label>
+          </div>
+          <p class="hint" data-i18n="plan.paramsNote"></p>
+          <button type="button" class="btn primary" id="plan-go" data-i18n="plan.go"></button>
+          <p id="plan-empty" class="warning" role="status" data-i18n="plan.empty" hidden></p>
+          <div id="plan-result" hidden>
+            <p id="plan-count" class="link-stats" role="status"></p>
+            <p class="hint" data-i18n="plan.formula"></p>
+            <h4 data-i18n="plan.calendar"></h4>
+            <div class="table-scroll"><canvas id="plan-heat" class="plan-heat" role="img" tabindex="0"></canvas></div>
+            <div class="link-legend"><span class="link-legend-bar" aria-hidden="true"></span><span class="link-legend-scale"><span>0 %</span><span>50 %</span><span>100 %</span></span></div>
+            <p class="hint" data-i18n="plan.calendarNote"></p>
+            <h4 data-i18n="plan.top"></h4>
+            <p id="plan-timeline" class="hint" role="status"></p>
+            <div class="table-scroll">
+              <table class="readings link-table">
+                <caption class="visually-hidden" data-i18n="plan.caption"></caption>
+                <thead><tr><th scope="col">#</th><th scope="col" data-i18n="plan.col.landing"></th><th scope="col" data-i18n="plan.col.both"></th><th scope="col" data-i18n="plan.col.sun"></th><th scope="col" data-i18n="plan.col.earth"></th><th scope="col" data-i18n="plan.col.earthGap"></th><th scope="col" data-i18n="plan.col.sunGap"></th><th scope="col" data-i18n="plan.col.sunset"></th><th scope="col" data-i18n="plan.col.loss"></th><th scope="col" data-i18n="plan.col.ok"></th><th scope="col"></th></tr></thead>
+                <tbody id="plan-top"></tbody>
+              </table>
+            </div>
+          </div>
         </section>
       </article>
       <article class="method glass" data-view-panel="method" aria-labelledby="method-title" hidden>

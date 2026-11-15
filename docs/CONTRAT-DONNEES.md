@@ -199,6 +199,7 @@ Ajoutés sans rien retirer (un fichier 1.0 ou 1.1 reste valide ; l'interface ign
 - **`terrain_tier`** : `5m` (MNT PGDA 78, `provenance.dem.resolution_m == 5` vérifié) · `80m` (LDEM polaire 80 m, partout au sud de 80° S) · `flat` (relief **non modélisé**).
 - **`terrain_modeled`** (booléen). Un site `flat` a `terrain_modeled: false` **et** `terrain_real: false`, mais `synthetic: false` : **un relief non modélisé n'est pas un relief fictif**. Règle de 1.2 : `synthetic` = `ephemeris_synthetic` OU (NON `terrain_real` ET `terrain_modeled`). `provenance.dem.resolution_m` peut valoir 0 (pas de MNT).
 - Le niveau `tier` de l'index (entier) devient : 1 = sites prioritaires LOLA, 3 = entités nommées, 4 = sites Apollo (ordre de tri et de visite).
+- **`link_bits`** (entrée d'`index.json`, optionnel, 1.2) : visibilité horaire **stricte** du Soleil et de la Terre, `{ encoding: "bitset-lsb-first-base64", mode: "strict", n, sun_strict, earth_strict }` (bit 0 = premier échantillon, poids faible d'abord ; 5 478 octets par corps pour 43 824 heures). Sert à la couche « Liaison » de l'Atlas sans charger les fichiers de site. **`validate` le recalcule** depuis le fichier de site et refuse tout écart.
 - Azimuts `truncated` : au nord de 80° S le LDEM ne couvre plus le disque de 150 km ; les azimuts concernés sont marqués (minorant), pas masqués.
 
 ## 8. Évolution du contrat

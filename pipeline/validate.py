@@ -271,6 +271,12 @@ def _check_entry(root: Path, entry: dict[str, Any]) -> list[str]:
                 errors.append(f"{site_label}: synthetic différent de l'index")
             if not _same_coords(site["location"], entry):
                 errors.append(f"{site_label}: location différente des coordonnées de l'index")
+            if "link_bits" in entry:  # champ optionnel 1.2 : doit redonner EXACTEMENT la visibilité (strict) des séries du site
+                from pipeline.kpi import visibility_bits
+
+                expected = visibility_bits(site["horizon"]["elev_deg"], site["bodies"])
+                if entry["link_bits"] != expected:
+                    errors.append(f"index.json: link_bits de {entry['id']} différent d'un recalcul depuis {site_label}")
     terrain, errs = _load_json(root / terrain_label, terrain_label)
     errors += errs
     if terrain is not None:

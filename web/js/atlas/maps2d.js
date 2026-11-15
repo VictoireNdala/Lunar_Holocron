@@ -215,7 +215,7 @@ export function drawMap(ctx, proj, state, style, labels) {
       ctx.moveTo(q.x, q.y - 14); ctx.lineTo(q.x, q.y - 5); ctx.moveTo(q.x, q.y + 5); ctx.lineTo(q.x, q.y + 14); ctx.stroke();
     }
   }
-  if (state.layers.sites) return drawSites(ctx, proj, state.sites, proj.zoom ?? 1, style, { selected: state.selectedId, hovered: state.hoveredId, focused: state.focusedId });
+  if (state.layers.sites) return drawSites(ctx, proj, state.sites, proj.zoom ?? 1, style, { selected: state.selectedId, hovered: state.hoveredId, focused: state.focusedId }, state.overlayOf ?? null);
   return { zones: [] };
 }
 

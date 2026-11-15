@@ -195,6 +195,34 @@
                 }
               }
             }
+          },
+          "link_bits": {
+            "type": "object",
+            "required": [
+              "encoding",
+              "mode",
+              "n",
+              "sun_strict",
+              "earth_strict"
+            ],
+            "properties": {
+              "encoding": {
+                "const": "bitset-lsb-first-base64"
+              },
+              "mode": {
+                "const": "strict"
+              },
+              "n": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "sun_strict": {
+                "type": "string"
+              },
+              "earth_strict": {
+                "type": "string"
+              }
+            }
           }
         }
       }
