@@ -31,8 +31,7 @@ Thumbs.db
 # Aperçus du relief réel (dérivés de data/raw, jamais versionnés)
 web/data/local/
 
-# Textures de la Lune (Atlas) : non versionnées tant que Q-013 (licence des données ASU) n'est pas tranchée
-web/assets/moon/*.jpg
+# Textures de la Lune (Atlas) : versionnées depuis D-035 (Q-013 tranchée par CHAT sur délégation de l'humain, 2026-11-15)
 
 # Captures qui montrent la texture de la Lune : non versionnées tant que Q-013 n'est pas tranchée
 docs/captures/a04-*.png

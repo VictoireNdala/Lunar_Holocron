@@ -113,8 +113,7 @@ py -m pipeline.tools.serve              # http://localhost:8000, served without 
 py -m http.server 8000 -d web           # alternative; the browser may keep stale JS modules: hard-reload with Ctrl+Shift+R
 ```
 
-The committed `web/data/` already contains the four real sites. The Atlas textures (NASA SVS) are **not** committed
-(licence to be settled, `Q-013`): without them the globe falls back to a plain sphere and says so.
+The committed `web/data/` already contains all 55 sites (27 real 5 m products, 22 named features, missions and regions at 80 m, 6 Apollo sites). The two Atlas textures (NASA SVS, credited in the interface, illustrative only) are committed under `web/assets/moon/` (decision D-035); if they are removed, the globe falls back to a plain sphere and says so.
 
 ### Run the tests
 
