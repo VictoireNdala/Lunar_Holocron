@@ -100,44 +100,40 @@ x = ρ·sin(lon)    y = ρ·cos(lon)
 > Pour un MNT réel, les paramètres viennent de l'étiquette du fichier (`.LBL`) et **priment**.
 > Vérifier la convention sur le produit réel est une étape obligatoire (`docs/BRANCHEMENT-DONNEES-REELLES.md`).
 
-## 4. Arborescence du dépôt
+## 4. Arborescence du dépôt (état du 2026-11-15, après le lot V2)
 
 ```
 Lunar Holocron/
-├─ CLAUDE.md  PLAN.md  DECISIONS.md  STATUS.md  SOURCES.md  README.md (à écrire, T-14)
-├─ docs/                       ARCHITECTURE, CONTRAT-DONNEES, PIPELINE, INTERFACE, TESTS-VALIDATION, BRANCHEMENT-DONNEES-REELLES
+├─ CLAUDE.md  PLAN.md  DECISIONS.md  STATUS.md  LIAISON.md  SOURCES.md  README.md
+├─ docs/                       ARCHITECTURE, CONTRAT-DONNEES (1.2), PIPELINE, INTERFACE, TESTS-VALIDATION, VALIDATION-RESULTATS, BUILD-V2, ATLAS, SITES-REELS, REVUE-FICHIER-OR…
 ├─ config/
-│   ├─ sites.json              liste des sites (démo + réels « non vérifiés »)
-│   └─ pipeline.json           période, pas de temps, distances d'horizon, taille des tuiles de terrain
-├─ pipeline/
-│   ├─ requirements.txt
-│   ├─ cli.py                  commandes : demo | fetch | build | validate
-│   ├─ config.py               constantes physiques et lecture de config/
-│   ├─ geodesy.py              trajet sphérique, base ENU, azimut/élévation
-│   ├─ projection.py           stéréographique polaire (aller-retour)
-│   ├─ dem.py                  interface Dem, MultiResDem, lecteur de MNT réel (rasterio)
-│   ├─ dem_synthetic.py        terrain synthétique déterministe
-│   ├─ horizon.py              masque d'horizon 360 azimuts
-│   ├─ visibility.py           fraction visible, seuils
-│   ├─ ephemeris_spice.py      Soleil/Terre via SPICE (mode réel)
-│   ├─ ephemeris_demo.py       Soleil/Terre analytiques (mode démonstration)
-│   ├─ kpi.py                  indicateurs et bilan mensuel
-│   ├─ export.py               écriture des JSON et des .bin de terrain
-│   ├─ validate.py             contrôles du contrat (CONTRAT-DONNEES.md § 7)
-│   ├─ schema/                 site.schema.json, index.schema.json, terrain.schema.json
+│   ├─ pipeline.json           période, pas de temps, distances d'horizon, taille des tuiles de terrain
+│   ├─ sites_real.json         27 produits PGDA 5 m (SHA-256, centre d'emprise, étiquette de région NASA)
+│   └─ catalog_features.json   entités IAU, missions (LROC), régions NASA, Apollo : chaque coordonnée a `sources[]`
+├─ pipeline/                   (hors ligne ; Python ≥ 3.10)
+│   ├─ cli.py                  commandes : build | validate
+│   ├─ config.py  geodesy.py  projection.py  timegrid.py  visibility.py  horizon.py  kpi.py
+│   ├─ dem.py  dem_geotiff.py  terrain_grid.py   MNT (MultiResDem 5 m + 80 m), lecture GeoTIFF, grille 3D d'un site
+│   ├─ ephemeris_spice.py      Soleil/Terre via SPICE (seul moteur de production)
+│   ├─ sites.py  catalog.py    sites 5 m réels, catalogue (entités, missions, régions, Apollo)
+│   ├─ global_state.py         éphémérides globales de l'Atlas
+│   ├─ polar_grid.py  polar_tiles.py   grille 480 m et pyramide de tuiles (240 / 160 / 80 m) du fond polaire
+│   ├─ export.py  validate.py  schema/   écriture des JSON, contrôles du contrat
+│   ├─ tools/                  fetch_pgda5m (téléchargement des produits 5 m), serve (serveur local sans cache), horizons_validate…
+│   ├─ fixtures/               générateurs FICTIFS réservés aux tests (jamais importés par le produit : test AST)
 │   └─ tests/
 ├─ tests/
-│   ├─ golden/                 valeurs de référence partagées Python/JS
-│   └─ e2e/                    test de fumée Playwright
-├─ web/
-│   ├─ index.html  method.html
-│   ├─ css/
-│   ├─ vendor/three/           three.module.js + OrbitControls.js (version figée, sans CDN)
-│   ├─ js/                     constants, visibility, geometry, data, store, urlstate, i18n,
-│   │                          panorama, terrain3d, timeline, verdicts, polarmap, compare, main
-│   ├─ data/                   sorties générées (index.json, sites/, terrain/)
-│   └─ tests/                  node --test (fonctions pures)
-├─ data/raw/  data/cache/      ignorés par Git
+│   ├─ golden/                 valeurs de référence partagées Python / JavaScript
+│   ├─ reference/              recalculs indépendants (Horizons, croisements, couture 5 m / 80 m, illumination de Site01, tuiles) et leurs sorties
+│   └─ e2e/smoke_cdp.mjs       test de fumée sans dépendance (Edge piloté par CDP)
+├─ web/                        (application statique, aucune étape de compilation)
+│   ├─ index.html  css/  vendor/ (three.js figé, polices, icônes : aucun CDN)
+│   ├─ js/                     modules purs : constants, visibility, geometry, data, store, urlstate, i18n, freepoint, link, planner, bodies, terrainmesh, terrainring, timeline…
+│   │   ├─ atlas/              cartes 2D, globe, marqueurs, relief, pyramide de tuiles, sonde, fiche des sites, couche Liaison
+│   │   └─ ui/                 panneaux : verdict, panorama, frise, comparaison, point libre, liaison, planificateur, méthode…
+│   ├─ data/                   sorties générées : index.json, global.json, sites/, terrain/, polar/ (grille 480 m + tuiles) ; budget de 60 Mo (Q-017)
+│   └─ tests/                  node --test (fonctions pures, sans dépendance)
+├─ data/raw/  data/cache/      ignorés par Git (MNT, noyaux SPICE)
 └─ .gitignore  LICENSE (Apache-2.0)
 ```
 
