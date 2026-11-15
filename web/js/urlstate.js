@@ -36,6 +36,7 @@ export function encode(state) {
   if (state.threshold) p.push(`thr=${state.threshold}`);
   if (state.lang) p.push(`lang=${state.lang}`);
   if (state.windowDays !== undefined) p.push(`w=${state.windowDays}`);
+  if (state.minAngleDeg) p.push(`ang=${state.minAngleDeg}`); // omis quand il vaut 0 (valeur par défaut)
   return `#${p.join('&')}`;
 }
 
@@ -66,5 +67,7 @@ export function decode(hash) {
   if (LANGS.includes(lang)) out.lang = lang;
   const w = get('w');
   if (WINDOWS.includes(w)) out.windowDays = w === 'all' ? 'all' : Number(w);
+  const ang = Number(get('ang'));
+  if (get('ang') !== null && Number.isFinite(ang) && ang >= 0 && ang <= 5) out.minAngleDeg = ang;
   return out;
 }

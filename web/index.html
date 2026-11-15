@@ -47,6 +47,7 @@
       <li><a class="rail-item" data-view="south" href="#view=south"><svg class="ico" aria-hidden="true"><use href="./vendor/icons/sprite.svg#i-compass"></use></svg><span class="rail-label" data-i18n="nav.south"></span></a></li>
       <li><a class="rail-item" data-view="north" href="#view=north"><svg class="ico" aria-hidden="true"><use href="./vendor/icons/sprite.svg#i-compass"></use></svg><span class="rail-label" data-i18n="nav.north"></span></a></li>
       <li><a class="rail-item" data-view="site" href="#view=site"><svg class="ico" aria-hidden="true"><use href="./vendor/icons/sprite.svg#i-mountain"></use></svg><span class="rail-label" data-i18n="nav.site"></span></a></li>
+      <li><a class="rail-item" data-view="link" href="#view=link"><svg class="ico" aria-hidden="true"><use href="./vendor/icons/sprite.svg#i-signal"></use></svg><span class="rail-label" data-i18n="nav.link"></span></a></li>
       <li><a class="rail-item" data-view="method" href="#view=method"><svg class="ico" aria-hidden="true"><use href="./vendor/icons/sprite.svg#i-book-open"></use></svg><span class="rail-label" data-i18n="nav.method"></span></a></li>
     </ul>
   </nav>
@@ -193,6 +194,7 @@
           <section class="card glass" aria-labelledby="bodies-heading" data-panel="bodies" data-panel-view="site" data-panel-title="bodies.heading">
             <h2 id="bodies-heading" data-i18n="bodies.heading"></h2>
             <p id="direct-link" class="direct-link" role="status"></p>
+            <ul class="countdowns compact"><li id="count-earth"></li><li id="count-sun"></li></ul>
             <div id="reading-warnings" class="warning" role="status" hidden></div>
             <article class="reading" data-reading="sun">
               <h3><span class="icon icon-sun" aria-hidden="true"></span><span data-i18n="body.sun"></span> <span class="status" data-field="status"></span></h3>
@@ -383,6 +385,70 @@
           <p class="hint" id="atlas-credit"></p>
         </section>
       </aside>
+      <article class="link-view glass" data-view-panel="link" data-needs-site aria-labelledby="link-title" hidden>
+        <h2 id="link-title" data-i18n="link.title"></h2>
+        <p class="warning" role="note" data-i18n="link.limits"></p>
+        <section class="link-section" aria-labelledby="link-params-h">
+          <h3 id="link-params-h" data-i18n="link.params"></h3>
+          <div class="link-params">
+            <div class="seg" role="group" data-i18n-aria="verdict.threshold">
+              <button type="button" class="btn thr-btn" data-threshold="strict" aria-pressed="true" data-i18n="verdict.strict"></button>
+              <button type="button" class="btn thr-btn" data-threshold="any" aria-pressed="false" data-i18n="verdict.any"></button>
+            </div>
+            <label class="field inline"><span data-i18n="link.minAngle"></span><input id="link-angle" type="number" min="0" max="5" step="0.5" inputmode="decimal"></label>
+          </div>
+          <p class="hint" data-i18n="link.minAngleNote"></p>
+        </section>
+        <section class="link-section" aria-labelledby="link-now-h">
+          <h3 id="link-now-h" data-i18n="link.now"></h3>
+          <p id="link-state" class="direct-link" role="status"></p>
+          <p id="link-margin" class="hint"></p>
+          <ul class="countdowns">
+            <li id="link-count-earth"></li>
+            <li id="link-count-sun"></li>
+          </ul>
+          <p class="hint" data-i18n="link.countdownNote"></p>
+          <dl class="facts">
+            <dt data-i18n="link.distance"></dt><dd id="link-distance" class="num"></dd>
+            <dt data-i18n="link.oneWay"></dt><dd id="link-oneway" class="num"></dd>
+            <dt data-i18n="link.roundTrip"></dt><dd id="link-roundtrip" class="num"></dd>
+          </dl>
+          <p class="hint" data-i18n="link.delayNote"></p>
+        </section>
+        <section class="link-section" aria-labelledby="link-out-h">
+          <h3 id="link-out-h" data-i18n="link.outages"></h3>
+          <div class="link-params">
+            <div class="seg" role="group" data-i18n-aria="link.body">
+              <button type="button" class="btn link-body" data-body="earth" aria-pressed="true" data-i18n="body.earth"></button>
+              <button type="button" class="btn link-body" data-body="sun" aria-pressed="false" data-i18n="body.sun"></button>
+              <button type="button" class="btn link-body" data-body="both" aria-pressed="false" data-i18n="link.both"></button>
+            </div>
+            <div class="seg" role="group" data-i18n-aria="timeline.window">
+              <button type="button" class="btn win-btn" data-win="7" aria-pressed="false" data-i18n="timeline.win.7"></button>
+              <button type="button" class="btn win-btn" data-win="30" aria-pressed="true" data-i18n="timeline.win.30"></button>
+              <button type="button" class="btn win-btn" data-win="365" aria-pressed="false" data-i18n="timeline.win.365"></button>
+              <button type="button" class="btn win-btn" data-win="all" aria-pressed="false" data-i18n="timeline.win.all"></button>
+            </div>
+          </div>
+          <p id="link-stats" class="link-stats" role="status"></p>
+          <div class="link-params">
+            <div class="seg" role="group" data-i18n-aria="link.sort">
+              <button type="button" class="btn link-sort" data-sort="start" aria-pressed="true" data-i18n="link.sortStart"></button>
+              <button type="button" class="btn link-sort" data-sort="duration" aria-pressed="false" data-i18n="link.sortDuration"></button>
+            </div>
+            <button type="button" class="btn" id="link-csv" data-i18n="link.csv"></button>
+          </div>
+          <div class="table-scroll">
+            <table class="readings link-table">
+              <caption class="visually-hidden" data-i18n="link.caption"></caption>
+              <thead><tr><th scope="col" data-i18n="link.col.state"></th><th scope="col" data-i18n="link.col.start"></th><th scope="col" data-i18n="link.col.end"></th><th scope="col" data-i18n="link.col.duration"></th><th scope="col" data-i18n="link.col.edge"></th></tr></thead>
+              <tbody id="link-runs"></tbody>
+            </table>
+          </div>
+          <p id="link-trunc" class="hint" hidden></p>
+          <p class="hint" data-i18n="link.edgeNote"></p>
+        </section>
+      </article>
       <article class="method glass" data-view-panel="method" aria-labelledby="method-title" hidden>
         <h2 id="method-title" data-i18n="method.title"></h2>
         <section class="method-section" aria-labelledby="m-what">

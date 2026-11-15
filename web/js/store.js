@@ -14,6 +14,7 @@ export const DEFAULT_STATE = Object.freeze({
   playing: false,
   speed: 3600,
   panoramaCenterAz: 0,
+  minAngleDeg: 0,           // angle minimal utile de la Terre (0–5°), paramètre de l'utilisateur, non normatif (V2-05)
   pickedPoint: null,        // point choisi par un clic sur une carte de l'Atlas ({ latDeg, lonDeg }) : devient un point libre à la demande, jamais enregistré
   selectedSiteId: null,     // site dont la fiche est ouverte sur l'Atlas (pas dans l'URL)
 });

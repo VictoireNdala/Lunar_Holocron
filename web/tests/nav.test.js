@@ -4,8 +4,8 @@ import assert from 'node:assert/strict';
 import { VIEWS, IMPLEMENTED_VIEWS, railKeyTarget, isTypingTarget } from '../js/ui/nav.js';
 import { encode, decode } from '../js/urlstate.js';
 
-test('vues du rail : moins de sept destinations, la vue de site en fait partie', () => {
-  assert.ok(VIEWS.length < 7);
+test('vues du rail : au plus sept destinations (UI-DESIGN § 5.2 en prévoyait moins de sept ; l’onglet « Liaison » de BUILD-V2 § 7.5 est le septième), la vue de site en fait partie', () => {
+  assert.ok(VIEWS.length <= 7);
   assert.ok(VIEWS.includes('site'));
   assert.ok(IMPLEMENTED_VIEWS.every((v) => VIEWS.includes(v)));
 });

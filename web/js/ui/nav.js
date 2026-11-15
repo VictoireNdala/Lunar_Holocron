@@ -1,10 +1,10 @@
 // Navigation de la coque (UI-DESIGN § 5.2) : vues du rail, touches, détection de saisie. Fonctions pures.
 
 /** Vues du rail, dans l'ordre d'affichage (fragment d'URL `view=`). */
-export const VIEWS = Object.freeze(['atlas', 'world', 'south', 'north', 'site', 'method']);
+export const VIEWS = Object.freeze(['atlas', 'world', 'south', 'north', 'site', 'link', 'method']);
 
 /** Vues déjà construites ; les autres affichent un état « à venir » honnête. */
-export const IMPLEMENTED_VIEWS = Object.freeze(['atlas', 'world', 'south', 'north', 'site', 'method']);
+export const IMPLEMENTED_VIEWS = Object.freeze(['atlas', 'world', 'south', 'north', 'site', 'link', 'method']);
 
 /** Vue par défaut tant que l'Atlas n'existe pas (ATLAS § 7 : l'Atlas deviendra la vue d'accueil sans site dans l'URL). */
 export const DEFAULT_VIEW = 'site';

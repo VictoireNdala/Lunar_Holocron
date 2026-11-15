@@ -10,6 +10,8 @@ import re
 import sys
 from pathlib import Path
 
+# `signal` (barres de liaison) est dessinée à la main pour ce projet (Apache 2.0) et ajoutée après la génération : voir EXTRA_SYMBOLS.
+EXTRA_SYMBOLS = ('  <symbol id="i-signal" viewBox="0 0 24 24"><path d="M3 20v-3" /> <path d="M8 20v-7" /> <path d="M13 20v-11" /> <path d="M18 20V5" /></symbol>',)
 ICONS = ("globe", "map", "compass", "mountain", "book-open", "languages", "circle-help", "search",
          "panel-left-open", "panel-left-close", "play", "pause", "info", "x", "minus", "eye", "eye-off")
 OUT = Path("web/vendor/icons/sprite.svg")

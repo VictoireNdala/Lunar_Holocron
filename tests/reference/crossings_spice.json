@@ -1,0 +1,339 @@
+{
+ "description": "Changements d'\u00e9tat (strict) minute par minute, SPICE + horizon du pipeline ; `t_utc` = premi\u00e8re minute du nouvel \u00e9tat ; les couples de changements distants de moins de 10 minutes (fr\u00f4lement de l'horizon, bruit de quantification) sont retir\u00e9s. G\u00e9n\u00e9r\u00e9 par tests/reference/make_crossings_truth.py.",
+ "start_utc": "2027-03-01T00:00:00Z",
+ "minutes": 87840,
+ "sites": {
+  "site01-connecting-ridge": [
+   {
+    "body": "sun",
+    "type": "rise",
+    "t_utc": "2027-03-06T17:15:00Z"
+   },
+   {
+    "body": "earth",
+    "type": "rise",
+    "t_utc": "2027-03-07T07:05:00Z"
+   },
+   {
+    "body": "sun",
+    "type": "set",
+    "t_utc": "2027-03-16T05:49:00Z"
+   },
+   {
+    "body": "earth",
+    "type": "set",
+    "t_utc": "2027-03-18T16:57:00Z"
+   },
+   {
+    "body": "earth",
+    "type": "rise",
+    "t_utc": "2027-04-03T13:12:00Z"
+   },
+   {
+    "body": "sun",
+    "type": "rise",
+    "t_utc": "2027-04-05T17:14:00Z"
+   },
+   {
+    "body": "sun",
+    "type": "set",
+    "t_utc": "2027-04-12T09:42:00Z"
+   },
+   {
+    "body": "sun",
+    "type": "rise",
+    "t_utc": "2027-04-13T11:07:00Z"
+   },
+   {
+    "body": "sun",
+    "type": "set",
+    "t_utc": "2027-04-14T07:05:00Z"
+   },
+   {
+    "body": "earth",
+    "type": "set",
+    "t_utc": "2027-04-14T20:30:00Z"
+   },
+   {
+    "body": "earth",
+    "type": "rise",
+    "t_utc": "2027-04-30T17:43:00Z"
+   }
+  ],
+  "site04-shackleton-rim": [],
+  "site07-peak-near-shackleton": [
+   {
+    "body": "earth",
+    "type": "rise",
+    "t_utc": "2027-03-05T06:16:00Z"
+   },
+   {
+    "body": "sun",
+    "type": "set",
+    "t_utc": "2027-03-07T17:29:00Z"
+   },
+   {
+    "body": "sun",
+    "type": "rise",
+    "t_utc": "2027-03-13T03:02:00Z"
+   },
+   {
+    "body": "sun",
+    "type": "set",
+    "t_utc": "2027-03-13T05:30:00Z"
+   },
+   {
+    "body": "sun",
+    "type": "rise",
+    "t_utc": "2027-03-13T11:30:00Z"
+   },
+   {
+    "body": "sun",
+    "type": "set",
+    "t_utc": "2027-03-15T07:49:00Z"
+   },
+   {
+    "body": "sun",
+    "type": "rise",
+    "t_utc": "2027-03-16T08:00:00Z"
+   },
+   {
+    "body": "sun",
+    "type": "set",
+    "t_utc": "2027-03-18T11:15:00Z"
+   },
+   {
+    "body": "earth",
+    "type": "set",
+    "t_utc": "2027-03-20T05:16:00Z"
+   },
+   {
+    "body": "sun",
+    "type": "rise",
+    "t_utc": "2027-03-22T00:44:00Z"
+   },
+   {
+    "body": "sun",
+    "type": "set",
+    "t_utc": "2027-03-23T06:05:00Z"
+   },
+   {
+    "body": "sun",
+    "type": "rise",
+    "t_utc": "2027-03-24T07:28:00Z"
+   },
+   {
+    "body": "sun",
+    "type": "set",
+    "t_utc": "2027-03-25T01:06:00Z"
+   },
+   {
+    "body": "sun",
+    "type": "rise",
+    "t_utc": "2027-03-30T14:24:00Z"
+   },
+   {
+    "body": "earth",
+    "type": "rise",
+    "t_utc": "2027-04-01T11:11:00Z"
+   },
+   {
+    "body": "sun",
+    "type": "set",
+    "t_utc": "2027-04-02T12:12:00Z"
+   },
+   {
+    "body": "sun",
+    "type": "rise",
+    "t_utc": "2027-04-02T16:16:00Z"
+   },
+   {
+    "body": "sun",
+    "type": "set",
+    "t_utc": "2027-04-04T12:22:00Z"
+   },
+   {
+    "body": "earth",
+    "type": "set",
+    "t_utc": "2027-04-16T09:29:00Z"
+   },
+   {
+    "body": "sun",
+    "type": "rise",
+    "t_utc": "2027-04-21T06:55:00Z"
+   },
+   {
+    "body": "sun",
+    "type": "set",
+    "t_utc": "2027-04-21T16:14:00Z"
+   },
+   {
+    "body": "sun",
+    "type": "rise",
+    "t_utc": "2027-04-23T02:49:00Z"
+   },
+   {
+    "body": "sun",
+    "type": "set",
+    "t_utc": "2027-04-23T04:06:00Z"
+   },
+   {
+    "body": "earth",
+    "type": "rise",
+    "t_utc": "2027-04-28T14:18:00Z"
+   },
+   {
+    "body": "sun",
+    "type": "rise",
+    "t_utc": "2027-04-29T06:31:00Z"
+   },
+   {
+    "body": "sun",
+    "type": "set",
+    "t_utc": "2027-04-29T12:04:00Z"
+   },
+   {
+    "body": "sun",
+    "type": "rise",
+    "t_utc": "2027-04-30T00:42:00Z"
+   }
+  ],
+  "site11-de-gerlache-rim": [
+   {
+    "body": "earth",
+    "type": "rise",
+    "t_utc": "2027-03-05T07:15:00Z"
+   },
+   {
+    "body": "sun",
+    "type": "rise",
+    "t_utc": "2027-03-09T03:10:00Z"
+   },
+   {
+    "body": "sun",
+    "type": "set",
+    "t_utc": "2027-03-09T09:55:00Z"
+   },
+   {
+    "body": "sun",
+    "type": "rise",
+    "t_utc": "2027-03-14T12:34:00Z"
+   },
+   {
+    "body": "sun",
+    "type": "set",
+    "t_utc": "2027-03-17T06:17:00Z"
+   },
+   {
+    "body": "sun",
+    "type": "rise",
+    "t_utc": "2027-03-17T11:04:00Z"
+   },
+   {
+    "body": "sun",
+    "type": "set",
+    "t_utc": "2027-03-17T19:20:00Z"
+   },
+   {
+    "body": "sun",
+    "type": "rise",
+    "t_utc": "2027-03-19T11:44:00Z"
+   },
+   {
+    "body": "earth",
+    "type": "set",
+    "t_utc": "2027-03-20T07:55:00Z"
+   },
+   {
+    "body": "sun",
+    "type": "set",
+    "t_utc": "2027-03-20T14:58:00Z"
+   },
+   {
+    "body": "sun",
+    "type": "rise",
+    "t_utc": "2027-03-21T20:43:00Z"
+   },
+   {
+    "body": "sun",
+    "type": "set",
+    "t_utc": "2027-03-26T09:23:00Z"
+   },
+   {
+    "body": "earth",
+    "type": "rise",
+    "t_utc": "2027-04-01T12:06:00Z"
+   },
+   {
+    "body": "sun",
+    "type": "rise",
+    "t_utc": "2027-04-13T06:08:00Z"
+   },
+   {
+    "body": "sun",
+    "type": "set",
+    "t_utc": "2027-04-13T23:43:00Z"
+   },
+   {
+    "body": "sun",
+    "type": "rise",
+    "t_utc": "2027-04-14T00:15:00Z"
+   },
+   {
+    "body": "sun",
+    "type": "set",
+    "t_utc": "2027-04-14T22:24:00Z"
+   },
+   {
+    "body": "sun",
+    "type": "rise",
+    "t_utc": "2027-04-15T01:38:00Z"
+   },
+   {
+    "body": "sun",
+    "type": "set",
+    "t_utc": "2027-04-15T10:06:00Z"
+   },
+   {
+    "body": "earth",
+    "type": "set",
+    "t_utc": "2027-04-16T12:25:00Z"
+   },
+   {
+    "body": "sun",
+    "type": "rise",
+    "t_utc": "2027-04-18T03:32:00Z"
+   },
+   {
+    "body": "sun",
+    "type": "set",
+    "t_utc": "2027-04-19T00:21:00Z"
+   },
+   {
+    "body": "sun",
+    "type": "rise",
+    "t_utc": "2027-04-20T13:31:00Z"
+   },
+   {
+    "body": "sun",
+    "type": "set",
+    "t_utc": "2027-04-21T10:48:00Z"
+   },
+   {
+    "body": "sun",
+    "type": "rise",
+    "t_utc": "2027-04-21T18:04:00Z"
+   },
+   {
+    "body": "sun",
+    "type": "set",
+    "t_utc": "2027-04-24T12:54:00Z"
+   },
+   {
+    "body": "earth",
+    "type": "rise",
+    "t_utc": "2027-04-28T15:08:00Z"
+   }
+  ]
+ }
+}

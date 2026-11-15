@@ -48,7 +48,22 @@ Les tolérances valent environ **deux fois l'écart maximal mesuré** de chaque 
 
 **Ce que la mesure n'établit pas.** Le biais de l'horizon est de signe variable : la grille 480 m peut **sous-estimer ou surestimer** l'horizon réel d'un à quelques degrés. Les indicateurs d'un point libre sont donc **moins fiables** que ceux des sites du catalogue, surtout près des crêtes ; l'application le dit. Aucune comparaison n'a été faite avec un outil officiel.
 
-## 3. Pas encore validé (reste de T-24)
+## 3. Liaison : coupures, levers et couchers, délai de propagation (V2-05, D-028)
+
+Géométrie seulement (relais, stations au sol, bilan de liaison et trajectoire non modélisés).
+
+| Mesure | Résultat | Exigence | Commentaire |
+|---|---|---|---|
+| Plus longue coupure, nombre de coupures et % couvert du module (Soleil, Terre, les deux ; strict et optimiste ; 4 sites) contre `kpis` du pipeline | **égalité exacte** (`assert.equal` sur `longest_gap_h` et `n_gaps`, écart < 10⁻⁹ sur le %) | égalité exacte | `web/tests/link.test.js` |
+| Instants de coucher et de lever (strict) calculés dans le navigateur à partir des **séries horaires** (interpolation d'Hermite, bissection à 0,5 s) contre SPICE **minute par minute** avec l'horizon du pipeline, 4 sites, 2027-03-01 → 04-30 | **65 événements** : écart médian **32 s**, 90e centile 66 s, **maximum 150 s**, biais moyen −27 s | médiane < 1 min ; maximum publié | la vérité est « la première minute du nouvel état » (arrondie à la minute) : l'écart attendu d'une interpolation parfaite est de 0 à 60 s, moyenne 30 s ; le biais de −27 s en est la signature. Le maximum de 150 s vient de rasants où la marge reste presque nulle pendant des minutes. Précision annoncée à l'écran : ± 2,5 min |
+| Délai de propagation aller simple (distance ÷ c) contre la portée Horizons (`QUANTITIES='20'`), 4 sites × 3 dates × 24 h = 288 valeurs | écart maximal **0,738 ms**, moyen 0,342 ms | < 1 ms | borné par l'**arrondi au millidegré du rayon angulaire** de la Terre dans le fichier de site (± 5·10⁻⁴ de la distance) : on ne peut pas faire mieux avec ce format |
+| Délais calculés sur 5 ans (Site01) | entre 1,18 s et 1,37 s (aller simple) | plausible | distance Terre–Lune 356 000 – 407 000 km |
+
+**Nettoyage de la vérité-terrain.** Aux instants où le corps frôle l'horizon, la quantification au millidegré fait osciller l'état (coucher, lever, coucher en 2 minutes). Ces couples de changements distants de moins de 10 minutes sont retirés de la référence (`tests/reference/make_crossings_truth.py`), sinon la mesure compterait du bruit de quantification comme une erreur de calcul. Sans ce nettoyage, 2 événements sur 71 auraient été mal appariés.
+
+**Limites.** Un double franchissement de l'horizon à l'intérieur d'une même heure (frôlement) n'est pas vu : les séries sont horaires. L'angle minimal utile est un paramètre de l'utilisateur (0 à 5°), pas une valeur normative.
+
+## 4. Pas encore validé (reste de T-24)
 
 | Contrôle | État |
 |---|---|

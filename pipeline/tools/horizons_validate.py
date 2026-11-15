@@ -117,5 +117,46 @@ def main() -> None:
     print(f"\n{len(cases)} cas, {sum(len(c["samples"]) for c in cases)} echantillons ; max d_az = {doc["max_az_err_deg"]:.2e} deg, max d_el = {doc["max_el_err_deg"]:.2e} deg -> {OUT.name}")
 
 
+
+
+# --- Distance Terre – site (V2-05, délai de propagation) : QUANTITIES='20' (portée) -------------------------------------------------------------
+RANGE_OUT = ROOT / "tests" / "reference" / "horizons_range.json"
+AU_KM = 149597870.700  # unité astronomique (UAI 2012), valeur indiquée par Horizons dans son en-tête
+
+
+def range_url(lat_deg: float, lon_deg: float, day: str) -> str:
+    """Requête de la portée (delta, en UA) de la Terre vue du site, apparente, 24 pas de 1 h."""
+    url = request_url("earth", lat_deg, lon_deg, day)
+    return url.replace(urllib.parse.quote("'4'"), urllib.parse.quote("'20'"))
+
+
+def parse_range(text: str) -> list[dict[str, float | str]]:
+    """Lignes `date, , , delta, deldot` entre $$SOE et $$EOE → portée en km et instant UTC."""
+    m = SOE.search(text)
+    if not m:
+        raise ValueError("réponse Horizons sans bloc $$SOE/$$EOE : " + text[:300])
+    out = []
+    for line in m.group(1).strip().splitlines():
+        cells = [c.strip() for c in line.split(",")]
+        when = datetime.strptime(cells[0], "%Y-%b-%d %H:%M")
+        out.append({"utc": when.strftime("%Y-%m-%dT%H:%M:%S"), "delta_au": float(cells[3]), "range_km": float(cells[3]) * AU_KM})
+    return out
+
+
+def main_range() -> None:
+    """`py -m pipeline.tools.horizons_validate range` : relève la portée de la Terre pour les 4 sites réels × 3 dates."""
+    cases = []
+    for site in sites()[1:]:  # le point de référence de CHAT n'a pas de fichier de site
+        for day in DATES:
+            samples = parse_range(fetch(range_url(site["lat_deg"], site["lon_deg"], day)))
+            cases.append({"site_id": site["id"], "day": day, "samples": samples})
+    doc = {"description": "Portée apparente de la Terre vue des sites (JPL Horizons, QUANTITIES='20', delta en UA converti en km avec 1 UA = 149 597 870,7 km). Généré par `py -m pipeline.tools.horizons_validate range`.",
+           "source": "NASA/JPL Horizons System, " + ENDPOINT, "consulted_utc": datetime.now(timezone.utc).strftime("%Y-%m-%d"), "cases": cases}
+    RANGE_OUT.write_text(json.dumps(doc, ensure_ascii=False, indent=1) + "\n", encoding="utf-8", newline="\n")
+    print(f"{len(cases)} cas, {sum(len(c['samples']) for c in cases)} echantillons -> {RANGE_OUT.name}")
+
+
 if __name__ == "__main__":
-    main()
+    import sys
+
+    main_range() if sys.argv[1:] == ["range"] else main()
