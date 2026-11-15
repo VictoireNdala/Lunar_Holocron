@@ -13,6 +13,7 @@ const port = 9477;
 const results = [];
 const check = (name, ok, detail = '') => { results.push(ok); console.log(`${ok ? 'OK  ' : 'ÉCHEC'} ${name}${detail ? ` : ${detail}` : ''}`); };
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+const until = async (fn, ok, tries = 80) => { let v; for (let i = 0; i < tries; i += 1) { v = await fn(); if (ok(v)) return v; await wait(250); } return v; }; // attente active : réseau lent sur l'adresse publique
 const proc = spawn(browser, ['--headless=new', `--remote-debugging-port=${port}`, `--user-data-dir=${mkdtempSync(join(tmpdir(), 'lh-nogl-'))}`, '--window-size=1440,900', 'about:blank'], { stdio: 'ignore' });
 let page = null;
 for (let i = 0; i < 40 && !page; i += 1) { try { page = (await (await fetch(`http://127.0.0.1:${port}/json`)).json()).find((t) => t.type === 'page'); } catch { /* démarrage */ } if (!page) await wait(250); }
@@ -37,20 +38,20 @@ await send('Page.addScriptToEvaluateOnNewDocument', { source: '(() => { const g 
 const colors = (sel, step, shift) => `(() => { const c = document.querySelector('${sel}'); if (!c) return -1; const k = document.createElement('canvas'); k.width = c.width; k.height = c.height; const g = k.getContext('2d'); g.drawImage(c, 0, 0); const d = g.getImageData(0, 0, k.width, k.height).data; const s = new Set(); for (let i = 0; i < d.length; i += 4 * ${step}) s.add((d[i] >> ${shift}) * 1024 + (d[i + 1] >> ${shift}) * 32 + (d[i + 2] >> ${shift})); return s.size; })()`;
 try {
   await send('Page.navigate', { url: `${base}?nogl=${Date.now()}#view=atlas&a=site01-connecting-ridge&t=2027-03-14T06:00Z&thr=strict&lang=fr&w=30` });
-  await wait(5000);
+  for (let i = 0; i < 240; i += 1) { await wait(250); if (/view=south/.test(await ev('location.hash'))) break; } // réseau lent (adresse publique) : on attend la bascule au lieu d'un délai fixe
+  await wait(1500);
   const hash = await ev('location.hash');
   check('#view=atlas bascule sur la carte 2D du pôle Sud', /view=south/.test(hash), hash);
   const banner = await ev("(() => { const b = document.getElementById('no3d'); return b && !b.hidden ? b.textContent.replace(/[ \\n\\t]+/g, ' ').trim() : ''; })()");
   check('bandeau persistant « 3D désactivée » avec la façon de l\'activer', /WebGL unavailable/.test(banner) && /acceleration/.test(banner), banner.slice(0, 70));
   const globeBtn = await ev("(() => { const b = document.querySelector('.proj-btn[data-proj-view=\"atlas\"]'); return b ? b.disabled + '|' + b.title : 'absent'; })()");
   check('bouton Globe grisé avec info-bulle', /^true\|/.test(globeBtn) && globeBtn.length > 8, globeBtn);
-  const mapPixels = await ev(colors('[data-scene="south"] canvas', 211, 4));
+  const mapPixels = await until(() => ev(colors('[data-scene="south"] canvas', 211, 4)), (n) => n > 15);
   check('carte du pôle Sud non noire (2D)', mapPixels > 15, `${mapPixels} couleurs`);
   await ev("document.querySelector('.rail-item[data-view=\"site\"]').click()");
-  await wait(4500);
-  const map2d = await ev(colors('canvas.terrain2d', 97, 3));
+  const map2d = await until(() => ev(colors('canvas.terrain2d', 97, 3)), (n) => n > 20);
   check('vue Site : carte d\'altitude 2D non uniforme à la place de la scène 3D', map2d > 20, `${map2d} couleurs`);
-  const probe = await ev("(async () => { const c = document.querySelector('canvas.terrain2d'); const r = c.getBoundingClientRect(); c.dispatchEvent(new PointerEvent('pointermove', { clientX: r.left + r.width * 0.55, clientY: r.top + r.height * 0.45, bubbles: true })); await new Promise((q) => setTimeout(q, 600)); return document.getElementById('view3d-probe').textContent; })()");
+  const probe = await until(() => ev("(async () => { const c = document.querySelector('canvas.terrain2d'); const r = c.getBoundingClientRect(); c.dispatchEvent(new PointerEvent('pointermove', { clientX: r.left + r.width * 0.55, clientY: r.top + r.height * 0.45, bubbles: true })); await new Promise((q) => setTimeout(q, 600)); return document.getElementById('view3d-probe').textContent; })()"), (v) => /Elevation/.test(v ?? ''), 20) ?? '';
   check('sonde au survol de la carte 2D (altitude, pente, cap, horizon)', /Elevation/.test(probe) && /horizon/.test(probe), probe.slice(0, 80));
   const hidden3d = await ev('[...document.querySelectorAll("[data-needs-webgl]")].every((e) => e.hidden)');
   check('commandes propres à la 3D masquées', hidden3d === true);

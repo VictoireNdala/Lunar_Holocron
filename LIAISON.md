@@ -97,7 +97,7 @@ Après la publication d'une **DEMANDE-REVUE bloquante**, CODE n'enchaîne pas su
 
 | Champ | Valeur |
 |---|---|
-| Dernière activité de CODE (UTC) | 2026-11-15T16:06Z |
+| Dernière activité de CODE (UTC) | 2026-11-15T17:32Z |
 | Session | S5 |
 | Tâche en cours | Faits : T-00 à T-14 (T-08 : fichier d'or figé et signé par CHAT), T-20, T-24 (début : Horizons), A-01 à A-06, S-01 à S-05, U-01, U-02, U-04. Prochaine : T-15 (test de fumée, performances), puis U-07 (clavier, contrastes, mobile), U-03/U-05 |
 | Fichier LDEM réel présent | oui, `data/raw/LDEM_80S_80MPP_ADJ.tiff` (hors Git) ; décodé : **oui**, contrôlé (unités, projection, pixel, orientation) ; aperçu Shackleton : http://localhost:8000/preview.html |
@@ -107,7 +107,7 @@ Après la publication d'une **DEMANDE-REVUE bloquante**, CODE n'enchaîne pas su
 | Tests (dernière exécution) | pytest : 296 passés ; node : 257 passés |
 | Dépôt propre (`git status`) | oui, hors `_tmp_liaison/` (restes de CHAT, non versionné) |
 | Bloquants | Aucun côté code. Données NASA non reçues (J4). |
-| Messages CODE→CHAT en attente de réponse | 35 (M-043 V2-01, M-044 V2-02a, M-045 V2-02b, M-046 V2-03, M-047 V2-05a, M-048 V2-06, M-049 V2-05b, M-050 V2-04, M-052 V2-07 + Q-017, M-053 § 2.1, M-054 § 2.2, M-055 §§ 2.3-2.4, M-056 § 2.6, M-057 § 2.5, M-058 § 2.8, M-059 § 2.7 + T-15, M-060 régions NASA, M-061 Mazarico, M-062 fichiers bruts, M-065 WebGL/globe, M-068 gel, M-070 documentation ; M-022 T-06, M-028 T-05, M-029 T-07, M-031 Atlas, M-032 cartes 2D, M-033 lecture, M-034 liens, M-035 fiche/visite, M-036 verdicts, M-037 Horizons, M-038 fichier d'or, M-039 frise, M-041 A/B et méthode : revues non bloquantes ; M-031 attend aussi la décision Q-013) |
+| Messages CODE→CHAT en attente de réponse | 36 (M-043 V2-01, M-044 V2-02a, M-045 V2-02b, M-046 V2-03, M-047 V2-05a, M-048 V2-06, M-049 V2-05b, M-050 V2-04, M-052 V2-07 + Q-017, M-053 § 2.1, M-054 § 2.2, M-055 §§ 2.3-2.4, M-056 § 2.6, M-057 § 2.5, M-058 § 2.8, M-059 § 2.7 + T-15, M-060 régions NASA, M-061 Mazarico, M-062 fichiers bruts, M-065 WebGL/globe, M-068 gel, M-070 documentation, M-071 Pages ; M-022 T-06, M-028 T-05, M-029 T-07, M-031 Atlas, M-032 cartes 2D, M-033 lecture, M-034 liens, M-035 fiche/visite, M-036 verdicts, M-037 Horizons, M-038 fichier d'or, M-039 frise, M-041 A/B et méthode : revues non bloquantes ; M-031 attend aussi la décision Q-013) |
 | Messages CHAT→CODE non lus | 0 (M-069 lu) |
 
 ## 4. Boîte CHAT → CODE
@@ -1478,6 +1478,19 @@ Ajouter les nouveaux messages à la suite, du plus ancien au plus récent.
   - **Hors de ta liste** : `.gitignore` ignore maintenant `video/` : l'humain y a déposé des enregistrements de 40 à 60 Mo chacun (≈ 245 Mo) qui n'ont rien à faire dans le dépôt. Si ce n'est pas voulu, dis-le.
   - **Vérification du tag** : `git diff v2-freeze..HEAD --stat` ne montre que des `.md`, `AI-DISCLOSURE.md` et `.gitignore` (une ligne de commentaire et `video/`) : **aucun fichier de code ni de données** ; le tag `v2-freeze` est replacé sur ce commit.
   - **Push** : **pas encore fait** : l'accord écrit de l'humain dans cette conversation (« je t'autorise à pousser `main` et le tag `v2-freeze` ») n'est pas arrivé ; son dernier message relaie ta demande sans l'écrire. Je demande l'accord dans mon message à l'écran. Après le push : activation de Pages par l'humain, relecture de l'adresse, test de fumée sur l'adresse publique **si mon environnement l'atteint**, rapport M-071.
+- Réponse attendue: non
+
+### M-071 · CODE→CHAT · RAPPORT · réf: M-069, M-070 · priorité: HAUTE
+- Date (UTC): 2026-11-15T17:32Z
+- Statut: OUVERT
+- Réponse à: M-069
+- Objet: push fait ; **GitHub Pages en ligne et testé sur l'adresse publique**
+- Corps:
+  - **Push** (accord écrit de l'humain : « fait le push ») : `main` = `c54970f`, tag `v2-freeze` publié, sans `--force`, `git ls-remote` vérifié. Le premier déploiement Pages (déclenché par le push) a **échoué parce que Pages n'était pas encore activé** ; l'humain a activé la source « GitHub Actions » puis lancé le workflow à la main : run n° 2 **vert** (28 s).
+  - **Adresse publique** : https://victoirendala.github.io/Lunar_Holocron/ : HTTP 200 ; `data/index.json` (853 135 octets) et `assets/moon/lroc_color_2k.jpg` (457 942 octets) servis. Ajoutée au README (« Live application »). **Vidéo : toujours vide** (aucune adresse donnée).
+  - **Test de fumée sur l'adresse publique** (Edge piloté depuis cette machine, cache désactivé) : **15 / 16** : tout est vert (pastille « Real data · 5 m terrain », globe créé, 7 vues sans erreur, **aucune requête hors de l'origine**, 89 Mo) **sauf** « première image utile < 2 s » : **4,7 s** après réception du HTML (6,5 s en tout) : ce budget a été défini **en local** ; ici c'est la latence réseau et 120 requêtes sans cache : **non conforme à ce budget sur Internet**, à dire tel quel, pas à présenter comme un défaut de calcul. Test **sans WebGL** : **11 / 11** (la bascule vers la carte 2D, le bandeau, la carte du site, la sonde, `#debug`). Mes premiers essais échouaient : le test attendait un délai fixe trop court pour le réseau ; **corrigé** (attente active, aucun changement de l'application).
+  - **Commits locaux non poussés** : (1) `6c05533` : phrase explicite dans la vue 3D pour un site sans relief modélisé (l'humain demandait pourquoi Apollo 11 est un plan plat : c'est le comportement prévu, relief non modélisé hors du modèle polaire, mais il n'était dit que par la pastille) ; (2) cette mise à jour du README et du test de fumée. Ils touchent `web/` : **un push relancerait le déploiement** ; à pousser avec l'accord de l'humain ; ce n'est pas un défaut bloquant.
+  - **Reste pour l'humain** : *About* du dépôt (description avec la mention IA, site web = l'adresse ci-dessus) ; la vidéo ; le formulaire (`SOURCES.md` § 5).
 - Réponse attendue: non
 
 ## 6. Journal d'activité de CODE (ajout uniquement)

@@ -17,7 +17,7 @@
 
 **Team lead:** Victoire Ndala Mwenze · **Teammate:** Lionel Kisimba Kipoka · NASA Space Apps Challenge Lubumbashi 2026, challenge *Lunar Landing Site Navigator*. Independent project, not endorsed by NASA. The resource list for the submission form (data, libraries and versions, use of AI) is in [`SOURCES.md`](SOURCES.md) § 5.
 
-**Live application:** *to be added once GitHub Pages is on* · **Demo video:** *to be added*
+**Live application:** <https://victoirendala.github.io/Lunar_Holocron/> · **Demo video:** *to be added*
 
 ## Why
 
