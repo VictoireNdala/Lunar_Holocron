@@ -59,6 +59,22 @@ Géométrie seulement (relais, stations au sol, bilan de liaison et trajectoire 
 | Délai de propagation aller simple (distance ÷ c) contre la portée Horizons (`QUANTITIES='20'`), 4 sites × 3 dates × 24 h = 288 valeurs | écart maximal **0,738 ms**, moyen 0,342 ms | < 1 ms | borné par l'**arrondi au millidegré du rayon angulaire** de la Terre dans le fichier de site (± 5·10⁻⁴ de la distance) : on ne peut pas faire mieux avec ce format |
 | Délais calculés sur 5 ans (Site01) | entre 1,18 s et 1,37 s (aller simple) | plausible | distance Terre–Lune 356 000 – 407 000 km |
 
+**Seconde comparaison avec la littérature : Mazarico et al. (2011), résumé seul (M-051 § 2.7, suite).**
+
+*Ce qui a été lu* : le **résumé** de Mazarico et al. 2011 (« Illumination conditions of the lunar polar regions using LOLA topography », Icarus 211, 1066) sur NTRS 20120010094, lu le 2026-11-15. **Le texte complet n'est pas accessible** (Semantic Scholar et Unpaywall : accès fermé ; NTRS : résumé seul) : je n'ai lu ni les méthodes, ni les tableaux, ni les valeurs par site. Le résumé dit : horizon calculé sur des MNT polaires de **240 m** ; sur des simulations de plusieurs cycles de précession ; « *Every year, a location near the Shackleton crater rim in the south polar region is sunlit continuously for 240 days, and its longest continuous period in total darkness is about 1.5 days* » ; « *for some locations small height gains (~10 m) can dramatically improve their average illumination* ».
+
+*Test* (`tests/reference/darkness_sweep.py`, `darkness_refine.py`, sorties `darkness_site04-shackleton-rim.json` et `darkness_refine_…json`) : sur l'emprise 5 m de **Site04 (« Shackleton rim »)**, grille de 500 m, année 2026 (8 760 échantillons), pour chaque point la plus longue obscurité et la plus longue période éclairée.
+
+| Hauteur d'œil · seuil | Plus courte « plus longue obscurité » sur la grille | Plus longue période éclairée en continu | Part du temps éclairé (max) |
+|---|---|---|---|
+| 2 m · strict | **226 h** (9.4 j) | 26.46 j | 72.66 % |
+| 2 m · any | 190 h (7.9 j) | 26.71 j | 76.74 % |
+| 5 m · strict | 184 h (7.7 j) | 27.54 j | 74.78 % |
+| 5 m · any | 133 h (5.5 j) | 27.75 j | 79.36 % |
+| Raffinement à 50 m (±600 m autour du meilleur point), 5 m · strict / any | 140 h / 132 h | 27.58 j / 27.79 j | 75.07 % / 79.76 % |
+
+**Lecture : la valeur publiée n'est PAS reproduite.** Mon meilleur point de l'emprise de Site04 a une obscurité continue d'au moins **5,5 à 9,4 jours** (le résumé annonce environ 1,5 jour) et une période éclairée continue d'au plus **28 jours** (le résumé annonce 240 jours). Je **ne conclus pas** que le résumé a tort ni que mon calcul a tort : (1) le lieu de Mazarico « près du bord de Shackleton » n'est pas forcément dans l'emprise de 16 km de Site04, et je n'ai balayé que cette emprise ; (2) le résumé ne donne ni la hauteur d'observation, ni la définition de l'éclairement (disque entier ou point), ni la grille de recherche ; (3) mes grilles (500 m puis 50 m) peuvent manquer un petit maximum. **Constat qui reste vrai** : dans mon calcul comme dans le résumé, une petite hauteur change beaucoup l'éclairement (obscurité la plus courte : 226 h à 2 m, 184 h à 5 m). **Conséquence pour la présentation** : les indicateurs d'éclairement de l'application ne sont **pas validés** par la littérature ; ils sont **cohérents en interne** (le balayage retrouve les indicateurs du pipeline) et leurs éphémérides sont validées contre JPL Horizons. Ce que je ne peux pas exclure : une différence de définition ou de lieu, mais aussi une erreur de ma chaîne d'horizon (qui n'a jamais été comparée à un outil officiel : Quickmap / Moon Trek).
+
 **Illumination de Site01 : balayage de l'emprise 5 m et comparaison avec la littérature (M-051 § 2.7).**
 
 Méthode (`tests/reference/illumination_sweep.py`, résultats `tests/reference/illumination_site01-connecting-ridge.json`, carte `docs/illumination-site01-connecting-ridge.png`) : grille de 500 m sur ±8 km (33 × 33 = 1 089 points) ; en chaque point, masque d'horizon du pipeline (MNT 5 m près, LDEM 80 m au-delà, courbure incluse), éphémérides SPICE du Soleil, part du temps où le Soleil est visible (strict : au moins la moitié du disque ; « any » : une partie du disque).

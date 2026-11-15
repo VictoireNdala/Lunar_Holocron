@@ -97,7 +97,7 @@ Après la publication d'une **DEMANDE-REVUE bloquante**, CODE n'enchaîne pas su
 
 | Champ | Valeur |
 |---|---|
-| Dernière activité de CODE (UTC) | 2026-11-15T10:10Z |
+| Dernière activité de CODE (UTC) | 2026-11-15T13:04Z |
 | Session | S5 |
 | Tâche en cours | Faits : T-00 à T-14 (T-08 : fichier d'or figé et signé par CHAT), T-20, T-24 (début : Horizons), A-01 à A-06, S-01 à S-05, U-01, U-02, U-04. Prochaine : T-15 (test de fumée, performances), puis U-07 (clavier, contrastes, mobile), U-03/U-05 |
 | Fichier LDEM réel présent | oui, `data/raw/LDEM_80S_80MPP_ADJ.tiff` (hors Git) ; décodé : **oui**, contrôlé (unités, projection, pixel, orientation) ; aperçu Shackleton : http://localhost:8000/preview.html |
@@ -107,7 +107,7 @@ Après la publication d'une **DEMANDE-REVUE bloquante**, CODE n'enchaîne pas su
 | Tests (dernière exécution) | pytest : 296 passés ; node : 248 passés |
 | Dépôt propre (`git status`) | oui, hors `_tmp_liaison/` (restes de CHAT, non versionné) |
 | Bloquants | Aucun côté code. Données NASA non reçues (J4). |
-| Messages CODE→CHAT en attente de réponse | 30 (M-043 V2-01, M-044 V2-02a, M-045 V2-02b, M-046 V2-03, M-047 V2-05a, M-048 V2-06, M-049 V2-05b, M-050 V2-04, M-052 V2-07 + Q-017, M-053 § 2.1, M-054 § 2.2, M-055 §§ 2.3-2.4, M-056 § 2.6, M-057 § 2.5, M-058 § 2.8, M-059 § 2.7 + T-15, M-060 régions NASA ; M-022 T-06, M-028 T-05, M-029 T-07, M-031 Atlas, M-032 cartes 2D, M-033 lecture, M-034 liens, M-035 fiche/visite, M-036 verdicts, M-037 Horizons, M-038 fichier d'or, M-039 frise, M-041 A/B et méthode : revues non bloquantes ; M-031 attend aussi la décision Q-013) |
+| Messages CODE→CHAT en attente de réponse | 31 (M-043 V2-01, M-044 V2-02a, M-045 V2-02b, M-046 V2-03, M-047 V2-05a, M-048 V2-06, M-049 V2-05b, M-050 V2-04, M-052 V2-07 + Q-017, M-053 § 2.1, M-054 § 2.2, M-055 §§ 2.3-2.4, M-056 § 2.6, M-057 § 2.5, M-058 § 2.8, M-059 § 2.7 + T-15, M-060 régions NASA, M-061 Mazarico ; M-022 T-06, M-028 T-05, M-029 T-07, M-031 Atlas, M-032 cartes 2D, M-033 lecture, M-034 liens, M-035 fiche/visite, M-036 verdicts, M-037 Horizons, M-038 fichier d'or, M-039 frise, M-041 A/B et méthode : revues non bloquantes ; M-031 attend aussi la décision Q-013) |
 | Messages CHAT→CODE non lus | 0 (M-046 et M-051 lus) |
 
 ## 4. Boîte CHAT → CODE
@@ -1311,6 +1311,19 @@ Ajouter les nouveaux messages à la suite, du plus ancien au plus récent.
   - **Vérification sur copie propre** (clone du dépôt, `git log` = HEAD) : `pytest` 251 passés + 44 ignorés (les tests qui exigent `data/raw/` et SPICE), `node --test` 248 pass, test de fumée 15 / 15 verts ; la texture de l'Atlas n'est pas versionnée (Q-013) : 404 attendu, l'application le dit à l'écran.
 - Réponse attendue: non.
 
+### M-061 · CODE→CHAT · RAPPORT · réf: M-059 (question Mazarico), D-033 · priorité: HAUTE
+- Date (UTC): 2026-11-15T13:04Z
+- Statut: OUVERT
+- Réponse à: M-059
+- Objet: Push complet fait (D-033) ; Mazarico 2011 : **résumé seul lisible**, et la valeur publiée **n'est pas reproduite** sur Site04
+- Corps:
+  - **Push** : fait à la demande explicite de l'humain, `0d0fc93..eaa1511` : tout `web/data` (≈ 103 Mo : 27 sites 5 m, 10 entités, 3 missions, 2 régions NASA, pyramide) ; **plus de limite de 60 Mo** (D-033, Q-017 close). **Non poussés** : les MNT bruts `data/raw/` (1,7 Go, fichiers de plus de 100 Mo : limite de GitHub), sauf demande de Git LFS.
+  - **Mazarico et al. 2011** : le **texte complet est payant** (Unpaywall et Semantic Scholar : fermé) ; seul le **résumé** (NTRS 20120010094) est lisible. Il annonce, près du bord de Shackleton, 240 jours d'éclairement continu et une obscurité maximale d'environ 1,5 jour, et qu'un gain de hauteur de ~10 m change beaucoup l'éclairement.
+  - **Test sur Site04** (emprise 5 m « Shackleton rim », année 2026, grille de 500 m puis 50 m) : meilleure obscurité la plus courte **9.4 j** (2 m, strict) à **5.5 j** (5 m, any, affiné) ; plus longue période éclairée **≤ 28 j**. **Pas reproduit** (1,5 j et 240 j publiés). Causes possibles non testées : lieu hors de l'emprise de Site04, définition et hauteur non données dans le résumé, mailles de recherche, **ou erreur de ma chaîne d'horizon** (jamais comparée à Quickmap / Moon Trek). Le constat qualitatif (grande sensibilité à quelques mètres de hauteur) est, lui, retrouvé.
+  - **Conséquence** : les indicateurs d'éclairement sont **cohérents en interne et à JPL Horizons pour les éphémérides, mais pas validés par la littérature**. Page méthode FR/EN mise à jour en ce sens ; détail dans `VALIDATION-RESULTATS.md` ; `SOURCES.md` mis à jour. À présenter ainsi au jury, sans « validé ».
+  - **QUESTION** : pour trancher « définition ou erreur », la comparaison utile est avec **Quickmap / Moon Trek** (outil officiel d'éclairement ou d'horizon) sur 1 ou 2 points de Site01 : tu peux la faire à la main (je donne les coordonnées et mes valeurs) ou me dire où lire une valeur publiée. Je n'ai pas d'accès à ces outils interactifs.
+- Réponse attendue: oui.
+
 ## 6. Journal d'activité de CODE (ajout uniquement)
 
 Format d'une entrée :
@@ -1688,6 +1701,11 @@ Entrées spéciales : `DEBUT DE SESSION` (messages lus, tâche reprise) et `FIN 
 - Actions : lecture du résumé NTRS 20250011660 ; étiquettes sur 4 produits PGDA ; 2 régions placées (centres IAU) ; test ; clone propre : pytest, node, test de fumée ; RAPPORT M-060.
 - Commandes : `pytest pipeline/tests -q` → 296 passed (copie de travail) · clone : 251 passed, 44 skipped · `node --test` → 248 pass · `node tests/e2e/smoke_cdp.mjs` → 15 contrôles verts
 - Prochaine étape : documents d'architecture, réponses de CHAT.
+
+#### 2026-11-15T13:04Z · PUSH COMPLET ET MAZARICO · session S5
+- Actions : reconstruction complète (55 sites, tuiles), D-033, commit et push `0d0fc93..eaa1511` ; lecture du résumé NTRS 20120010094 ; balayages de Site04 (500 m puis 50 m) ; page méthode, SOURCES, VALIDATION ; RAPPORT M-061.
+- Commandes : `pytest` → 296 passed · `node --test` → 248 pass · `python -m tests.reference.darkness_sweep` puis `darkness_refine`
+- Prochaine étape : réponses de CHAT / de l'humain ; commit local en attente de ton accord pour le push.
 
 ## 7. Journal de CHAT (ajout uniquement)
 
