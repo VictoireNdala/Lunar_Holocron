@@ -132,8 +132,22 @@ py -m pipeline.cli validate             # check web/data against the data contra
 py -m pipeline.fixtures.demo_sites --site demo-b   # FICTIONAL test fixtures, written to tests/fixtures/web-data (never under web/)
 ```
 
-Real sites need local files that are **never committed** (`data/raw/`): the four SPICE kernels (`naif0012.tls`, `de440s.bsp`, `moon_pa_de440_200625.bpc`, `moon_de440_250416.tf`)
-and the PGDA terrain files. Names, sizes and SHA-256 sums are in [`SOURCES.md`](SOURCES.md).
+### Raw data: NOT in this repository, and how to get it
+
+The GitHub repository contains the application, the code and the **computed outputs** (`web/data/`, about 103 MB). It does **not** contain the raw NASA files (about 1.9 GB, some above GitHub's 100 MB per-file limit; they are in `.gitignore`). **The application and `web/data/` work without them**; you only need them to rebuild the data (`py -m pipeline.cli build`). Without them, `pytest` skips 44 tests (251 pass on a clean clone) and `node --test` is unaffected.
+
+Put every file below in `data/raw/` (SPICE kernels in `data/raw/spice/`). Sizes and SHA-256 sums were measured on the files used for the committed data.
+
+| File | Where to download | Size | SHA-256 |
+|---|---|---|---|
+| `LDEM_80S_80MPP_ADJ.tiff` (PGDA product 90, polar LDEM 80 m) | <https://pgda.gsfc.nasa.gov/data/LOLA_20mpp/LDEM_80S_80MPP_ADJ.TIF> — **save it under the name `.tiff`** | 189,158,392 B | `82030DCBDD7C4BB0C7D858E9B4B293B9F2CDA5A543BA31EC0F42784BD6BEEE5A` |
+| `spice/naif0012.tls` | <https://naif.jpl.nasa.gov/pub/naif/generic_kernels/lsk/naif0012.tls> | 5,257 B | `678E32BDB5A744117A467CD9601CD6B373F0E9BC9BBDE1371D5EEE39600A039B` |
+| `spice/de440s.bsp` | <https://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/planets/de440s.bsp> | 32,726,016 B | `C1C7FEEAB882263FC493A9D5A5B2DDD71B54826CDF65D8D17A76126B260A49F2` |
+| `spice/moon_pa_de440_200625.bpc` | <https://naif.jpl.nasa.gov/pub/naif/generic_kernels/pck/moon_pa_de440_200625.bpc> | 12,863,488 B | `60CD55AA401EA2EA97360636F567554BFE4E37BB829F901B4460A455DFAF783F` |
+| `spice/moon_de440_250416.tf` | <https://naif.jpl.nasa.gov/pub/naif/generic_kernels/fk/satellites/moon_de440_250416.tf> | 19,478 B | `A47C71E9C9F33796BDAFB2C9D69A7EE447B6016ECAD80F71CD6F3E479F9CF768` |
+| 27 PGDA 5 m products (`Site01_final_adj_5mpp_surf.tif`, …, 41 to 142 MB each, about 1.7 GB) | `py -m pipeline.tools.fetch_pgda5m` downloads the 23 products missing locally from `https://pgda.gsfc.nasa.gov/data/LOLA_5mpp/<Id>/<file>` and records their SHA-256; the four first products (Site01, Site04, Site07, Site11) are fetched the same way from the same URLs | see `config/sites_real.json` | in `config/sites_real.json` (`dem.sha256`) |
+
+The pipeline reads the 5 m products and the 80 m LDEM only from `data/raw/`; the web application never downloads anything. No licence is stated on the PGDA and NAIF pages that were read: cite Barker et al. (2021, 2023) and NAIF (see [`SOURCES.md`](SOURCES.md)).
 
 ### Validate against JPL Horizons
 
