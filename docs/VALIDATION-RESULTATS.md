@@ -59,6 +59,22 @@ Géométrie seulement (relais, stations au sol, bilan de liaison et trajectoire 
 | Délai de propagation aller simple (distance ÷ c) contre la portée Horizons (`QUANTITIES='20'`), 4 sites × 3 dates × 24 h = 288 valeurs | écart maximal **0,738 ms**, moyen 0,342 ms | < 1 ms | borné par l'**arrondi au millidegré du rayon angulaire** de la Terre dans le fichier de site (± 5·10⁻⁴ de la distance) : on ne peut pas faire mieux avec ce format |
 | Délais calculés sur 5 ans (Site01) | entre 1,18 s et 1,37 s (aller simple) | plausible | distance Terre–Lune 356 000 – 407 000 km |
 
+**Illumination de Site01 : balayage de l'emprise 5 m et comparaison avec la littérature (M-051 § 2.7).**
+
+Méthode (`tests/reference/illumination_sweep.py`, résultats `tests/reference/illumination_site01-connecting-ridge.json`, carte `docs/illumination-site01-connecting-ridge.png`) : grille de 500 m sur ±8 km (33 × 33 = 1 089 points) ; en chaque point, masque d'horizon du pipeline (MNT 5 m près, LDEM 80 m au-delà, courbure incluse), éphémérides SPICE du Soleil, part du temps où le Soleil est visible (strict : au moins la moitié du disque ; « any » : une partie du disque).
+
+| Période · hauteur d'œil | Maximum | Médiane | Centre de l'emprise | Points > 70 % |
+|---|---|---|---|---|
+| 2026-01-01 → 2030-12-31 · 2 m (période du projet) | **59.28 %** (any : 63.01 %) | 29.79 % | **46.55 %** (any : 52.31 %) | 0.0 % |
+| 2024-01-01 → 2026-01-01 · 1 m (période de l'abstract de Barker et al.) | 57.54 % (any : 60.56 %) | 28.87 % | 42.0 % | 0.0 % |
+| 2024-01-01 → 2026-01-01 · 5 m | 77.89 % (any : 83.55 %) | 31.76 % | 66.14 % | 0.18 % |
+
+**Contrôle interne** : la valeur au centre du balayage (période du projet, 2 m) est **46.55 %** (strict) et 52.31 % (any), identique aux indicateurs du fichier de site (46,5 % et 52,3 %, test `test_illumination_reference.py`) : le balayage et le pipeline donnent le même nombre au même point.
+
+**Lecture.** Le centre de l'emprise (46,5 %) n'est **pas** le meilleur point : sur la grille de 500 m, le maximum est de 59.28 % (+12.7 point) avec un œil à 2 m, et de 77.89 % avec un œil à 5 m : **l'éclairement dépend fortement de la hauteur d'œil** (centre : 42.0 % à 1 m, 46.55 % à 2 m, 66.14 % à 5 m, sur deux périodes différentes). Raffinement à 50 m (±600 m autour du meilleur point, œil 1 m, 625 points) : maximum **66.58 %**, aucun point au-dessus de 70 %.
+
+**Comparaison avec la littérature : non concluante.** Le seul texte publié que j'aie lu est l'abstract de Barker et al. (2021), affiché sur la page PGDA 78 (lu le 2026-11-15) : « Between Jan. 1, 2024 and Jan. 1, 2026, Site 1 has the most area with average illumination > 70 % at 1 m above the surface […]. At 5 m above the surface, the effect of LDEM uncertainties […] is significantly reduced, and Site 1 has longer continuous illumination periods than the other sites. » **Je n'ai pas lu** Mazarico et al. (2011) ni Gläser et al. (2014). Sur la période et la hauteur de cette phrase, je ne retrouve **aucun** point au-dessus de 70 % (maximum 57.54 % sur la grille de 500 m, 66.58 % après raffinement à 50 m ; 60.56 % en mode « any »). Je ne peux pas dire que mon calcul **contredit** cette phrase : elle parle d'une **surface** (peu de pixels peuvent suffire), de l'« average illumination » dont la définition exacte (disque entier, centre du disque, Soleil ponctuel) n'est pas donnée dans l'abstract, et d'un calcul sur le MNT 5 m partout. Mais je ne peux pas non plus dire qu'il la **confirme** : écart **non expliqué**, à ne pas présenter comme une validation. Pistes (non testées) : définition du Soleil, maille de calcul des auteurs, hauteur du sommet de la crête hors de ma grille, mon horizon (5 m jusqu'à 8,5 km puis 80 m).
+
 **Vue 3D : disques du Soleil et de la Terre, et sonde (M-051 § 2.5).**
 
 Mesure dans Edge (SwiftShader), caméra au sol, ouverture 60°, canvas de 900 × 600 px, Soleil de rayon angulaire 0,2665° et Terre de 0,95° (valeurs de test ; script `tests/reference/browser_measure_3d_discs.js`). Diamètre du **disque** (sans halo) projeté par la caméra réelle, comparé à (rayon angulaire × agrandissement) × pixels par radian au centre de l'image ; largeur lue sur les pixels rendus (≥ 55 % du maximum de luminosité de la rangée).

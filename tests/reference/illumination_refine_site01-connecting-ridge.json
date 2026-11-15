@@ -1,0 +1,18 @@
+{
+ "site_id": "site01-connecting-ridge",
+ "center_of_refinement_m": [
+  -7000.0,
+  -6500.0
+ ],
+ "step_m": 50.0,
+ "half_m": 600.0,
+ "eye_m": 1.0,
+ "n_points": 625,
+ "max_pct": 66.58,
+ "median_pct": 36.81,
+ "share_above_70_pct": 0.0,
+ "best_offset_m": [
+  -6850.0,
+  -6650.0
+ ]
+}

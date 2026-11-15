@@ -255,6 +255,7 @@ async function loadSiteA() {
     $('error').hidden = true;
     renderAll();
     panorama.show(site);
+    $('loading').hidden = true; // le verdict, le panorama et la frise sont affichés : la vue 3D (three.js, maillage) arrive ensuite sans bloquer
     const terrain = built ? built.terrain : await source.loadTerrain(id);
     if (store.get().siteIdA === id) await panel3d.show(site, terrain);
     if (store.get().siteIdA === id) loadRing(source, site, terrain).then((ring) => panel3d.setRing(ring, loaded)).catch(() => {}); // contexte 3D : facultatif, jamais bloquant

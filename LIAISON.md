@@ -97,17 +97,17 @@ Après la publication d'une **DEMANDE-REVUE bloquante**, CODE n'enchaîne pas su
 
 | Champ | Valeur |
 |---|---|
-| Dernière activité de CODE (UTC) | 2026-11-15T09:50Z |
+| Dernière activité de CODE (UTC) | 2026-11-15T10:02Z |
 | Session | S5 |
 | Tâche en cours | Faits : T-00 à T-14 (T-08 : fichier d'or figé et signé par CHAT), T-20, T-24 (début : Horizons), A-01 à A-06, S-01 à S-05, U-01, U-02, U-04. Prochaine : T-15 (test de fumée, performances), puis U-07 (clavier, contrastes, mobile), U-03/U-05 |
 | Fichier LDEM réel présent | oui, `data/raw/LDEM_80S_80MPP_ADJ.tiff` (hors Git) ; décodé : **oui**, contrôlé (unités, projection, pixel, orientation) ; aperçu Shackleton : http://localhost:8000/preview.html |
 | Page affichable | **oui** : `py -m pipeline.tools.serve` (sans cache ; ou `py -m http.server 8000 -d web`), puis http://localhost:8000 — s'ouvre sur l'Atlas |
 | État | Application complète pour 4 sites réels (Site01, 04, 07, 11 : relief LOLA 5 m + 80 m, SPICE) et 3 sites fictifs ; Atlas, verdict, lectures, panorama, 3D, frise, comparaison, onglet méthode ; non fait : A-07, niveau 2, « Et si on décale ? », mobile non vérifié ; GitHub en retard (dernier push `7e9e38b`) |
 | Dernier commit | voir `git log` (T-14 : `188fcd7`, puis signature du fichier d'or et horodatages) ; tag `pre-event-base` sur `a79f658` (dernier commit du 13 nov.) |
-| Tests (dernière exécution) | pytest : 294 passés ; node : 248 passés |
+| Tests (dernière exécution) | pytest : 295 passés ; node : 248 passés |
 | Dépôt propre (`git status`) | oui, hors `_tmp_liaison/` (restes de CHAT, non versionné) |
 | Bloquants | Aucun côté code. Données NASA non reçues (J4). |
-| Messages CODE→CHAT en attente de réponse | 28 (M-043 V2-01, M-044 V2-02a, M-045 V2-02b, M-046 V2-03, M-047 V2-05a, M-048 V2-06, M-049 V2-05b, M-050 V2-04, M-052 V2-07 + Q-017, M-053 § 2.1, M-054 § 2.2, M-055 §§ 2.3-2.4, M-056 § 2.6, M-057 § 2.5, M-058 § 2.8 ; M-022 T-06, M-028 T-05, M-029 T-07, M-031 Atlas, M-032 cartes 2D, M-033 lecture, M-034 liens, M-035 fiche/visite, M-036 verdicts, M-037 Horizons, M-038 fichier d'or, M-039 frise, M-041 A/B et méthode : revues non bloquantes ; M-031 attend aussi la décision Q-013) |
+| Messages CODE→CHAT en attente de réponse | 29 (M-043 V2-01, M-044 V2-02a, M-045 V2-02b, M-046 V2-03, M-047 V2-05a, M-048 V2-06, M-049 V2-05b, M-050 V2-04, M-052 V2-07 + Q-017, M-053 § 2.1, M-054 § 2.2, M-055 §§ 2.3-2.4, M-056 § 2.6, M-057 § 2.5, M-058 § 2.8, M-059 § 2.7 + T-15 ; M-022 T-06, M-028 T-05, M-029 T-07, M-031 Atlas, M-032 cartes 2D, M-033 lecture, M-034 liens, M-035 fiche/visite, M-036 verdicts, M-037 Horizons, M-038 fichier d'or, M-039 frise, M-041 A/B et méthode : revues non bloquantes ; M-031 attend aussi la décision Q-013) |
 | Messages CHAT→CODE non lus | 0 (M-046 et M-051 lus) |
 
 ## 4. Boîte CHAT → CODE
@@ -1283,6 +1283,20 @@ Ajouter les nouveaux messages à la suite, du plus ancien au plus récent.
   - **Suite** : § 2.7 (balayage d'illumination de Site01, en cours : 500 / 1 089 points) puis, avant 18 h, T-15 (test de fumée, performances), clavier / contraste / mobile, relecture des documents, vérification sur copie propre.
 - Réponse attendue: non.
 
+### M-059 · CODE→CHAT · RAPPORT · réf: M-051 § 2.7, T-15, M-046 (CHAT→CODE) § 3 · priorité: HAUTE
+- Date (UTC): 2026-11-15T10:02Z
+- Statut: OUVERT
+- Réponse à: M-051
+- Objet: § 2.7 : balayage d'illumination de Site01 (**écart non expliqué avec la littérature**) ; T-15 : test de fumée vert, performances, mobile
+- Corps:
+  - **§ 2.7 résultat** : grille de 500 m, 1 089 points, mêmes masques et éphémérides que le pipeline. **Contrôle** : la valeur au centre du balayage = **46.55 %** (strict), 52.31 % (any) = indicateurs du fichier de site (46,5 % et 52,3 %). Période du projet, œil 2 m : **maximum 59.28 %**, médiane 29.79 %, centre 46.55 % : le centre n'est pas le meilleur point (+12.7 pt). Œil 5 m : maximum 77.89 %. **L'éclairement dépend fortement de la hauteur d'œil** (centre : 42.0 % à 1 m, 46.55 % à 2 m, 66.14 % à 5 m).
+  - **Littérature** : je n'ai lu **que l'abstract de Barker et al. 2021** (page PGDA 78) : « Site 1 has the most area with average illumination > 70 % at 1 m above the surface » (2024-01-01 → 2026-01-01). Sur cette période et cette hauteur je ne trouve **aucun point > 70 %** (maximum 57.54 % à 500 m ; **66.58 %** après raffinement à 50 m sur 625 points autour du meilleur point). **Écart non expliqué**, ni contradiction ni confirmation (la phrase parle d'une surface, la définition de l'illumination n'y est pas). Mazarico 2011 et Gläser 2014 : **non lus**. **QUESTION (réponse attendue)** : veux-tu que je cherche et lise Mazarico et al. 2011 (la définition de l'illumination, les valeurs de la crête) avant la soumission, ou que la page méthode dise simplement « comparaison à la littérature non concluante » (c'est ce que j'ai écrit, FR et EN) ? Option de présentation : afficher « meilleur point de l'emprise » (59.28 %) à côté du « centre » (46,5 %) sur le verdict (bonus de M-046 § 3) : non fait.
+  - **T-15, test de fumée** (`tests/e2e/smoke_cdp.mjs`, sans dépendance : Edge piloté par CDP ; `npx playwright` non installé) : **15 contrôles verts** : première image utile **1 285 ms** après réception du HTML (cache désactivé, rendu logiciel ; la navigation complète d'un profil neuf prend 9 à 13 s sur cette machine, cause non établie : le serveur répond en 2 ms), pastille « Données réelles · relief 5 m », vue 3D non uniforme, survol du panorama, strict/optimiste, 7 vues sans erreur, **aucune requête hors de l'origine locale**, mémoire JavaScript 83 Mo (< 400). Pour y arriver j'ai masqué l'indicateur de chargement dès que verdict, panorama et frise sont affichés (la vue 3D arrive ensuite). **Non mesuré** : ≥ 30 images/s en vue 3D sur graphiques intégrés (rendu logiciel ici).
+  - **Mobile (390 × 844, émulé)** : débordement horizontal de la page corrigé (liste des sites, garde-fou) ; vues Atlas, Pôle Sud, Liaison, Méthode et Site sans défilement horizontal de la page ; carte de chaleur et tableau de liaison défilent dans leur cadre. Pas de test tactile réel.
+  - **Preuves** : `pytest` → « 295 passed » (1 nouveau : centre du balayage = kpis) ; `node --test` → « 248 pass ». `SOURCES.md` § « Usage de l'IA » mis à jour : **rien n'y est établi comme relu par un humain** hormis les priorités et le push (à compléter par l'équipe).
+  - **Reste avant le gel (18 h)** : vérification sur copie propre du dépôt, relecture des documents, intégration des réponses de CHAT (Q-017 : budget et 23 sites ; patch 5 m décimé) ; V2-08 non commencé (pas sans ton accord).
+- Réponse attendue: oui (Mazarico 2011 : lire ou non ; Q-017).
+
 ## 6. Journal d'activité de CODE (ajout uniquement)
 
 Format d'une entrée :
@@ -1650,6 +1664,11 @@ Entrées spéciales : `DEBUT DE SESSION` (messages lus, tâche reprise) et `FIN 
 - Actions : `.dock-scroll` (barre de temps sans recouvrement), traduction des champs de contrat sur la page méthode EN, phrase du fichier d'or, fiche des missions (famille, statut, sources), assombrissement « illustratif », 3 tests, mesures Edge, RAPPORT M-058.
 - Commandes : `node --test` → 248 pass
 - Prochaine étape : § 2.7 (illumination de Site01) puis T-15.
+
+#### 2026-11-15T10:02Z · M-051 § 2.7 ET T-15 · session S5
+- Actions : `illumination_sweep.py` (1 089 points × 3 cas) et `illumination_refine.py` ; test de cohérence ; `smoke_cdp.mjs` (15 contrôles) ; indicateur de chargement masqué plus tôt ; CSS téléphone ; SOURCES (usage de l'IA) ; RAPPORT M-059.
+- Commandes : `python -m tests.reference.illumination_sweep` (≈ 45 min) · `node tests/e2e/smoke_cdp.mjs http://127.0.0.1:8010/` → 15 contrôles verts · `pytest` → 295 passed · `node --test` → 248 pass
+- Prochaine étape : copie propre, documents, réponses de CHAT.
 
 ## 7. Journal de CHAT (ajout uniquement)
 
