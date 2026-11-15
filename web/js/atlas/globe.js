@@ -104,6 +104,11 @@ export function createGlobe(container, { textureUrl, onTextureError = () => {}, 
 
   const siteGroup = new THREE.Group();
   let selectedId = null;
+  /** Taille à l'écran des marqueurs liée à la distance de la caméra : sans cela, ils deviennent d'énormes disques qui se recouvrent dès qu'on s'approche. */
+  function updateMarkerScale() {
+    const k = Math.min(1.2, Math.max(0.16, (camera.position.length() - 1) / 2));
+    for (const m of siteGroup.children) m.scale.setScalar(k * (m.userData.id === selectedId ? 1.9 : 1));
+  }
   scene.add(siteGroup);
   const raycaster = new THREE.Raycaster();
   const pointer = new THREE.Vector2();
@@ -123,6 +128,7 @@ export function createGlobe(container, { textureUrl, onTextureError = () => {}, 
       if (k >= 1) fly = null; else requestRender();
     }
     controls.update();
+    updateMarkerScale();
     renderer.render(scene, camera);
   }
 
@@ -211,7 +217,6 @@ export function createGlobe(container, { textureUrl, onTextureError = () => {}, 
     /** Marqueur du site dont la fiche est ouverte : agrandi (null = aucun). */
     setSelected(id) {
       selectedId = id;
-      for (const m of siteGroup.children) m.scale.setScalar(m.userData.id === id ? 1.9 : 1);
       requestRender();
     },
     setLayers(next) { Object.assign(layers, next); applyLayers(); },
