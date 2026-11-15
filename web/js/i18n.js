@@ -468,6 +468,7 @@ const EN = {
   'view3d.probeHint': 'Hover the terrain (or, after clicking on it, use the arrow keys, Esc to clear) to read elevation, slope, distance and bearing from the site, the horizon in that direction, and whether the Sun and the Earth are visible.',
   'view3d.probeOutside': 'Outside the polar grid (north of 80° S): no probe.',
   'view3d.probeDelta': 'height difference to the site {dh} m (3D mesh)',
+  'view3d.flat': 'Terrain NOT modelled for this site (it is outside the LOLA polar model, north of 80° S): the plane shown is flat and stands for no real relief. Sun and Earth directions are real; the horizon is assumed flat.',
   'view3d.sunBelow': 'Sun below the geometric horizon: direct lighting off.',
   'view3d.qualityReduced': 'Quality reduced automatically: lighter shadows.',
   'view3d.qualityOff': 'Quality reduced automatically: shadows disabled.',

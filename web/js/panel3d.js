@@ -58,6 +58,7 @@ export function createPanel3d(store, source = null) {
 
   function renderStatus() {
     const parts = [];
+    if (site && (site.terrain_tier === 'flat' || site.terrain_modeled === false)) parts.push(t('view3d.flat'));
     if (map2d) parts.push(t('map2d.legend'));
     if (mapError) parts.push(`${t('view3d.error')} (${mapError})`);
     if (viewError) parts.push(t('view3d.unavailable'));
