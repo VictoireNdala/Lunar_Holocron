@@ -70,6 +70,7 @@ export function createAtlasSites(store, atlas, openSite) {
     facts.replaceChildren();
     fact(facts, t('sheet.coords'), `${formatNumber(sheet.latDeg, 3)}° ; ${formatNumber(sheet.lonDeg, 3)}°`);
     fact(facts, t('sheet.coordsStatus'), t(sheet.coordsKey));
+    if (sheet.seamMaxM) fact(facts, t('prov.seam'), t('method.seam.site', { m: sheet.seamMaxM }));
     if (sheet.statusKey) fact(facts, t('sheet.status'), t(sheet.statusKey));
     if (sheet.missionTextKey) fact(facts, t('sheet.mission'), t(sheet.missionTextKey));
     if (sheet.pgdaId) fact(facts, t('sheet.pgda'), sheet.pgdaId);

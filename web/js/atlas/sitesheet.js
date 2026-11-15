@@ -1,5 +1,6 @@
 // Fiche d'un site sur l'Atlas et visite guidée (S-03, S-04) : fonctions PURES, testées sans navigateur.
 // La fiche ne dit que ce que l'index.json sait : aucune résolution ni aucun verdict inventés ici.
+import { SEAM_MAX_M } from '../seam.js';
 
 const SHEET_STATUSES = ['landed', 'planned', 'failed', 'candidate', 'reference'];
 
@@ -41,6 +42,7 @@ export function siteSheet(entry) {
     region: typeof entry.nasa_2024_region === 'string' && entry.nasa_2024_region ? entry.nasa_2024_region : null,
     pgdaId: typeof entry.pgda_id === 'string' && entry.pgda_id ? entry.pgda_id : null,
     synthetic: Boolean(entry.synthetic),
+    seamMaxM: SEAM_MAX_M[entry.id] ?? null, // raccord 5 m / 80 m > 20 m : dit sur la fiche
     statusKey: typeof entry.status === 'string' && SHEET_STATUSES.includes(entry.status) ? `sheet.status.${entry.status}` : null,
     missionTextKey: entry.kind === 'mission' ? `mission.text.${entry.id}` : null, // texte localisé de la mission (le texte du contrat est en français)
     sources: Array.isArray(entry.sources) ? entry.sources.map((s) => ({ label: s.label, url: s.url, readUtc: s.read_utc })) : [],

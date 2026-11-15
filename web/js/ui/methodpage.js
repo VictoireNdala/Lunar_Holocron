@@ -2,6 +2,7 @@
 // jamais écrite à la main ici. Une note apparaît si le site est fictif.
 import { formatNumber, getLang, t } from '../i18n.js';
 import { localizeContractText } from '../atlas/sitesheet.js';
+import { SEAM_MAX_M } from '../seam.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -25,6 +26,7 @@ export function renderMethodPage(site) {
     [t('prov.generated'), prov.generated_utc],
   ];
   if (prov.note) pairs.push([t('prov.note'), localizeContractText(prov.note, getLang())]);
+  if (SEAM_MAX_M[site.id]) pairs.push([t('prov.seam'), t('method.seam.site', { m: SEAM_MAX_M[site.id] })]);
   for (const [term, value] of pairs) {
     const dt = document.createElement('dt');
     dt.textContent = term;
