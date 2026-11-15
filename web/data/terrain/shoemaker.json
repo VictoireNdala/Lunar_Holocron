@@ -1,0 +1,1 @@
+{"center":{"lat_deg":-87.1835,"lon_deg":62.835},"frame":"local-enu","grid":{"n":257,"size_m":20000.0,"spacing_m":78.125},"id":"shoemaker","schema_version":"1.2","synthetic":false,"z":{"byte_order":"little","col_order":"west-to-east","encoding":"uint16-linear","file":"shoemaker.bin","max_m":163.1421007872559,"min_m":-1769.659235328203,"row_order":"north-to-south"}}

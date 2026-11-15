@@ -1,0 +1,1 @@
+{"center":{"lat_deg":-87.8897,"lon_deg":90.0},"frame":"local-enu","grid":{"n":257,"size_m":20000.0,"spacing_m":78.125},"id":"lm7-faustini-rim-a","schema_version":"1.2","synthetic":false,"z":{"byte_order":"little","col_order":"west-to-east","encoding":"uint16-linear","file":"lm7-faustini-rim-a.bin","max_m":518.896923817927,"min_m":-2872.023072067881,"row_order":"north-to-south"}}

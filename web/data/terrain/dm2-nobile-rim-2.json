@@ -1,0 +1,1 @@
+{"center":{"lat_deg":-83.954,"lon_deg":58.8221},"frame":"local-enu","grid":{"n":257,"size_m":20000.0,"spacing_m":78.125},"id":"dm2-nobile-rim-2","schema_version":"1.2","synthetic":false,"z":{"byte_order":"little","col_order":"west-to-east","encoding":"uint16-linear","file":"dm2-nobile-rim-2.bin","max_m":625.2330669858493,"min_m":-2261.476460514823,"row_order":"north-to-south"}}

@@ -1,0 +1,1 @@
+{"center":{"lat_deg":-83.9046,"lon_deg":89.5354},"frame":"local-enu","grid":{"n":257,"size_m":20000.0,"spacing_m":78.125},"id":"npb-amundsen-1","schema_version":"1.2","synthetic":false,"z":{"byte_order":"little","col_order":"west-to-east","encoding":"uint16-linear","file":"npb-amundsen-1.bin","max_m":720.5218659455422,"min_m":-263.5774218086153,"row_order":"north-to-south"}}
