@@ -1,18 +1,61 @@
 # STATUS — Lunar Holocron
 
-> Fichier **vivant** : Claude Code le met à jour à la fin de chaque tâche. Rester court. Les anciennes entrées du journal sont regroupées par jour, pas supprimées.
+> Fichier **vivant** : Claude Code le met à jour à la fin de chaque tâche. Le **journal détaillé et horodaté** est dans `LIAISON.md` § 6 ; les décisions dans `DECISIONS.md` ; les preuves chiffrées dans `docs/VALIDATION-RESULTATS.md`.
 
-**Dernière mise à jour** : 2026-11-12 (T-09 terminé ; T-02 accepté par CHAT, M-008)
-**Phase** : J1 (pipeline) et J2 (interface) en parallèle
-**T-20 : terminé** (2026-11-14) : noyaux SPICE téléchargés (accord de l'humain), `pipeline/ephemeris_spice.py`, 8 tests (marqueur `spice`) ; Soleil vu de (−89,67 ; 129,5) identique à Horizons à moins de 1e-6° sur 3 points ; `pytest` → 152 passed. Borne du rayon solaire corrigée (D-020).
-**Lot V2 (CHAT, M-042, D-025 à D-030)** : V2-01 faite (plus aucune donnée fictive dans le produit : voir le tableau). **Données réelles dans l'application (2026-11-14)** : `web/data/` contient 4 sites réels (niveau 1 : Site01, Site04, Site07, Site11 ; relief LOLA 5 m + 80 m, Soleil et Terre par SPICE) et 3 sites de démonstration. L'interface charge `data/` par défaut ; l'exemple fait main reste en `?data=data/sample/`. Le « site » réel est le **centre de l'emprise du MNT**, pas un point d'alunissage choisi.
-**Prochaine tâche** : A-05 (carte mondiale 2D, pôles Sud et Nord 2D : les marqueurs des sites se superposent sur le globe), A-06 (lecture animée, onglets) ; comparaison Horizons sur plusieurs sites (T-24, début) ; fichier d'or T-08 (relecture humaine) ; S-05 (liens profonds) avant S-03.
-**Fichier LDEM réel présent** : oui, `data/raw/LDEM_80S_80MPP_ADJ.tiff` (189 Mo, hors Git) ; **décodé : oui** (rasterio) ; unités (m), projection, convention de pixel et orientation **contrôlées** (2026-11-14, voir `SOURCES.md`).
-**Aperçu du relief réel** : `py -m pipeline.tools.crop_real_dem --id shackleton --lat -89.67 --lon 129.5`, puis http://localhost:8000/preview.html (données locales non versionnées).
-**Atlas** : A-01 (textures, **usage local, Q-013**), A-02 (fonctions pures), A-03 (`global.json`) et A-04 (globe 3D) et **A-05 (cartes 2D : monde, pôle Sud, pôle Nord)** **faits** ; **T-14 (comparaison A/B, page méthode, README)** faite (D-024, M-041). **T-12 (frise temporelle)** faite : voir le tableau et M-039. **T-08 (fichier d'or)** : figé, signé par CHAT (contresignature humaine possible). **T-24 (début) : SPICE vs Horizons, Soleil et Terre, 5 sites × 3 dates (30 cas, 1 440 valeurs)** : écart max Soleil 5,2e-7°, Terre azimut 9e-7°, **Terre élévation 2,44e-5° (cause non établie)** ; `pytest` → 246 passed ; détail dans `docs/VALIDATION-RESULTATS.md`. **T-13 + U-04 (verdict du site, lectures, marge, liaison directe, carte de chaleur)** faits : voir le tableau ci-dessous et M-036. **S-03 (fiche de site sur l'Atlas) et S-04 (visite guidée, préchargement)** faits : `node --test` → 109 pass (7 de `sitesheet`/`preload`) ; page réelle : visite 1→4, fiche, clic sur un marqueur de la carte, « Voir le site », 4 sites de niveau 1 préchargés (D-023). **S-05 (liens profonds Quickmap / Moon Trek)** fait : `node --test` → 102 pass (5 de `links`, 2 de `nonetwork`), page réelle : bons liens, aucune requête externe. **A-06 (sélecteur de projection, alias `proj=`, lecture animée ×1/×60/×3600/×86 400, « maintenant »)** fait ; preuves : `node --test` → 95 pass (8 de `playback`) ; page réelle pilotée par CDP : 5,80 s réelles à ×3600 → +5 h 49 min affichées (attendu 5 h 48), pause qui tient, « Maintenant » → 2026-11-14 21:31 UTC. Preuves A-05 : `node --test "web/tests/**/*.test.js"` → 85 pass (7 de `maps2d`) ; `pytest pipeline/tests -q` → 215 passed ; captures Edge de `#view=world|south|north` (non versionnées : texture, Q-013). **Sites réels** : S-01 fait (4 sites du niveau 1), S-02 couvert par `pipeline.cli build`. **Interface** : U-01, U-02, panneaux repliables faits ; U-03 à U-07 à faire.
-**Page affichable** : **oui** — `py -m http.server 8000 -d web`, puis ouvrir http://localhost:8000 (jeu d'exemple, aucun relief dessiné). Capture : `docs/captures/t09-page-fr.png`.
+**Dernière mise à jour** : 2026-11-15, 14 h 10 UTC (16 h 10 locale). **Gel des fonctionnalités : 18 h 00 locale (16 h 00 UTC)**, décision de coupe D-034 ; après le gel, seulement les correctifs demandés par CHAT.
 
-## Tableau d'avancement
+## 1. Où nous en sommes (résumé)
+
+**Le produit fonctionne de bout en bout avec des données 100 % réelles** (aucune donnée fictive dans `web/`, D-029) : 55 sites, Soleil et Terre par SPICE, horizon par MNT LOLA, 2026-2030, un échantillon par heure.
+
+| Domaine | État précis |
+|---|---|
+| **Sites** | 55 dans `web/data/index.json` : **27 sites réels à MNT 5 m** (PGDA 78 ; 4 de niveau 1 : Site01, 04, 07, 11), **22 entrées en relief 80 m** : 17 entités IAU (dont Shackleton, Nobile, Scott, Cabeus, Faustini, Shoemaker, Haworth…), 3 missions (IM-1, Chandrayaan-3, IM-2 **zone visée**), 2 régions NASA approximatives, **6 sites Apollo** en relief non modélisé. Chaque coordonnée a `sources[]` ; **aucune n'est vérifiée par un humain** (`verified: false`). |
+| **Données livrées** | `web/data/` ≈ **103 Mo** (D-033 : plus de limite de 60 Mo). Les **MNT bruts** (`data/raw/`, ≈ 1,9 Go) restent **hors dépôt** (limite de 100 Mo par fichier de GitHub) ; liens, tailles et SHA-256 dans le README. |
+| **Application** | Atlas (globe 3D, cartes monde / pôle Sud / pôle Nord avec marqueurs interactifs et empreintes réelles, fond LOLA en pyramide 480 → 80 m), vue Site (panorama 360°, frise, verdict strict / optimiste, comparaison A/B, point libre, vue 3D avec anneau de contexte, sonde, disques du Soleil et de la Terre), Liaison (décompte, délai, coupures, planificateur), page « Sources et méthode » FR / EN. **Repli sans WebGL** (carte 2D, bandeau, `#debug`). Hors ligne : aucune requête externe (vérifié par test de fumée). |
+| **Tests** | `pytest` **296** (sur une copie propre du dépôt : 251 réussis + 44 ignorés, car ils exigent `data/raw/`) · `node --test` **255** · test de fumée navigateur **16 contrôles verts** · test sans WebGL **11 verts**. Première image utile 1,2 à 1,5 s (cache désactivé, rendu logiciel). |
+| **Git** | Branche `main`. **GitHub est à `eaa1511`** (livraison complète des données). **7 commits locaux non poussés (avec la mise à jour de ce fichier)**, dont le **correctif du globe** : la version publiée contient la faute de syntaxe de `globe.js` (« WebGL indisponible ») : **à pousser dès que l'humain l'autorise**. Tag `pre-event-base` sur `a79f658` ; **tag `v2-freeze` non posé**. |
+
+## 2. Défauts connus et limites à dire (aucune n'est cachée)
+
+- **Éclairement non validé par la littérature** : le balayage de Site01 retrouve les indicateurs du pipeline (46,5 % au centre) mais pas les valeurs publiées lues (Barker 2021 : > 70 % à 1 m, résumé ; Mazarico 2011 : 240 jours continus près de Shackleton, résumé) ; causes non établies ; l'indicateur est sensible à ±4-5 points pour ±0,25° d'horizon (recalcul indépendant de CHAT : RMS 0,41°, max 0,98° ; D-034). **Ne jamais écrire « validé ».** Éphémérides validées contre JPL Horizons.
+- **Vue 3D centrale = grille de 78 m** (patch 5 m décimé **abandonné**, D-034) ; contexte jusqu'à ±60 km en LDEM 80 m moyenné à 250 m ; rendu illustratif.
+- **Couture 5 m / 80 m** : RMS ≈ 1 m, mais maximum > 20 m pour **Site20 (22 m), Site23 (21 m), Site42 (68 m), DM1 (72 m), NPB (45 m)** ; décision D-034 : publier tel quel, **ligne à ajouter dans la page méthode et la fiche de ces 5 sites (pas encore faite)**.
+- Positions des produits 5 m = **centre de l'emprise**, pas le centre du cratère homonyme (Haworth : 34 km d'écart avec le centre IAU).
+- Terre dessinée schématique (phase réelle) ; assombrissement du Soleil « illustratif » (coefficient non sourcé).
+- La **fiche d'un site** ne s'ouvre que par la visite guidée et la liste des sites prioritaires (le clic sur un marqueur ouvre la vue Site) ; testée par `node --test`, **pas relue à l'écran** (Faustini, Apollo 11, point libre, mission : à faire).
+- **Non mesuré** : images par seconde de la vue 3D sur graphiques intégrés (rendu logiciel ici), tactile réel, mobile au-delà d'un contrôle de débordement émulé.
+- **Non fait faute de source lue** : Chang'e-7, Blue Moon / Connecting Ridge, étiquettes « eau » (références non lues), 3 régions NASA (Peak near Cabeus B, Mons Mouton Plateau, Slater Plain), issue de l'alunissage d'IM-2. **V2-08 (stretch)** non commencé, pas sans l'accord de CHAT.
+- Fichier d'or `tests/golden/body_state_cases.json` : relu et signé par **CHAT** (une IA) sur délégation de l'humain ; valeurs fictives ; pas de relecture humaine indépendante.
+
+## 3. Reste à faire avant le gel (ordre de M-064 § 3, 16 h → 18 h locale)
+
+1. Section « Sensibilité » de la page méthode FR / EN (tableau de CHAT, recalcul RMS 0,41° / max 0,98°, « non validé par la littérature »).
+2. Lignes de raccord > 20 m (page méthode + fiches de Site20, Site23, Site42, DM1, NPB).
+3. Relecture écran FR puis EN : Faustini, Apollo 11, un point libre, une mission.
+4. Clavier (Tab sur la vue Site, la sonde 3D, la carte) et mobile.
+5. Test de fumée sur copie propre, **tag `v2-freeze`**.
+6. **Dire à CHAT à 17 h 00 locale ce qui n'est pas fini.**
+
+## 4. À arbitrer par l'humain
+
+- **Autoriser le push** des 7 commits locaux (correctif du globe : urgent).
+- `Q-001` (le code écrit avant l'événement est-il autorisé ?), `Q-002` (règle sur l'IA), `Q-003` (langue de soumission) : **le guide de soumission du 13 novembre n'a pas été transmis à CODE**. `Q-010` (titulaire du copyright), `Q-013` (versionner les textures NASA SVS ; elles restent locales : un clone propre affiche le globe sans texture), `Q-014` à `Q-016` (texture de la Terre, couche PSR, valeurs par défaut du planificateur).
+- Tranchées : Q-017 (budget) par D-033 ; patch 5 m, littérature, raccords par D-034.
+- Confirmation par un humain des coordonnées et du texte de l'interface (rien n'est établi comme relu par un humain : `SOURCES.md` § 4).
+
+## 5. Revue (écrite par l'agent vérificateur)
+
+_Rien pour l'instant._ Aucune revue indépendante (TESTS-VALIDATION § 7) n'a été faite ; les revues de CHAT sont dans `LIAISON.md`. Format d'une entrée :
+```
+### Revue de T-xx — AAAA-MM-JJ
+- Bloquant : …
+- À corriger : …
+- Remarque : …
+- Vérifié : conventions angulaires ☐  unités ☐  accord Python/JS ☐  aucun réseau ☐  drapeau synthetic ☐
+```
+
+## 6. Tableau d'avancement (historique par tâche)
 
 | Tâche | Intitulé | État | Preuve (commande → résultat) |
 |---|---|---|---|
@@ -51,32 +94,8 @@
 | V2-06 | Fond polaire réel, fondu, sonde (§§ 1, 2, 4) | **partiel** : carte du pôle Sud = **relief LOLA moyenné à 480 m** (de 80° S au pôle), ombrage par incidence locale avec l'**azimut réel du Soleil** et une **élévation d'étude de 15°** (écrit dans la légende), **sans ombres portées**, **fondu** circulaire vers la texture au bord de la grille (jamais de bord net ni carré) ; **sonde au survol** (altitude, pente, distance et cap depuis le site affiché, horizon du site dans cette direction, Soleil/Terre visibles au site). **Non fait** : fusion des empreintes avec un relief 5 m (les MNT 5 m ne sont pas distribués avec l'application : seules des grilles à 78 m le sont), vue 3D avec anneau de contexte (§ 6.3), isohypses (§ 6.5), PSR (§ 6.6), sonde au clavier | `node --test` → 208 pass (6 de `relief` : fondu monotone, ombrage, gradients, **sonde = Python sur 4 points** à 0,01 m / 0,001° près, pente à 0,35°) ; page réelle : survol « Altitude 1 280 m · pente 15,5° … horizon 14,6° … », 0 erreur JS ; captures à ×1, ×4, ×17 (non versionnées : texture) |
 | T-13 | Verdicts, lectures, indicateurs | terminé, **sauf la page « Sources et méthode »** (T-14) vers laquelle les infobulles devraient renvoyer — **revue CHAT demandée (M-036)** | `node --test` → 118 pass (9 de `verdicts`, dont le recalcul JS indépendant des KPI de Site04 et Site01 : écart < 0,05 point) ; page réelle pilotée par CDP : seuil, mois, tableau, EN ; captures `docs/captures/t13-*.png` |
 | T-14 | Carte polaire, A/B, page méthode, README | **terminé avec écarts (D-024)** : cartes polaires = Atlas (A-05) ; comparaison A/B (tableau d'indicateurs, écart B − A, lectures au même instant, `b=` dans l'URL) ; page « Sources et méthode » (6 sections FR/EN, provenance lue dans le site affiché, limites de PIPELINE § 4, validation mesurée) ; README réécrit | `node --test` → 157 pass (7 de `compare`, dont l'état A/B/date/seuil restauré depuis l'URL) ; page réelle pilotée par CDP : liste B, tableau, A = B → vide, retrait de B, onglet méthode FR/EN, note « site fictif » ; **non faits** : « Et si on décale ? », « Deux dates », export CSV |
-| T-15 | Tests de fumée, performances, revue | à faire | |
 
 États possibles : `à faire` · `en cours` · `terminé` · `bloqué`.
-
-## Bloquants
-
-- **Données NASA non reçues** : bloque J4 (T-20 à T-24). N'empêche pas J0 à J3.
-- Vérifications non faites à l'écriture de ces fichiers : accès réseau vers NAIF, Horizons et PDS (**inaccessibles depuis l'environnement de rédaction**), noms exacts des fichiers SPICE et des produits MNT,
-  convention de projection du MNT réel, coordonnées des sites réels. Tout est marqué « à vérifier » dans `docs/`.
-
-## À arbitrer par l'humain
-
-Voir `DECISIONS.md` § Questions ouvertes : `Q-001` (code avant événement) et `Q-002` (usage de l'IA) sont à lever dès la lecture du guide du 13 novembre.
-`Q-010` (titulaire du copyright). `Q-011` tranchée par D-014 (site `demo-a` sur le rebord).
-Suppression des scripts jetables de CHAT dans `data/raw/` (`_decode.py`, `_decode.log`, `ldem80_decoded.npy` partiel) : refusée à CODE par le contrôle des permissions, à faire par l'humain.
-
-## Revue (écrite par l'agent vérificateur)
-
-_Rien pour l'instant._ Format d'une entrée :
-```
-### Revue de T-xx — AAAA-MM-JJ
-- Bloquant : …
-- À corriger : …
-- Remarque : …
-- Vérifié : conventions angulaires ☐  unités ☐  accord Python/JS ☐  aucun réseau ☐  drapeau synthetic ☐  cas limites ☐
-```
 
 ## Journal
 
