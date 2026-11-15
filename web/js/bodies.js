@@ -68,27 +68,30 @@ export function earthSurface(x, y) {
   return { land: n > 0.55 ? 1 : 0, cloud: cloud > 0.68 ? (cloud - 0.68) * 3 : 0, z };
 }
 
-/** Trace le Soleil sur `canvas` (carré `size` px) : disque à assombrissement centre-bord, halo additif étendu au-delà du disque. */
+/** Trace le Soleil sur `canvas` (carré `size` px) : disque à assombrissement centre-bord, halo additif étendu au-delà du disque. Calcul pixel par pixel SANS relecture du canvas (getImageData est très lent sur un canvas accéléré). */
 export function drawSunSprite(canvas, size) {
   canvas.width = canvas.height = size;
   const ctx = canvas.getContext('2d');
   const c = size / 2;
   const disc = c / 2.4; // le disque occupe 1/2,4 du sprite ; le reste est le halo
-  const halo = ctx.createRadialGradient(c, c, disc * 0.8, c, c, c);
-  halo.addColorStop(0, 'rgba(255,214,128,0.55)');
-  halo.addColorStop(0.35, 'rgba(255,190,90,0.18)');
-  halo.addColorStop(1, 'rgba(255,180,80,0)');
-  ctx.fillStyle = halo;
-  ctx.fillRect(0, 0, size, size);
-  const img = ctx.getImageData(0, 0, size, size);
+  const img = ctx.createImageData(size, size);
+  const haloStart = disc * 0.8;
   for (let y = 0; y < size; y += 1) {
     for (let x = 0; x < size; x += 1) {
-      const r = Math.hypot(x + 0.5 - c, y + 0.5 - c) / disc;
-      if (r > 1) continue;
+      const d = Math.hypot(x + 0.5 - c, y + 0.5 - c);
       const i = (y * size + x) * 4;
-      const I = limbIntensity(r);
-      const edge = Math.min(1, (1 - r) * disc); // bord adouci sur ~1 px
-      img.data[i] = 255; img.data[i + 1] = Math.round(236 * I + 19); img.data[i + 2] = Math.round(190 * I * I + 10); img.data[i + 3] = Math.round(255 * edge);
+      const r = d / disc;
+      if (r <= 1) {
+        const I = limbIntensity(r);
+        const edge = Math.min(1, (1 - r) * disc); // bord adouci sur ~1 px
+        img.data[i] = 255; img.data[i + 1] = Math.round(236 * I + 19); img.data[i + 2] = Math.round(190 * I * I + 10); img.data[i + 3] = Math.round(255 * edge);
+      } else if (d < c) { // halo : dégradé radial de haloStart à c (mêmes arrêts que l'ancien dégradé du canvas)
+        const t = Math.min(1, Math.max(0, (d - haloStart) / (c - haloStart)));
+        let a; let g; let b;
+        if (t < 0.35) { const k = t / 0.35; a = 0.55 + (0.18 - 0.55) * k; g = 214 + (190 - 214) * k; b = 128 + (90 - 128) * k; }
+        else { const k = (t - 0.35) / 0.65; a = 0.18 * (1 - k); g = 190 + (180 - 190) * k; b = 90 + (80 - 90) * k; }
+        img.data[i] = 255; img.data[i + 1] = Math.round(g); img.data[i + 2] = Math.round(b); img.data[i + 3] = Math.round(255 * a);
+      }
     }
   }
   ctx.putImageData(img, 0, 0);

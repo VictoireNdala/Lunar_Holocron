@@ -2,6 +2,7 @@
 // éclairée vers le point sub-solaire. Aucun verdict de visibilité : horizon plat seulement. Hors ligne : texture locale ;
 // si elle manque, sphère grise avec graticule (le dit via `onTextureError`).
 import { glyphOf } from './markers.js';
+import { createRenderer, releaseRenderer } from '../webgl.js';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { latLonToVector, terminatorCircle, vectorToLatLon } from './sphere.js';
@@ -51,7 +52,7 @@ const toArr = (p, r) => { const v = latLonToVector(p.latDeg, p.lonDeg); return [
 
 /** Crée le globe dans `container` ; renvoie l'API (setTime, setSites, setLayers, flyTo, home, dispose…). */
 export function createGlobe(container, { textureUrl, onTextureError = () => {}, onSiteClick = () => {}, onHover = () => {}, reducedMotion = false } = {}) {
-  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  const renderer = createRenderer(THREE);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   container.appendChild(renderer.domElement);
   const scene = new THREE.Scene();
@@ -199,7 +200,7 @@ export function createGlobe(container, { textureUrl, onTextureError = () => {}, 
       siteGroup.clear();
       for (const s of sites) {
         const big = s.tier === 1;
-        const m = new THREE.Mesh(new THREE.SphereGeometry(big ? 0.022 : 0.014, 12, 8), new THREE.MeshBasicMaterial({ color: new THREE.Color(glyphOf(s).color) }) // couleur de la famille (même palette que les cartes 2D));
+        const m = new THREE.Mesh(new THREE.SphereGeometry(big ? 0.022 : 0.014, 12, 8), new THREE.MeshBasicMaterial({ color: new THREE.Color(glyphOf(s).color) })); // couleur de la famille (même palette que les cartes 2D)
         const p = latLonToVector(s.latDeg, s.lonDeg);
         m.position.set(p.x * MARKER_RADIUS, p.y * MARKER_RADIUS, p.z * MARKER_RADIUS);
         m.userData = s; siteGroup.add(m);
@@ -232,7 +233,7 @@ export function createGlobe(container, { textureUrl, onTextureError = () => {}, 
       disposed = true; ro.disconnect(); controls.dispose();
       scene.traverse((o) => { o.geometry?.dispose?.(); const m = o.material; if (m) (Array.isArray(m) ? m : [m]).forEach((x) => { x.map?.dispose?.(); x.dispose(); }); });
       textures.forEach((t) => t.dispose()); texture?.dispose();
-      renderer.dispose(); renderer.domElement.remove();
+      releaseRenderer(renderer);
     },
   };
   api.resetCamera();

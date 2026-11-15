@@ -59,6 +59,13 @@ try {
   const nonUniform = await ev(`(async () => { const img = new Image(); img.src = 'data:image/png;base64,${shot}'; await img.decode(); const k = document.createElement('canvas'); k.width = img.width; k.height = img.height; const g = k.getContext('2d'); g.drawImage(img, 0, 0); const d = g.getImageData(Math.round(img.width * 0.35), Math.round(img.height * 0.15), Math.round(img.width * 0.2), Math.round(img.height * 0.5)).data; const seen = new Set(); for (let i = 0; i < d.length; i += 4 * 23) seen.add((d[i] >> 3) * 1024 + (d[i + 1] >> 3) * 32 + (d[i + 2] >> 3)); return seen.size; })()`);
   check('vue 3D : pixels non uniformes', nonUniform > 20, `${nonUniform} couleurs distinctes échantillonnées`);
 
+  // 3 bis. le globe de l'Atlas se crée (un module cassé s'affiche comme « WebGL indisponible » : on vérifie le message, pas seulement le canvas)
+  await ev("document.querySelector('.rail-item[data-view=\"atlas\"]').click()");
+  await wait(2500);
+  const globe = await ev("(() => { const n = document.getElementById('atlas-texture-note'); return { canvas: !!document.querySelector('#globe canvas'), note: n && !n.hidden ? n.textContent : '' }; })()");
+  check('globe 3D de l’Atlas créé (canvas présent, aucun message « indisponible » ni « erreur »)', globe.canvas && !/indisponible|erreur/i.test(globe.note), globe.note.slice(0, 80));
+  await ev("document.querySelector('.rail-item[data-view=\"site\"]').click()");
+  await wait(1500);
   // 4. survol du panorama
   const hover = await ev(`(async () => { const c = document.getElementById('pano-canvas'); const r = c.getBoundingClientRect(); const out = []; for (const f of [0.2, 0.7]) { c.dispatchEvent(new PointerEvent('pointermove', { clientX: r.left + r.width * f, clientY: r.top + r.height * 0.5, bubbles: true })); await new Promise((q) => setTimeout(q, 150)); out.push(document.getElementById('pano-readout').textContent); } return out; })()`);
   check('panorama : le curseur change la lecture (azimut, hauteur)', hover[0] !== hover[1] && /°/.test(hover[0]), `${hover[0].slice(0, 40)} / ${hover[1].slice(0, 40)}`);

@@ -1,6 +1,7 @@
 // Vues « Atlas » (A-04, A-05) : globe 3D et cartes 2D partagent les mêmes données (sites de l'index, global.json), la même horloge
 // (store.tMs) et le même panneau de couches. Aucun verdict de visibilité ici : horizon plat seulement (D-015).
 // Hors ligne : texture locale ; sans elle, repli gris avec message.
+import { detectWebGL } from '../webgl.js';
 import { DataError, globalSeries } from '../data.js';
 import { interpolateSubPoint } from '../atlas/sphere.js';
 import { computeGradients } from '../atlas/relief.js';
@@ -20,6 +21,7 @@ export function createAtlasPanel(store, source, selectSite) {
   let polarPromise = null;
   let sitesPromise = null;
   let failure = null;
+  let failureDetail = null; // message technique de l'erreur du globe (affiché dans un détail repliable)
   let latLon = null;
 
   const layerState = () => ({ terminator: $('layer-terminator').checked, earthZone: $('layer-earth').checked, graticule: $('layer-graticule').checked, sites: $('layer-sites').checked });
@@ -52,6 +54,12 @@ export function createAtlasPanel(store, source, selectSite) {
     const note = $('atlas-texture-note');
     const text = failure ? t(failure) : '';
     note.textContent = text;
+    if (text && failureDetail) { // erreur du globe : le message réel est visible pour qui sait le lire, sans encombrer les autres
+      const d = document.createElement('details');
+      const s = document.createElement('summary'); s.textContent = t('atlas.errorDetail');
+      const c = document.createElement('code'); c.textContent = failureDetail;
+      d.append(s, c); note.append(d);
+    }
     note.hidden = !text;
   }
 
@@ -96,6 +104,11 @@ export function createAtlasPanel(store, source, selectSite) {
   }
 
   async function start() {
+    if (!detectWebGL().available) { // test unique et mémorisé : sans WebGL, aucune tentative de créer le globe
+      failure = 'atlas.noWebgl';
+      renderStatus();
+      return;
+    }
     try {
       const { createGlobe } = await import('../atlas/globe.js');
       globe = createGlobe($('globe'), {
@@ -105,8 +118,10 @@ export function createAtlasPanel(store, source, selectSite) {
         onHover: showTip,
         reducedMotion: window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false,
       });
-    } catch {
-      failure = 'atlas.noWebgl';
+    } catch (err) { // jamais de catch muet : l'erreur réelle est journalisée et montrée (M-064 § 2.0)
+      console.error('[atlas] createGlobe', err); // eslint-disable-line no-console
+      failure = err?.code === 'webgl-unavailable' ? 'atlas.noWebgl' : 'atlas.globeError';
+      failureDetail = failure === 'atlas.globeError' ? `${err?.name ?? 'Error'}: ${err?.message ?? err}` : null;
       renderStatus();
       return;
     }

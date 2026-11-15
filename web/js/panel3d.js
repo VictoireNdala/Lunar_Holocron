@@ -1,5 +1,6 @@
 // Carte « Vue 3D » de la page : relie la vue three.js (terrain3d.js) à l'état et aux contrôles.
 // three.js est chargé à la demande : si WebGL manque, la page reste utilisable et un message l'explique.
+import { detectWebGL } from './webgl.js';
 import { bodyStateAt } from './data.js';
 import { wrapDeg } from './geometry.js';
 import { formatNumber, t } from './i18n.js';
@@ -24,26 +25,41 @@ export function createPanel3d(store, source = null) {
   let mode = 'overview';
   let qualityKey = null;
   let hasRing = false;
+  let map2d = false; // repli : carte d'altitude 2D
+  let mapError = null;
   let probePoint = null; // { e, n, u } du dernier point sondé (souris ou clavier)
   const KEY_STEP_M = 500;
 
   async function ensureView() {
     if (view || viewError) return view;
+    if (!detectWebGL().available) { await useMap2D(null); return view; } // pas de WebGL : carte d'altitude 2D à la place de la scène vide
     try {
       const { createTerrainView } = await import('./terrain3d.js');
       view = createTerrainView($('view3d'), {
         onQualityChange: (px) => { qualityKey = px > 0 ? 'view3d.qualityReduced' : 'view3d.qualityOff'; renderStatus(); },
       });
     } catch (err) {
-      viewError = err;
-      $('view3d').hidden = true;
-      renderStatus();
+      console.error('[view3d] createTerrainView', err); // eslint-disable-line no-console
+      await useMap2D(err?.code === 'webgl-unavailable' ? null : err); // erreur réelle : journalisée, montrée, et carte 2D en repli
     }
     return view;
   }
 
+  /** Repli : carte 2D ; `err` = erreur réelle de la vue 3D (null : WebGL absent, déjà expliqué par le bandeau). */
+  async function useMap2D(err) {
+    const { createTerrainMap2D } = await import('./terrain2d.js');
+    view = createTerrainMap2D($('view3d'));
+    map2d = true;
+    mapError = err ? `${err.name ?? 'Error'}: ${err.message ?? err}` : null;
+    for (const el of document.querySelectorAll('[data-needs-webgl]')) el.hidden = true;
+    $('view3d-heading').dataset.i18n = 'map2d.heading';
+    $('view3d-heading').textContent = t('map2d.heading');
+  }
+
   function renderStatus() {
     const parts = [];
+    if (map2d) parts.push(t('map2d.legend'));
+    if (mapError) parts.push(`${t('view3d.error')} (${mapError})`);
     if (viewError) parts.push(t('view3d.unavailable'));
     if (site && !viewError) {
       const sun = bodyStateAt(site, 'sun', store.get().tMs);

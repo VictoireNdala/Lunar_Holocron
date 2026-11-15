@@ -1,6 +1,7 @@
 // Vue 3D du terrain (INTERFACE § 6). Rendu ILLUSTRATIF : les ombres ne servent jamais aux verdicts,
 // qui viennent du masque d'horizon (CLAUDE.md, principe 3). Aucune ressource externe : sprites dessinés par Canvas.
 import { drawEarthSprite, drawSunSprite, earthPhase, quantizePhase } from './bodies.js';
+import { createRenderer, releaseRenderer } from './webgl.js';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { bodyDirection, buildTerrainArrays, gridCenterHeight } from './terrainmesh.js';
@@ -26,7 +27,7 @@ const FRAMES_PER_CHECK = 30;
 
 /** Crée la vue dans `container`. Renvoie l'API documentée dans INTERFACE § 2. */
 export function createTerrainView(container, { onQualityChange = () => {} } = {}) {
-  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  const renderer = createRenderer(THREE);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -313,8 +314,7 @@ export function createTerrainView(container, { onQualityChange = () => {} } = {}
       sprites.forEach((s) => s.material.dispose());
       textures.forEach((t) => t.dispose());
       sunLight.shadow.map?.dispose();
-      renderer.dispose();
-      renderer.domElement.remove();
+      releaseRenderer(renderer);
     },
   };
 }

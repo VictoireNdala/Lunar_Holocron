@@ -18,6 +18,58 @@
       }
     }
   </script>
+  <!-- Préchargement parallèle des modules statiques (sinon la chaîne d'import se charge niveau par niveau) ; liste produite par tests/reference/modulepreload_list.mjs et vérifiée par web/tests/modulepreload.test.js. -->
+  <link rel="modulepreload" href="./js/atlas/linkoverlay.js">
+  <link rel="modulepreload" href="./js/atlas/maps2d.js">
+  <link rel="modulepreload" href="./js/atlas/markerdraw.js">
+  <link rel="modulepreload" href="./js/atlas/markers.js">
+  <link rel="modulepreload" href="./js/atlas/probetext.js">
+  <link rel="modulepreload" href="./js/atlas/pyramid.js">
+  <link rel="modulepreload" href="./js/atlas/pyramidsource.js">
+  <link rel="modulepreload" href="./js/atlas/relief.js">
+  <link rel="modulepreload" href="./js/atlas/sitesheet.js">
+  <link rel="modulepreload" href="./js/atlas/sphere.js">
+  <link rel="modulepreload" href="./js/bodies.js">
+  <link rel="modulepreload" href="./js/compare.js">
+  <link rel="modulepreload" href="./js/constants.js">
+  <link rel="modulepreload" href="./js/data.js">
+  <link rel="modulepreload" href="./js/freepoint.js">
+  <link rel="modulepreload" href="./js/geometry.js">
+  <link rel="modulepreload" href="./js/i18n.js">
+  <link rel="modulepreload" href="./js/link.js">
+  <link rel="modulepreload" href="./js/links.js">
+  <link rel="modulepreload" href="./js/main.js">
+  <link rel="modulepreload" href="./js/panel3d.js">
+  <link rel="modulepreload" href="./js/panorama.js">
+  <link rel="modulepreload" href="./js/planner.js">
+  <link rel="modulepreload" href="./js/playback.js">
+  <link rel="modulepreload" href="./js/preload.js">
+  <link rel="modulepreload" href="./js/ringsource.js">
+  <link rel="modulepreload" href="./js/store.js">
+  <link rel="modulepreload" href="./js/terrainmesh.js">
+  <link rel="modulepreload" href="./js/terrainring.js">
+  <link rel="modulepreload" href="./js/timeline.js">
+  <link rel="modulepreload" href="./js/ui/atlaspanel.js">
+  <link rel="modulepreload" href="./js/ui/atlassites.js">
+  <link rel="modulepreload" href="./js/ui/comparepanel.js">
+  <link rel="modulepreload" href="./js/ui/countdown.js">
+  <link rel="modulepreload" href="./js/ui/freepointpanel.js">
+  <link rel="modulepreload" href="./js/ui/linkpanel.js">
+  <link rel="modulepreload" href="./js/ui/mappanel.js">
+  <link rel="modulepreload" href="./js/ui/methodpage.js">
+  <link rel="modulepreload" href="./js/ui/nav.js">
+  <link rel="modulepreload" href="./js/ui/panels.js">
+  <link rel="modulepreload" href="./js/ui/panoramapanel.js">
+  <link rel="modulepreload" href="./js/ui/plannerpanel.js">
+  <link rel="modulepreload" href="./js/ui/readings.js">
+  <link rel="modulepreload" href="./js/ui/shell.js">
+  <link rel="modulepreload" href="./js/ui/sitelinks.js">
+  <link rel="modulepreload" href="./js/ui/timelinepanel.js">
+  <link rel="modulepreload" href="./js/ui/verdictpanel.js">
+  <link rel="modulepreload" href="./js/urlstate.js">
+  <link rel="modulepreload" href="./js/verdicts.js">
+  <link rel="modulepreload" href="./js/visibility.js">
+  <link rel="modulepreload" href="./js/webgl.js">
   <script type="module" src="./js/main.js"></script>
   <script>
     // Filet de sécurité (jamais de page blanche) : si main.js ne démarre pas (module en cache périmé, erreur de chargement),
@@ -113,6 +165,7 @@
     </header>
 
     <!-- Pastille d'honnêteté (UI-DESIGN § 5.5) : toujours visible ; seule la note explicative se replie. -->
+    <pre id="debug-info" class="debug-info" hidden></pre>
     <div class="honesty">
       <button type="button" id="honesty-chip" class="chip" aria-expanded="false" aria-controls="honesty-note">
         <span class="chip-dot" aria-hidden="true"></span><span id="honesty-label"></span><span class="chip-caret" aria-hidden="true">▾</span>
@@ -166,7 +219,7 @@
           <section class="card glass" aria-labelledby="view3d-heading" data-panel="view3d" data-panel-view="site" data-panel-title="view3d.heading">
             <h2 id="view3d-heading" data-i18n="view3d.heading"></h2>
             <div class="toolbar">
-              <div class="seg" role="group" data-i18n-aria="view3d.mode">
+              <div class="seg" role="group" data-needs-webgl data-i18n-aria="view3d.mode">
                 <button type="button" class="btn mode-btn" data-mode="overview" aria-pressed="true" data-i18n="view3d.overview"></button>
                 <button type="button" class="btn mode-btn" data-mode="ground" aria-pressed="false" data-i18n="view3d.ground"></button>
               </div>
@@ -175,13 +228,13 @@
                 <span id="view3d-az" class="az"></span>
                 <button type="button" class="btn" data-turn="1" data-i18n="view3d.turnRight"></button>
               </div>
-              <label class="field inline">
+              <label class="field inline" data-needs-webgl>
                 <span data-i18n="view3d.exaggeration"></span>
                 <input id="view3d-exag" type="range" min="1" max="5" step="0.5" value="1">
                 <output id="view3d-exag-value" for="view3d-exag"></output>
               </label>
             </div>
-            <label class="check"><input id="view3d-study" type="checkbox" checked><span data-i18n="view3d.study"></span></label>
+            <label class="check" data-needs-webgl><input id="view3d-study" type="checkbox" checked><span data-i18n="view3d.study"></span></label>
             <div class="legend">
               <span data-i18n="view3d.legend"></span>
               <div id="legend-bar" class="legend-bar" aria-hidden="true"></div>
@@ -276,6 +329,10 @@
 
       <!-- Panorama (vue de site) et barre de temps : commune à la vue de site et à l'Atlas (une seule horloge, ATLAS § 4). -->
         <div class="dock" data-view-panel="site atlas world south north" data-needs-site hidden>
+        <aside id="no3d" class="no3d glass" role="status" hidden>
+      <p><strong data-i18n="no3d.title"></strong> <span data-i18n="no3d.body"></span></p>
+      <p class="hint" data-i18n="no3d.how"></p>
+    </aside>
         <div class="dock-scroll">
         <section class="panorama glass" aria-labelledby="pano-heading" data-panel="panorama" data-panel-view="site" data-view-only="site" data-panel-title="pano.heading">
           <div class="pano-head">

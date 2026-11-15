@@ -1,4 +1,5 @@
 // Initialisation de la page : chargement des données, état, langue, coque (U-02), vue de site (T-09, T-11).
+import { detectWebGL, webglInfoText } from './webgl.js';
 import { loadRing } from './ringsource.js';
 import { createDataSource, DataError, siteTimeRange } from './data.js';
 import { buildFreePointSite, parseCoordinates } from './freepoint.js';
@@ -330,6 +331,7 @@ function bindControls() {
 
 /** Réactions aux changements d'état ; le fragment d'URL suit l'état stable. */
 store.subscribe((state, changed) => {
+  if (changed.includes('view') && state.view === 'atlas' && !detectWebGL().available) { store.set({ view: 'south' }); return; } // sans WebGL : jamais de page noire (M-064 § 2.2)
   if (changed.includes('lang')) setLang(state.lang);
   window.history.replaceState(null, '', encode(state));
   if (changed.includes('playing') && !state.playing && coveredRange() && state.tMs >= coveredRange().endMs) showTimeNote(t('time.ended'));
@@ -349,10 +351,25 @@ store.subscribe((state, changed) => {
 });
 
 /** Démarrage : langue, index, site initial. */
+/** Sans WebGL : bandeau persistant, globe grisé, vue de départ en carte 2D du pôle Sud ; `#debug` / `?debug=1` : informations sur le moteur graphique. */
+function setupWebGLFallback() {
+  const info = detectWebGL();
+  if (/(^|[#&?])debug(=1)?($|&)/.test(window.location.hash) || /[?&]debug(=1)?($|&)/.test(window.location.search)) {
+    $('debug-info').textContent = webglInfoText(info);
+    $('debug-info').hidden = false;
+  }
+  if (info.available) return;
+  console.warn('[webgl] indisponible :', info.error); // eslint-disable-line no-console
+  $('no3d').hidden = false;
+  for (const btn of document.querySelectorAll('.proj-btn[data-proj-view="atlas"]')) { btn.disabled = true; btn.title = t('no3d.globeDisabled'); btn.setAttribute('aria-disabled', 'true'); }
+  if (store.get().view === 'atlas') store.set({ view: 'south' });
+}
+
 async function start() {
   setLang(store.get().lang);
   bindControls();
   applyStaticTexts();
+  if (store.get().view === 'atlas') setupWebGLFallback(); // la vue Globe a besoin du résultat tout de suite ; sinon le test (qui peut coûter ≈ 2 s avec un rendu logiciel) attend le premier affichage utile
   try {
     index = await source.loadIndex();
   } catch (err) {
@@ -367,6 +384,7 @@ async function start() {
   if (siteIdA !== requested) store.set({ siteIdA });
   else await loadSiteA();
   await loadSiteB();
+  if (store.get().view !== 'atlas') setupWebGLFallback();
   window.history.replaceState(null, '', encode(store.get()));
   // Préchargement discret du terrain et des séries des sites prioritaires, une fois la première vue affichée (S-04).
   setTimeout(() => preloadTier1(source, index.sites), 1500);

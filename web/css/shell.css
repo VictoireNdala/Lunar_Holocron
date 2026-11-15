@@ -303,3 +303,10 @@
   .heat, .link-view .table-wrap, .link-view { overflow-x: auto; max-width: 100%; }
   html, body { overflow-x: clip; max-width: 100vw; } /* garde-fou : pas de défilement horizontal de la page */
 }
+
+/* Sans WebGL (M-064) : bandeau persistant et informations de diagnostic (#debug). */
+.no3d { padding: var(--s-2) var(--s-4); border: 1px solid var(--warn, #f5a623); border-radius: 12px; } /* dans le bloc du bas : jamais par-dessus la barre de temps */
+.no3d p { margin: 2px 0; }
+.debug-info { position: fixed; z-index: 70; left: 108px; top: 8px; margin: 0; padding: 6px 10px; background: #000c; color: #9fe8c9; font: 12px "JetBrains Mono", monospace; border-radius: 8px; max-width: 80vw; white-space: pre-wrap; }
+.terrain2d { image-rendering: auto; }
+[data-needs-webgl][hidden] { display: none !important; }
