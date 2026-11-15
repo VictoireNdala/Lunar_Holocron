@@ -67,9 +67,25 @@
   max-height: calc(100% - 128px); overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--line-strong) transparent; /* jamais sous la barre du haut */
 }
 .dock > * { pointer-events: auto; flex: none; }
+/* Panorama et frise défilent dans leur propre zone ; la barre de temps reste en dessous, jamais superposée au contenu (M-046 (c)). */
+.dock { overflow: hidden; }
+.dock-scroll { display: flex; flex-direction: column; gap: var(--s-3); min-height: 0; flex: 0 1 auto; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--line-strong) transparent; }
+.dock-scroll > * { flex: none; }
 .timebar { display: flex; flex-wrap: wrap; gap: var(--s-3) var(--s-4); align-items: center; padding: var(--s-3) var(--s-4); }
-.dock .timebar { position: sticky; bottom: 0; z-index: 3; background: var(--bg-1); } /* la barre de temps reste visible quand le bloc défile */
+.dock .timebar { background: var(--bg-1); } /* sous la zone qui défile : toujours visible, jamais par-dessus */
 .panorama { padding: var(--s-3) var(--s-4); }
+/* Écrans de moins de 900 px de haut (portable 1280 × 800) : le bloc du bas (panorama, frise, barre de temps) doit tenir sans que la barre de temps recouvre la frise. */
+@media (max-height: 900px) and (min-width: 1100px) {
+  .pano-canvas { height: 140px; }
+  .tl-canvas { height: 96px; }
+  .dock { gap: var(--s-2); }
+  .dock .hint { font-size: 0.72rem; line-height: 1.25; margin: 2px 0 0; }
+  .dock .card, .dock .panorama, .dock .timeline { padding-top: var(--s-2); padding-bottom: var(--s-2); }
+  .dock .timebar { padding-top: var(--s-2); padding-bottom: var(--s-2); gap: 6px var(--s-3); }
+  .dock .timebar .btn { padding: 5px 10px; }
+  .dock .timebar .current { margin: 0; font-size: 0.78rem; }
+}
+
 .pano-head { display: flex; flex-wrap: wrap; gap: var(--s-2) var(--s-3); align-items: center; margin-bottom: var(--s-2); }
 .pano-head h2 { margin: 0 var(--s-2) 0 0; }
 .pano-head .seg .btn { min-height: 32px; padding: 4px 10px; display: inline-flex; align-items: center; }
@@ -267,6 +283,7 @@
   #panel-a { display: flex; flex-direction: column-reverse; }
   .drawer { position: static; width: auto; overflow: visible; padding: var(--s-3); }
   .dock { position: static; margin: var(--s-3) var(--s-3) 0; max-height: none; overflow: visible; }
+  .dock-scroll { overflow: visible; }
   .dock .timebar { position: static; }
   .pano-canvas { height: 160px; }
   .link-view { position: static; margin: var(--s-3); padding: var(--s-4); overflow: visible; }
@@ -274,3 +291,6 @@
   .empty-view { position: static; transform: none; width: auto; margin: var(--s-4) var(--s-3); }
   .stage .footer { position: static; max-width: none; padding: var(--s-4) var(--s-3); text-shadow: none; }
 }
+
+/* Fiche d'un site : les sources sont sur plusieurs lignes et peuvent contenir de longues adresses. */
+#sheet-facts dd { white-space: pre-line; overflow-wrap: anywhere; }

@@ -276,6 +276,7 @@
 
       <!-- Panorama (vue de site) et barre de temps : commune à la vue de site et à l'Atlas (une seule horloge, ATLAS § 4). -->
         <div class="dock" data-view-panel="site atlas world south north" data-needs-site hidden>
+        <div class="dock-scroll">
         <section class="panorama glass" aria-labelledby="pano-heading" data-panel="panorama" data-panel-view="site" data-view-only="site" data-panel-title="pano.heading">
           <div class="pano-head">
             <h2 id="pano-heading" data-i18n="pano.heading"></h2>
@@ -313,6 +314,7 @@
           <p id="tl-readout" class="pano-foot num" aria-live="off"></p>
           <p class="hint" data-i18n="timeline.legend"></p>
         </section>
+        </div>
         <section class="timebar glass" aria-labelledby="time-heading" data-panel="time" data-panel-view="site atlas world south north" data-panel-title="time.heading">
           <h2 id="time-heading" class="visually-hidden" data-i18n="time.heading"></h2>
           <form id="time-form" class="time-form" novalidate>

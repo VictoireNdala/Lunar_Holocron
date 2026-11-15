@@ -1,6 +1,6 @@
 // Fiche d'un site sur l'Atlas et visite guidée des sites prioritaires (S-03, S-04). Valable pour le globe et les trois cartes.
 // La fiche vient de l'index.json (léger) ; « Voir le site » ouvre la vue de site. La visite n'avance que sur clic (pas de minuterie).
-import { siteSheet, tourOrder, tourPosition } from '../atlas/sitesheet.js';
+import { localizeSourceLabel, siteSheet, tourOrder, tourPosition } from '../atlas/sitesheet.js';
 import { formatNumber, getLang, t } from '../i18n.js';
 
 const $ = (id) => document.getElementById(id);
@@ -70,7 +70,10 @@ export function createAtlasSites(store, atlas, openSite) {
     facts.replaceChildren();
     fact(facts, t('sheet.coords'), `${formatNumber(sheet.latDeg, 3)}° ; ${formatNumber(sheet.lonDeg, 3)}°`);
     fact(facts, t('sheet.coordsStatus'), t(sheet.coordsKey));
+    if (sheet.statusKey) fact(facts, t('sheet.status'), t(sheet.statusKey));
+    if (sheet.missionTextKey) fact(facts, t('sheet.mission'), t(sheet.missionTextKey));
     if (sheet.pgdaId) fact(facts, t('sheet.pgda'), sheet.pgdaId);
+    if (sheet.sources.length) fact(facts, t('sheet.sources'), sheet.sources.map((s) => `${localizeSourceLabel(s.label, getLang())} — ${s.url} (${t('sheet.readOn', { d: s.readUtc })})`).join('\n'));
     if (entry.tier) fact(facts, t('sheet.region'), sheet.region ?? t('sheet.regionNone'));
     $('tour-status').hidden = !touring;
     if (touring) $('tour-status').textContent = t('tour.status', { n: pos.index + 1, total: pos.total });

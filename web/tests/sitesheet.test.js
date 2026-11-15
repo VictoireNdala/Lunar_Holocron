@@ -1,7 +1,7 @@
 // Tests de atlas/sitesheet.js (fiche, visite) et preload.js (S-03, S-04).
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { siteSheet, tourOrder, tourPosition } from '../js/atlas/sitesheet.js';
+import { localizeContractText, localizeSourceLabel, siteSheet, tourOrder, tourPosition } from '../js/atlas/sitesheet.js';
 import { preloadTier1 } from '../js/preload.js';
 
 const REAL = { id: 'site04', tier: 1, terrain_real: true, ephemeris_synthetic: false, synthetic: false, verified: false, lat_deg: -89.7668, lon_deg: -171.8699, nasa_2024_region: null, pgda_id: 'Site04' };
@@ -86,4 +86,37 @@ test('contrat 1.2 : relief 5 m / 80 m / non modélisé dits distinctement ; « n
   assert.equal(apollo.synthetic, false);
   assert.equal(apollo.coordsKey, 'sheet.coordsApollo');
   assert.equal(apollo.tierKey, 'sheet.kindApollo');
+});
+
+test('fiche d\'une mission : famille « mission » (jamais « démonstration »), position lue sur LROC, zone visée distinguée, statut, texte localisé, sources', () => {
+  const base = { synthetic: false, ephemeris_synthetic: false, terrain_real: true, terrain_modeled: true, terrain_tier: '80m', verified: false, tier: 4, lat_deg: -80.13, lon_deg: 1.44 };
+  const landed = siteSheet({ ...base, id: 'mission-im1-odysseus', kind: 'mission', position_basis: 'mission_lroc', status: 'landed', approximate: false, sources: [{ label: 'LROC', url: 'https://lroc.im-ldi.com/images/1360', read_utc: '2026-11-15' }] });
+  assert.equal(landed.tierKey, 'sheet.kindMission');
+  assert.equal(landed.coordsKey, 'sheet.coordsMission');
+  assert.equal(landed.statusKey, 'sheet.status.landed');
+  assert.equal(landed.missionTextKey, 'mission.text.mission-im1-odysseus');
+  assert.deepEqual(landed.sources, [{ label: 'LROC', url: 'https://lroc.im-ldi.com/images/1360', readUtc: '2026-11-15' }]);
+  const target = siteSheet({ ...base, id: 'mission-im2-athena-cible', kind: 'mission', position_basis: 'mission_lroc', status: 'planned', approximate: true });
+  assert.equal(target.coordsKey, 'sheet.coordsMissionTarget');
+  assert.equal(target.statusKey, 'sheet.status.planned');
+  assert.equal(siteSheet({ ...base, kind: 'feature', position_basis: 'feature_center', status: 'inconnu' }).statusKey, null, 'statut inconnu : rien d\'inventé');
+});
+
+test('libellés de source : texte tel quel en français, fragments connus traduits en anglais, texte inconnu laissé intact', () => {
+  const fr = 'LROC, « Chandrayaan-3 Landing Site » : 69,3741° S ; 32,32° E, altitude 532 m (image NAC M1447750764LR)';
+  assert.equal(localizeSourceLabel(fr, 'fr'), fr);
+  assert.equal(localizeSourceLabel(fr, 'en'), 'LROC, “Chandrayaan-3 Landing Site” : 69.3741° S; 32.32° E, elevation 532 m (image NAC M1447750764LR)');
+  assert.equal(localizeSourceLabel('IAU Gazetteer, Haworth (fiche et fichier de centres)', 'en'), 'IAU Gazetteer, Haworth (page and centre-points file)');
+  assert.equal(localizeSourceLabel('NASA NSSDC, Apollo Landing Sites', 'en'), 'NASA NSSDC, Apollo Landing Sites');
+});
+
+test('provenance du contrat en anglais : fragments connus traduits, autre texte français signalé, texte anglais et français inchangés', () => {
+  const lic = "aucune licence indiquée sur les pages PGDA (lues le 2026-11-14) ; citation demandée, voir SOURCES.md";
+  assert.equal(localizeContractText(lic, 'fr'), lic);
+  assert.equal(localizeContractText(lic, 'en'), 'no licence stated on the PGDA pages (read on 2026-11-14); citation requested, see SOURCES.md');
+  assert.equal(localizeContractText("centre de l'emprise du GeoTIFF Site06_final_adj_5mpp_surf.tif (4000 px × 4000 px × 5 m), lu le 2026-11-15", 'en'),
+    'centre of the GeoTIFF footprint Site06_final_adj_5mpp_surf.tif (4000 px × 4000 px × 5 m), read on 2026-11-15');
+  assert.match(localizeContractText('texte inconnu écrit par le pipeline', 'en'), /\(source text in French\)$/);
+  assert.equal(localizeContractText('n/a', 'en'), 'n/a');
+  assert.equal(localizeContractText(undefined, 'en'), undefined);
 });
