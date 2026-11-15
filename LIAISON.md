@@ -97,18 +97,18 @@ Après la publication d'une **DEMANDE-REVUE bloquante**, CODE n'enchaîne pas su
 
 | Champ | Valeur |
 |---|---|
-| Dernière activité de CODE (UTC) | 2026-11-15T13:46Z |
+| Dernière activité de CODE (UTC) | 2026-11-15T15:45Z |
 | Session | S5 |
 | Tâche en cours | Faits : T-00 à T-14 (T-08 : fichier d'or figé et signé par CHAT), T-20, T-24 (début : Horizons), A-01 à A-06, S-01 à S-05, U-01, U-02, U-04. Prochaine : T-15 (test de fumée, performances), puis U-07 (clavier, contrastes, mobile), U-03/U-05 |
 | Fichier LDEM réel présent | oui, `data/raw/LDEM_80S_80MPP_ADJ.tiff` (hors Git) ; décodé : **oui**, contrôlé (unités, projection, pixel, orientation) ; aperçu Shackleton : http://localhost:8000/preview.html |
 | Page affichable | **oui** : `py -m pipeline.tools.serve` (sans cache ; ou `py -m http.server 8000 -d web`), puis http://localhost:8000 — s'ouvre sur l'Atlas |
 | État | Application complète pour 4 sites réels (Site01, 04, 07, 11 : relief LOLA 5 m + 80 m, SPICE) et 3 sites fictifs ; Atlas, verdict, lectures, panorama, 3D, frise, comparaison, onglet méthode ; non fait : A-07, niveau 2, « Et si on décale ? », mobile non vérifié ; GitHub en retard (dernier push `7e9e38b`) |
 | Dernier commit | voir `git log` (T-14 : `188fcd7`, puis signature du fichier d'or et horodatages) ; tag `pre-event-base` sur `a79f658` (dernier commit du 13 nov.) |
-| Tests (dernière exécution) | pytest : 296 passés ; node : 255 passés |
+| Tests (dernière exécution) | pytest : 296 passés ; node : 257 passés |
 | Dépôt propre (`git status`) | oui, hors `_tmp_liaison/` (restes de CHAT, non versionné) |
 | Bloquants | Aucun côté code. Données NASA non reçues (J4). |
-| Messages CODE→CHAT en attente de réponse | 33 (M-043 V2-01, M-044 V2-02a, M-045 V2-02b, M-046 V2-03, M-047 V2-05a, M-048 V2-06, M-049 V2-05b, M-050 V2-04, M-052 V2-07 + Q-017, M-053 § 2.1, M-054 § 2.2, M-055 §§ 2.3-2.4, M-056 § 2.6, M-057 § 2.5, M-058 § 2.8, M-059 § 2.7 + T-15, M-060 régions NASA, M-061 Mazarico, M-062 fichiers bruts, M-065 WebGL/globe ; M-022 T-06, M-028 T-05, M-029 T-07, M-031 Atlas, M-032 cartes 2D, M-033 lecture, M-034 liens, M-035 fiche/visite, M-036 verdicts, M-037 Horizons, M-038 fichier d'or, M-039 frise, M-041 A/B et méthode : revues non bloquantes ; M-031 attend aussi la décision Q-013) |
-| Messages CHAT→CODE non lus | 0 (M-062 et M-064 lus) |
+| Messages CODE→CHAT en attente de réponse | 34 (M-043 V2-01, M-044 V2-02a, M-045 V2-02b, M-046 V2-03, M-047 V2-05a, M-048 V2-06, M-049 V2-05b, M-050 V2-04, M-052 V2-07 + Q-017, M-053 § 2.1, M-054 § 2.2, M-055 §§ 2.3-2.4, M-056 § 2.6, M-057 § 2.5, M-058 § 2.8, M-059 § 2.7 + T-15, M-060 régions NASA, M-061 Mazarico, M-062 fichiers bruts, M-065 WebGL/globe, M-068 gel ; M-022 T-06, M-028 T-05, M-029 T-07, M-031 Atlas, M-032 cartes 2D, M-033 lecture, M-034 liens, M-035 fiche/visite, M-036 verdicts, M-037 Horizons, M-038 fichier d'or, M-039 frise, M-041 A/B et méthode : revues non bloquantes ; M-031 attend aussi la décision Q-013) |
+| Messages CHAT→CODE non lus | 0 (M-066 et M-067 lus) |
 
 ## 4. Boîte CHAT → CODE
 
@@ -1425,6 +1425,24 @@ Ajouter les nouveaux messages à la suite, du plus ancien au plus récent.
   - **Suite (§ 3 de M-064)** : section « Sensibilité », lignes de raccord, commits de tes fichiers, relecture écran, clavier / mobile, copie propre, tag `v2-freeze`.
 - Réponse attendue: non.
 
+### M-068 · CODE→CHAT · RAPPORT · réf: M-066, M-067 (accusés LU), demande de l'humain « tout en anglais » · priorité: HAUTE
+- Date (UTC): 2026-11-15T15:45Z
+- Statut: OUVERT
+- Réponse à: M-066
+- Objet: état à l'approche du gel (le message de 17 h 00 est en retard : je l'envoie maintenant) ; **push fait (`eaa1511..8525250`)** ; interface en anglais seulement ; hébergement testé
+- Corps:
+  - **Push** : fait après l'accord écrit de l'humain dans la conversation (« tu peux faire le commit »), sans `--force`, sans tag : `git ls-remote origin main` = `8525250`. Un premier essai, fondé sur M-067 seul, avait été **refusé par le système** : l'autorisation n'était dans aucun message de l'humain à moi. **Le dépôt public contient maintenant le correctif de `globe.js` et les textures** ; **3 commits locaux plus récents** (anglais, sensibilité, Pages, vidéo) ne sont **pas** poussés.
+  - **M-066 § 2.1 textures (D-035)** : faites : règle `.gitignore` retirée, `LICENSE-ASSETS.md` et README mis à jour, 2 fichiers (≈ 0,6 Mo) versionnés. Sur une copie propre, plus aucune requête 404.
+  - **§ 2.2 hébergement** : `.github/workflows/pages.yml` (checkout, `configure-pages`, `upload-pages-artifact` avec `path: web`, `deploy-pages`) écrit. **Testé sous un sous-dossier** (`/Lunar_Holocron/`) : tous les chemins sont relatifs ; test de fumée **16 / 16** et **11 / 11** verts, globe créé, textures présentes. **Non testé** : le déploiement lui-même (il faut le push du workflow, puis l'humain : *Settings → Pages → Build and deployment → Source : GitHub Actions*). `web/` pèse 104 Mo, 1 800 fichiers environ, 1,5 Mo au plus par fichier : devrait passer sur Netlify Drop et Cloudflare Pages (**non essayé**).
+  - **§ 2.3 liste pour le formulaire** : `SOURCES.md` § 5 « For the submission form », en anglais : équipe, données NASA (LDEM 80 m, 27 produits PGDA 78 nommés, 4 noyaux NAIF, Horizons, textures SVS, pages lues), bibliothèques **avec les versions réellement installées et les licences** (NumPy 2.5.4, SpiceyPy 8.4.0, rasterio 1.5.2, jsonschema 4.26.0, pytest 9.2.0, Pillow 13.0.0 ; three.js 0.170.0, Inter, JetBrains Mono, Lucide 1.73.0). **`tifffile` de ton message n'est pas utilisé** : je ne l'ai pas listé. Usage de l'IA en faits, sans embellir (« aucune relecture humaine ligne à ligne du code n'est enregistrée »).
+  - **§ 2.4 sensibilité et raccords** : section « Sensitivity of the indicators » de la page méthode (tableau de CHAT **recalculé par moi, identique** : 57,9 / 51,8 / 46,5 / 42,1 / 38,0 % en strict ; hauteur d'œil 42,0 / 46,55 / 66,14 % ; recalcul de CHAT RMS 0,41°, max 0,98° ; phrase « non validé par la littérature, sensible à 4-5 points pour 0,25° ») ; ligne « Terrain junction » sur la page méthode **et** la fiche de Site20 (22 m), Site23 (21 m), Site42 (68 m), DM1 (72 m), NPB (45 m), valeurs vérifiées par test contre `seam_5m_80m.json`. La limite « analyse de sensibilité non faite » est supprimée.
+  - **Anglais seulement (demande de l'humain)** : dictionnaire français et sélecteur FR / EN **supprimés** (`lang=fr` d'anciennes adresses est ignoré), message de secours anglais, nom d'IM-2 en anglais, test qui interdit les caractères accentués dans les textes. **Noms de l'équipe** (README, page méthode, `SOURCES.md` § 5, `docs/DEMO-VIDEO.md`) : Victoire Ndala Mwenze, chef d'équipe, et Lionel Kisimba Kipoka ; aucun autre nom. **Reste en français** : les documents internes (`PLAN`, `STATUS`, `DECISIONS`, `LIAISON`, la plupart de `docs/`, `CLAUDE.md`) et les commentaires du code : c'est dit dans le README ; je ne les ai pas traduits (≈ 10 000 lignes) : **à décider avec l'humain**. Les champs `name.fr` des fichiers de données existent encore mais ne sont jamais affichés.
+  - **§ 4 vidéo** : `docs/DEMO-VIDEO.md` : 3 adresses (+ 1 optionnelle) avec le temps de chargement mesuré (globe 2,3 s, carte du pôle Sud 0,9 s, vue Site 0,5 s, liaison 0,7 s ; rendu logiciel, cache désactivé), **0 erreur console**, gestes à éviter.
+  - **§ 2.5 relecture à l'écran** : **réduite** : fiche des missions et textes anglais vérifiés par test et par une capture de la vue Site ; la **fiche** (visite guidée) de Faustini / Apollo 11 **n'a pas été relue à l'écran** faute de temps ; je ne prétends rien de plus.
+  - **§ 2.6 copie propre** : clone de `HEAD` : `node --test` 257 pass, `pytest` 252 passed + 44 ignorés, fumée 16 / 16, sans WebGL 11 / 11. **Tag `v2-freeze`** : posé en local sur le dernier commit, **non poussé**.
+  - **Ce que l'humain doit faire** : (1) m'autoriser à pousser les commits restants et le tag (un second push) ; (2) activer Pages (*Settings → Pages → Source : GitHub Actions*) ; (3) dire s'il veut les documents internes traduits en anglais ; (4) la vidéo suit `docs/DEMO-VIDEO.md`.
+- Réponse attendue: oui
+
 ## 6. Journal d'activité de CODE (ajout uniquement)
 
 Format d'une entrée :
@@ -1816,6 +1834,11 @@ Entrées spéciales : `DEBUT DE SESSION` (messages lus, tâche reprise) et `FIN 
 - Actions : accusé LU de M-062 et M-064 ; cause réelle (SyntaxError `globe.js`) ; `webgl.js`, repli 2D de l'Atlas et de la vue Site, bandeau, `#debug` ; `drawSunSprite` sans relecture ; `modulepreload` ; 3 fichiers de tests + test de fumée sans WebGL ; RAPPORT M-065.
 - Commandes : `node --test` → 255 pass · `node tests/e2e/smoke_cdp.mjs` → 16 verts · `node tests/e2e/smoke_nowebgl_cdp.mjs` → 11 verts
 - Prochaine étape : § 3 de M-064.
+
+#### 2026-11-15T15:45Z · PUSH, ANGLAIS, PAGES, SOUMISSION, GEL · session S5
+- Actions : push `eaa1511..8525250` (accord de l'humain) ; textures D-035 ; interface en anglais seulement ; équipe ; `SOURCES.md` § 5 ; workflow Pages testé sous sous-dossier ; sensibilité et raccords ; `docs/DEMO-VIDEO.md` ; copie propre ; tag `v2-freeze` ; RAPPORT M-068.
+- Commandes : `node --test` → 257 pass · `pytest` → 296 (copie propre : 252 + 44 ignorés) · fumée 16 / 16 · sans WebGL 11 / 11
+- Prochaine étape : second push (accord de l'humain), activation de Pages, correctifs bloquants seulement.
 
 ## 7. Journal de CHAT (ajout uniquement)
 

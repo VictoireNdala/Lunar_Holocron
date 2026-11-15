@@ -2,7 +2,7 @@
 
 > Fichier **vivant** : Claude Code le met à jour à la fin de chaque tâche. Le **journal détaillé et horodaté** est dans `LIAISON.md` § 6 ; les décisions dans `DECISIONS.md` ; les preuves chiffrées dans `docs/VALIDATION-RESULTATS.md`.
 
-**Dernière mise à jour** : 2026-11-15, 14 h 10 UTC (16 h 10 locale). **Gel des fonctionnalités : 18 h 00 locale (16 h 00 UTC)**, décision de coupe D-034 ; après le gel, seulement les correctifs demandés par CHAT.
+**Dernière mise à jour** : 2026-11-15, 15:45 UTC. **Gel des fonctionnalités : 18 h 00 locale (16 h 00 UTC)** ; après le gel, seulement des correctifs bloquants annoncés à CHAT.
 
 ## 1. Où nous en sommes (résumé)
 
@@ -13,8 +13,8 @@
 | **Sites** | 55 dans `web/data/index.json` : **27 sites réels à MNT 5 m** (PGDA 78 ; 4 de niveau 1 : Site01, 04, 07, 11), **22 entrées en relief 80 m** : 17 entités IAU (dont Shackleton, Nobile, Scott, Cabeus, Faustini, Shoemaker, Haworth…), 3 missions (IM-1, Chandrayaan-3, IM-2 **zone visée**), 2 régions NASA approximatives, **6 sites Apollo** en relief non modélisé. Chaque coordonnée a `sources[]` ; **aucune n'est vérifiée par un humain** (`verified: false`). |
 | **Données livrées** | `web/data/` ≈ **103 Mo** (D-033 : plus de limite de 60 Mo). Les **MNT bruts** (`data/raw/`, ≈ 1,9 Go) restent **hors dépôt** (limite de 100 Mo par fichier de GitHub) ; liens, tailles et SHA-256 dans le README. |
 | **Application** | Atlas (globe 3D, cartes monde / pôle Sud / pôle Nord avec marqueurs interactifs et empreintes réelles, fond LOLA en pyramide 480 → 80 m), vue Site (panorama 360°, frise, verdict strict / optimiste, comparaison A/B, point libre, vue 3D avec anneau de contexte, sonde, disques du Soleil et de la Terre), Liaison (décompte, délai, coupures, planificateur), page « Sources et méthode ». **Interface en anglais seulement** (décision de l'humain, 2026-11-15 : le sélecteur FR / EN et le dictionnaire français sont supprimés ; les documents internes restent en français). **Repli sans WebGL** (carte 2D, bandeau, `#debug`). Hors ligne : aucune requête externe (vérifié par test de fumée). |
-| **Tests** | `pytest` **296** (sur une copie propre du dépôt : 251 réussis + 44 ignorés, car ils exigent `data/raw/`) · `node --test` **255** · test de fumée navigateur **16 contrôles verts** · test sans WebGL **11 verts**. Première image utile 1,2 à 1,5 s (cache désactivé, rendu logiciel). |
-| **Git** | Branche `main`. **GitHub est à `eaa1511`** (livraison complète des données). **7 commits locaux non poussés (avec la mise à jour de ce fichier)**, dont le **correctif du globe** : la version publiée contient la faute de syntaxe de `globe.js` (« WebGL indisponible ») : **à pousser dès que l'humain l'autorise**. Tag `pre-event-base` sur `a79f658` ; **tag `v2-freeze` non posé**. |
+| **Tests** | `pytest` **296** (sur une copie propre du dépôt : 251 réussis + 44 ignorés, car ils exigent `data/raw/`) · `node --test` **257** · test de fumée navigateur **16 contrôles verts** · test sans WebGL **11 verts**. Première image utile 1,2 à 1,5 s (cache désactivé, rendu logiciel). |
+| **Git** | Branche `main`. **GitHub est à `8525250`** : il contient le correctif de `globe.js`, les textures (D-035) et toutes les données. **Des commits plus récents sont locaux, non poussés** (interface en anglais, sensibilité, workflow Pages, `docs/DEMO-VIDEO.md`) : **second push à autoriser par l'humain**. Tag `pre-event-base` sur `a79f658` ; tag `v2-freeze` posé en local, non poussé. **Pages** : workflow écrit et testé sous un sous-dossier ; à activer (Settings → Pages → Source : GitHub Actions). |
 
 ## 2. Défauts connus et limites à dire (aucune n'est cachée)
 
@@ -28,19 +28,16 @@
 - **Non fait faute de source lue** : Chang'e-7, Blue Moon / Connecting Ridge, étiquettes « eau » (références non lues), 3 régions NASA (Peak near Cabeus B, Mons Mouton Plateau, Slater Plain), issue de l'alunissage d'IM-2. **V2-08 (stretch)** non commencé, pas sans l'accord de CHAT.
 - Fichier d'or `tests/golden/body_state_cases.json` : relu et signé par **CHAT** (une IA) sur délégation de l'humain ; valeurs fictives ; pas de relecture humaine indépendante.
 
-## 3. Reste à faire avant le gel (ordre de M-064 § 3, 16 h → 18 h locale)
+## 3. Fait depuis M-066 / reste à faire
 
-1. Section « Sensibilité » de la page méthode FR / EN (tableau de CHAT, recalcul RMS 0,41° / max 0,98°, « non validé par la littérature »).
-2. Lignes de raccord > 20 m (page méthode + fiches de Site20, Site23, Site42, DM1, NPB).
-3. Relecture écran FR puis EN : Faustini, Apollo 11, un point libre, une mission.
-4. Clavier (Tab sur la vue Site, la sonde 3D, la carte) et mobile.
-5. Test de fumée sur copie propre, **tag `v2-freeze`**.
-6. **Dire à CHAT à 17 h 00 locale ce qui n'est pas fini.**
+- **Fait** : textures versionnées (D-035) ; push `eaa1511..8525250` ; interface en anglais seulement ; équipe ; `SOURCES.md` § 5 (formulaire) ; workflow Pages testé sous sous-dossier ; section « Sensibilité » et lignes de raccord > 20 m (page méthode + 5 fiches) ; `docs/DEMO-VIDEO.md` ; copie propre verte ; tag `v2-freeze` local.
+- **À faire par l'humain** : autoriser le second push ; activer Pages ; dire s'il veut les documents internes traduits en anglais ; enregistrer la vidéo ; remplir le formulaire avec `SOURCES.md` § 5.
+- **Non fait** : relecture à l'écran des fiches de Faustini / Apollo 11 ; traduction des documents internes et des commentaires de code ; déploiement de Pages (non testable avant le push du workflow).
 
 ## 4. À arbitrer par l'humain
 
 - **Autoriser le push** des 7 commits locaux (correctif du globe : urgent).
-- `Q-001` (le code écrit avant l'événement est-il autorisé ?), `Q-002` (règle sur l'IA), `Q-003` (langue de soumission) : **le guide de soumission du 13 novembre n'a pas été transmis à CODE**. `Q-010` (titulaire du copyright), `Q-013` (versionner les textures NASA SVS ; elles restent locales : un clone propre affiche le globe sans texture), `Q-014` à `Q-016` (texture de la Terre, couche PSR, valeurs par défaut du planificateur).
+- `Q-001` (le code écrit avant l'événement est-il autorisé ?), `Q-002` (règle sur l'IA), `Q-003` (langue de soumission : l'anglais, d'après CHAT) ; CODE n'a pas lu le guide du 13 novembre (CHAT en a résumé les exigences dans M-066). `Q-010` (titulaire du copyright), `Q-013` (versionner les textures NASA SVS ; elles restent locales : un clone propre affiche le globe sans texture), `Q-014` à `Q-016` (texture de la Terre, couche PSR, valeurs par défaut du planificateur).
 - Tranchées : Q-017 (budget) par D-033 ; patch 5 m, littérature, raccords par D-034.
 - Confirmation par un humain des coordonnées et du texte de l'interface (rien n'est établi comme relu par un humain : `SOURCES.md` § 4).
 
