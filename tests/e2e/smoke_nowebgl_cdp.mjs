@@ -41,7 +41,7 @@ try {
   const hash = await ev('location.hash');
   check('#view=atlas bascule sur la carte 2D du pôle Sud', /view=south/.test(hash), hash);
   const banner = await ev("(() => { const b = document.getElementById('no3d'); return b && !b.hidden ? b.textContent.replace(/[ \\n\\t]+/g, ' ').trim() : ''; })()");
-  check('bandeau persistant « 3D désactivée » avec la façon de l\'activer', /WebGL indisponible/.test(banner) && /accélération/.test(banner), banner.slice(0, 70));
+  check('bandeau persistant « 3D désactivée » avec la façon de l\'activer', /WebGL unavailable/.test(banner) && /acceleration/.test(banner), banner.slice(0, 70));
   const globeBtn = await ev("(() => { const b = document.querySelector('.proj-btn[data-proj-view=\"atlas\"]'); return b ? b.disabled + '|' + b.title : 'absent'; })()");
   check('bouton Globe grisé avec info-bulle', /^true\|/.test(globeBtn) && globeBtn.length > 8, globeBtn);
   const mapPixels = await ev(colors('[data-scene="south"] canvas', 211, 4));
@@ -51,7 +51,7 @@ try {
   const map2d = await ev(colors('canvas.terrain2d', 97, 3));
   check('vue Site : carte d\'altitude 2D non uniforme à la place de la scène 3D', map2d > 20, `${map2d} couleurs`);
   const probe = await ev("(async () => { const c = document.querySelector('canvas.terrain2d'); const r = c.getBoundingClientRect(); c.dispatchEvent(new PointerEvent('pointermove', { clientX: r.left + r.width * 0.55, clientY: r.top + r.height * 0.45, bubbles: true })); await new Promise((q) => setTimeout(q, 600)); return document.getElementById('view3d-probe').textContent; })()");
-  check('sonde au survol de la carte 2D (altitude, pente, cap, horizon)', /Altitude/.test(probe) && /horizon/.test(probe), probe.slice(0, 80));
+  check('sonde au survol de la carte 2D (altitude, pente, cap, horizon)', /Elevation/.test(probe) && /horizon/.test(probe), probe.slice(0, 80));
   const hidden3d = await ev('[...document.querySelectorAll("[data-needs-webgl]")].every((e) => e.hidden)');
   check('commandes propres à la 3D masquées', hidden3d === true);
   const content = await ev("document.getElementById('pano-canvas').width > 0 && /%/.test(document.querySelector('[data-panel=\"verdict\"]')?.textContent ?? '') && document.getElementById('tl-canvas').width > 0");
@@ -60,7 +60,7 @@ try {
   await send('Page.navigate', { url: `${base}?nogl2=${Date.now()}#view=atlas&debug=1&lang=fr` });
   await wait(3500);
   const dbg = await ev("document.getElementById('debug-info').hidden ? '' : document.getElementById('debug-info').textContent");
-  check('#debug affiche l\'état de WebGL', /WebGL: indisponible/.test(dbg), dbg);
+  check('#debug affiche l\'état de WebGL', /WebGL: unavailable/.test(dbg), dbg);
   check('aucune exception ni console.error', errors.length === 0, errors.slice(0, 3).join(' | '));
   check('aucune requête hors de l\'origine locale', foreign.length === 0, foreign.slice(0, 2).join(' | '));
 } catch (err) { check('exécution', false, err.message); }

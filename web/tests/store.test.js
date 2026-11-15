@@ -13,11 +13,11 @@ test('set notifie avec les clés changées ; rien si aucune valeur ne change', (
   const store = createStore();
   const calls = [];
   const unsubscribe = store.subscribe((state, changed) => calls.push([...changed]));
-  store.set({ lang: 'en', threshold: store.get().threshold });
-  store.set({ lang: 'en' });
+  store.set({ lang: 'sw', threshold: store.get().threshold });
+  store.set({ lang: 'sw' });
   assert.deepEqual(calls, [['lang']]);
   unsubscribe();
-  store.set({ lang: 'fr' });
+  store.set({ lang: 'en' });
   assert.equal(calls.length, 1);
 });
 

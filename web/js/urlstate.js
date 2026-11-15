@@ -5,7 +5,7 @@ import { VIEWS } from './ui/nav.js';
 
 const SITE_ID = /^(?:[a-z0-9]+(?:-[a-z0-9]+)*|custom:-?\d{1,3}(?:\.\d{1,6})?,-?\d{1,3}(?:\.\d{1,6})?)$/; // identifiant du catalogue, ou point libre `custom:lat,lon` (D-027)
 const TIME = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})Z$/;
-const LANGS = Object.freeze(['fr', 'en', 'sw']);
+const LANGS = Object.freeze(['en']); // interface en anglais seulement : `lang=fr` d'anciennes adresses est ignoré
 const WINDOWS = Object.freeze(['7', '30', '365', 'all']);
 const PROJ_VIEWS = Object.freeze({ globe: 'atlas', world: 'world', south: 'south', north: 'north' });
 

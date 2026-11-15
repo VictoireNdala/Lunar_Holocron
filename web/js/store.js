@@ -10,7 +10,7 @@ export const DEFAULT_STATE = Object.freeze({
   tMs: Date.parse('2027-03-14T06:00:00Z'),
   threshold: DEFAULT_THRESHOLD,
   windowDays: 30,
-  lang: 'fr',
+  lang: 'en',
   playing: false,
   speed: 3600,
   panoramaCenterAz: 0,

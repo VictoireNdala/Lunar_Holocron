@@ -51,7 +51,7 @@ try {
 
   // 2. pastille d'honnêteté
   const pill = await ev(`(document.getElementById('honesty-label')?.textContent ?? '').replace(/\\s+/g, ' ').trim()`);
-  check('pastille d\'honnêteté présente (données réelles, niveau de relief dit)', /Données réelles · relief 5 m/.test(pill), pill.slice(0, 80));
+  check('pastille d\'honnêteté présente (données réelles, niveau de relief dit)', /Real data · 5 m terrain/.test(pill), pill.slice(0, 80));
 
   // 3. vue 3D non uniforme
   // le canvas WebGL est vide hors de l'image de rendu : on analyse une capture d'écran de la page (région de la vue 3D)
@@ -63,7 +63,7 @@ try {
   await ev("document.querySelector('.rail-item[data-view=\"atlas\"]').click()");
   await wait(2500);
   const globe = await ev("(() => { const n = document.getElementById('atlas-texture-note'); return { canvas: !!document.querySelector('#globe canvas'), note: n && !n.hidden ? n.textContent : '' }; })()");
-  check('globe 3D de l’Atlas créé (canvas présent, aucun message « indisponible » ni « erreur »)', globe.canvas && !/indisponible|erreur/i.test(globe.note), globe.note.slice(0, 80));
+  check('globe 3D de l’Atlas créé (canvas présent, aucun message « indisponible » ni « erreur »)', globe.canvas && !/unavailable|error/i.test(globe.note), globe.note.slice(0, 80));
   await ev("document.querySelector('.rail-item[data-view=\"site\"]').click()");
   await wait(1500);
   // 4. survol du panorama
@@ -71,7 +71,7 @@ try {
   check('panorama : le curseur change la lecture (azimut, hauteur)', hover[0] !== hover[1] && /°/.test(hover[0]), `${hover[0].slice(0, 40)} / ${hover[1].slice(0, 40)}`);
 
   // 5. strict / optimiste
-  const thr = await ev(`(async () => { const read = () => document.querySelector('[data-panel="verdict"]')?.textContent.replace(/\\s+/g, ' ') ?? ''; const before = read(); const b = [...document.querySelectorAll('button')].find((x) => /Optimiste|Optimistic/.test(x.textContent)); b.click(); await new Promise((q) => setTimeout(q, 600)); return { before, after: read() }; })()`);
+  const thr = await ev(`(async () => { const read = () => document.querySelector('[data-panel="verdict"]')?.textContent.replace(/\\s+/g, ' ') ?? ''; const before = read(); const b = [...document.querySelectorAll('button')].find((x) => /Optimistic/.test(x.textContent)); b.click(); await new Promise((q) => setTimeout(q, 600)); return { before, after: read() }; })()`);
   check('basculer strict / optimiste change au moins un indicateur', thr.before !== thr.after);
 
   // 6. chaque vue, sans erreur

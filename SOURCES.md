@@ -97,3 +97,30 @@ Règle du hackathon sur l'IA : non confirmée à ce jour (`Q-002`). Ce paragraph
 - 2026-11-15 — Claude Code — pyramide de tuiles du fond polaire, anneau de contexte 3D, sonde et mesure des disques en 3D, catalogue étendu (Gazetteer, LROC), 23 produits PGDA 5 m, planificateur, liaison, Soleil et Terre en disques, test de fumée — relu par : personne à ce jour ; vérifié par commandes lancées (`pytest`, `node --test`, `pipeline.cli validate`, contrôles dans Edge) citées dans `STATUS.md` et `LIAISON.md`.
 
 Format d'une ligne à ajouter : `AAAA-MM-JJ — outil — tâche — ce qui a été relu et par qui`.
+
+## 5. For the submission form (English, copy-paste ready)
+
+**Project:** Lunar Holocron: a lunar south-pole landing-site navigator. **Challenge:** Lunar Landing Site Navigator (NASA Space Apps Challenge Lubumbashi 2026). **Team lead:** Victoire Ndala Mwenze. **Teammate:** Lionel Kisimba Kipoka. **Licence of our code:** Apache 2.0. Independent project, not endorsed by NASA.
+
+### (i) NASA data used
+- **LOLA polar elevation model, 80 m/pixel** (`LDEM_80S_80MPP_ADJ`, PGDA product 90, south of 80° S): <https://pgda.gsfc.nasa.gov/products/90>; Barker et al. 2023, Planetary Science Journal 4, 183, <https://doi.org/10.3847/PSJ/acf3e1>; data DOI 10.60903/gsfcpgda-lola-spole.
+- **LOLA 5 m/pixel landing-site elevation models** (PGDA product 78, <https://pgda.gsfc.nasa.gov/products/78>), 27 products: Site01, Site04, Site06, Site07, Site11, Site20, Site20v2, Site23, Site42, Haworth, Shoemaker, DM1, DM2, SL2, SL3, NPA, NPB, NPC, NPD, LM1 to LM8 (`<name>_final_adj_5mpp_surf.tif`); Barker et al. 2021, Planetary and Space Science 203, 105119, <https://doi.org/10.1016/j.pss.2020.105119>.
+- **SPICE kernels** (NASA/JPL NAIF, <https://naif.jpl.nasa.gov/pub/naif/generic_kernels/>): `naif0012.tls`, `de440s.bsp`, `moon_pa_de440_200625.bpc`, `moon_de440_250416.tf` (Sun and Earth positions in the lunar Mean Earth frame, 2026-2030).
+- **JPL Horizons** (<https://ssd.jpl.nasa.gov/api/horizons.api>): used only to verify our Sun and Earth directions (5 sites, 3 dates, 24 hours; maximum difference 9e-7° in azimuth, 2.4e-5° in Earth elevation, cause of the latter not established). Never called by the application.
+- **NASA SVS CGI Moon Kit textures** (LROC WAC colour mosaic, `lroc_color_2k.jpg`, `lroc_color_poles_1k.jpg`, <https://svs.gsfc.nasa.gov/4720>): illustrative globe/map texture only, credited in the interface ("NASA's Scientific Visualization Studio"); used in no calculation.
+- **Read for coordinates and context** (values copied with the page and date of reading in the data files): IAU Gazetteer of Planetary Nomenclature centre-points file (USGS); LROC pages for IM-1, IM-2 and Chandrayaan-3; NASA NTRS 20250011660 (names of the nine Artemis III candidate regions); NTRS 20120010094 (abstract of Mazarico et al. 2011) and the abstract of Barker et al. 2021 for a literature comparison that we could **not** reproduce.
+
+### (ii) Code and libraries (name, version used, licence)
+- Python pipeline (offline, run once): **NumPy** 2.5.4 (BSD-3-Clause), **SpiceyPy** 8.4.0 (MIT; wraps NAIF CSPICE), **rasterio** 1.5.2 (BSD-3-Clause; GeoTIFF reading), **jsonschema** 4.26.0 (MIT), **pytest** 9.2.0 (MIT, tests only), **Pillow** 13.0.0 (HPND, preview images only).
+- Web application (static, no build step, no network access at run time): **three.js** 0.170.0 (MIT; copied into `web/vendor/three/`), **Inter** variable font (SIL OFL 1.1), **JetBrains Mono** (SIL OFL 1.1), **Lucide** icons 1.73.0 (ISC). Everything else is plain ES modules written by us.
+- Our own code: Apache 2.0, in this repository.
+
+### (iii) Text, images and other material from outside
+- No text or image was copied from other projects. Interface texts, documentation and code comments were written with the AI tools listed below.
+- Third-party fonts and icons as listed above; NASA textures as listed above. All source URLs, versions and SHA-256 sums are in this file.
+
+### (iv) Use of AI (facts)
+- **Claude Code (Anthropic)** wrote the application code, the pipeline, the tests and the technical documentation, following task files in this repository, and ran the commands whose results are quoted in `STATUS.md` and `docs/VALIDATION-RESULTATS.md`.
+- **Claude (Anthropic, chat)** reviewed the work, recomputed some values independently (for example a horizon check with a different method), proposed priorities and wrote project-management messages (`LIAISON.md`).
+- **Humans (the two team members)** set the goals and priorities, chose what to build, ran and looked at the application in their own browser, and decided what to publish. **No complete line-by-line human review of the code has been recorded.** The reference file for the Python/JavaScript agreement was reviewed and signed by the Claude chat assistant on the team lead's delegation, not by a human.
+- Known limits stated in the application: the illumination percentages are internally consistent and their ephemerides are verified against JPL Horizons, but they are **not validated against published studies** (our comparison with two published abstracts was not reproduced; see "Sources and method" in the application).

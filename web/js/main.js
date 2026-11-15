@@ -80,7 +80,6 @@ function applyStaticTexts() {
   document.title = t('app.title');
   for (const el of document.querySelectorAll('[data-i18n]')) el.textContent = t(el.dataset.i18n);
   for (const el of document.querySelectorAll('[data-i18n-aria]')) el.setAttribute('aria-label', t(el.dataset.i18nAria));
-  for (const btn of document.querySelectorAll('.lang-btn')) btn.setAttribute('aria-pressed', String(btn.dataset.lang === getLang()));
   $('footer-data').textContent = t('footer.data', { root: source.root });
 }
 
@@ -301,7 +300,6 @@ function bindControls() {
     $('honesty-chip').setAttribute('aria-expanded', String(open));
     $('honesty-note').hidden = !open;
   });
-  for (const btn of document.querySelectorAll('.lang-btn')) btn.addEventListener('click', () => store.set({ lang: btn.dataset.lang }));
   $('time-form').addEventListener('submit', (e) => {
     e.preventDefault();
     const ms = parseTimeInput($('time-input').value);

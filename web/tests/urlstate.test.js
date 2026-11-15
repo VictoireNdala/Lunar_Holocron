@@ -6,8 +6,8 @@ import { encode, decode } from '../js/urlstate.js';
 const T = Date.parse('2027-03-14T06:00:00Z');
 
 test('encode produit le fragment documenté (INTERFACE § 3)', () => {
-  const hash = encode({ siteIdA: 'demo-a', siteIdB: 'demo-b', compare: true, tMs: T, threshold: 'strict', lang: 'fr', windowDays: 30 });
-  assert.equal(hash, '#a=demo-a&b=demo-b&t=2027-03-14T06:00Z&thr=strict&lang=fr&w=30');
+  const hash = encode({ siteIdA: 'demo-a', siteIdB: 'demo-b', compare: true, tMs: T, threshold: 'strict', lang: 'en', windowDays: 30 });
+  assert.equal(hash, '#a=demo-a&b=demo-b&t=2027-03-14T06:00Z&thr=strict&lang=en&w=30');
 });
 
 test('encode omet b sans comparaison et tronque à la minute', () => {
@@ -41,8 +41,8 @@ test('alias proj= (ATLAS § 4) : désigne la vue d\'Atlas ; view= l\'emporte ; v
 });
 
 test('point libre (D-027) : a=custom:lat,lon fait l\'aller-retour ; formes invalides ignorées', () => {
-  const state = { siteIdA: 'custom:-85.3,53.3', tMs: T, threshold: 'strict', lang: 'fr', windowDays: 30 };
-  assert.equal(encode(state), '#a=custom:-85.3,53.3&t=2027-03-14T06:00Z&thr=strict&lang=fr&w=30');
+  const state = { siteIdA: 'custom:-85.3,53.3', tMs: T, threshold: 'strict', lang: 'en', windowDays: 30 };
+  assert.equal(encode(state), '#a=custom:-85.3,53.3&t=2027-03-14T06:00Z&thr=strict&lang=en&w=30');
   assert.deepEqual(decode(encode(state)), state);
   assert.equal(decode('#a=custom:-85.3,53.3').siteIdA, 'custom:-85.3,53.3');
   for (const bad of ['custom:abc,1', 'custom:1', 'custom:1,2,3', 'custom:-85.3', 'custom:1234,5', 'custom:<script>,1']) {

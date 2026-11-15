@@ -28,7 +28,7 @@ test('absence simulée (getContext renvoie null) ou exception : jamais d\'except
   const none = detectWebGL(() => ({ getContext: () => null }));
   assert.equal(none.available, false);
   assert.match(none.error, /null/);
-  assert.match(webglInfoText(none), /indisponible/);
+  assert.match(webglInfoText(none), /unavailable/);
   resetWebGLDetection();
   const boom = detectWebGL(() => { throw new Error('contexte refusé'); });
   assert.equal(boom.available, false);

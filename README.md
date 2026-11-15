@@ -6,12 +6,16 @@
 
 > [!IMPORTANT]
 > **Read this before trusting a number.**
-> - Four sites (Site01, Site04, Site07, Site11) use **real** LOLA terrain models and **real** SPICE ephemerides. **No fictional data ships with the product**: synthetic test sets live in `pipeline/fixtures` and `tests/fixtures` only
+> - The 55 sites use **real** SPICE ephemerides; 27 have **real** LOLA 5 m terrain, 21 have LOLA 80 m terrain, and 7 (the six Apollo sites and Chandrayaan-3, north of the 80 m model's coverage) have **no modelled relief** (flat horizon, said on screen). **No fictional data ships with the product**: synthetic test sets live in `pipeline/fixtures` and `tests/fixtures` only
 >   (a data file flagged `"synthetic": true` would still be shown with a permanent honesty chip that cannot be hidden).
 > - A real site is evaluated at the **centre of its terrain model’s extent**, not at a chosen landing point. Those positions are **unverified** (`"verified": false`).
 > - This is an independent hackathon project, **not endorsed by NASA**, and not a mission planning tool. The limits are listed [below](#limitations) and in the application’s *Sources and method* tab.
 
 ---
+
+## Team
+
+**Team lead:** Victoire Ndala Mwenze · **Teammate:** Lionel Kisimba Kipoka · NASA Space Apps Challenge Lubumbashi 2026, challenge *Lunar Landing Site Navigator*. Independent project, not endorsed by NASA. The resource list for the submission form (data, libraries and versions, use of AI) is in [`SOURCES.md`](SOURCES.md) § 5.
 
 ## Why
 
@@ -40,7 +44,7 @@ The application is **static and fully offline** (no server logic, no CDN, no rem
 | **Sources and method** | Provenance read from the data file, formulas, definitions of every indicator, limits, validation, credits, use of AI. |
 | **Links** | Buttons to open the site in Quickmap or Moon Trek (external, opened by your click only). |
 
-The interface is available in French and English. The state (view, sites A/B, instant, threshold, window, language) lives in the URL fragment.
+The interface is in English. The state (view, sites A/B, instant, threshold, window) lives in the URL fragment.
 
 ## How it works
 
@@ -192,7 +196,7 @@ The tests read the committed results and need no network.
 | [`docs/REVUE-FICHIER-OR.md`](docs/REVUE-FICHIER-OR.md) | The Python/JavaScript agreement file awaiting human review |
 | [`DECISIONS.md`](DECISIONS.md) | Decision log and open questions |
 
-The design documents are written in French; code identifiers and data fields are in English.
+Some internal working documents (`PLAN.md`, `STATUS.md`, `DECISIONS.md`, `LIAISON.md`, most of `docs/`) and code comments are still written in French; code identifiers, data fields, the application and this README are in English.
 
 ## Data sources
 

@@ -2,7 +2,7 @@
 // Sans dépendance à three.js (testable) : `createRenderer` reçoit le constructeur de three.js.
 
 export class WebGLUnavailableError extends Error {
-  constructor(detail = '') { super(`WebGL indisponible${detail ? ` : ${detail}` : ''}`); this.name = 'WebGLUnavailableError'; this.code = 'webgl-unavailable'; }
+  constructor(detail = '') { super(`WebGL unavailable${detail ? ` : ${detail}` : ''}`); this.name = 'WebGLUnavailableError'; this.code = 'webgl-unavailable'; }
 }
 
 let cached = null;
@@ -47,7 +47,7 @@ export function detectWebGL(makeCanvas = () => document.createElement('canvas'))
 
 /** Texte de diagnostic (#debug) : version, moteur, fabricant. */
 export function webglInfoText(info = detectWebGL()) {
-  if (!info.available) return `WebGL: indisponible (${info.error ?? 'raison inconnue'})`;
+  if (!info.available) return `WebGL: unavailable (${info.error ?? 'unknown reason'})`;
   return `WebGL ${info.version === 2 ? '2' : '1'} · renderer: ${info.renderer ?? '?'} · vendor: ${info.vendor ?? '?'}`;
 }
 

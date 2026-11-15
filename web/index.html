@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="fr">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -73,13 +73,13 @@
   <script type="module" src="./js/main.js"></script>
   <script>
     // Filet de sécurité (jamais de page blanche) : si main.js ne démarre pas (module en cache périmé, erreur de chargement),
-    // message statique bilingue, hors i18n puisque i18n.js peut justement être en cause.
+    // message statique en anglais, hors i18n puisque i18n.js peut justement être en cause.
     setTimeout(function () {
       if (document.documentElement.dataset.booted) return;
       var box = document.getElementById('error');
       var text = document.getElementById('error-text');
       if (!box || !text) return;
-      text.textContent = "L'application n'a pas démarré (fichiers en cache périmés ou erreur de chargement). Rechargez sans cache : Ctrl+Maj+R. / The app did not start (stale cached files or a load error). Hard-reload: Ctrl+Shift+R.";
+      text.textContent = "The app did not start (stale cached files or a load error). Hard-reload: Ctrl+Shift+R.";
       box.hidden = false;
     }, 4000);
   </script>
@@ -157,10 +157,6 @@
           <select id="site-select"></select>
         </label>
         <button type="button" id="scene-only" class="btn scene-btn" aria-pressed="false"><svg class="ico" aria-hidden="true"><use href="./vendor/icons/sprite.svg#i-eye-off"></use></svg><span class="scene-label"></span></button>
-        <div class="lang" role="group" data-i18n-aria="lang.label">
-          <button type="button" class="lang-btn" data-lang="fr" aria-pressed="true">FR</button>
-          <button type="button" class="lang-btn" data-lang="en" aria-pressed="false">EN</button>
-        </div>
       </div>
     </header>
 
@@ -623,6 +619,7 @@
         <section class="method-section" aria-labelledby="m-credits">
           <h3 id="m-credits" data-i18n="method.credits"></h3>
           <ul>
+            <li data-i18n="method.credits.team"></li>
             <li data-i18n="method.credits.0"></li>
             <li data-i18n="method.credits.1"></li>
             <li data-i18n="method.credits.2"></li>

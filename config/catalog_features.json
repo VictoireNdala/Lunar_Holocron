@@ -556,7 +556,7 @@
     },
     {
       "id": "mission-im2-athena-cible",
-      "name": "IM-2 Athena (zone visée)",
+      "name": "IM-2 Athena (intended area)",
       "lat_deg": -84.78,
       "lon_deg": 29.13,
       "status": "planned",
