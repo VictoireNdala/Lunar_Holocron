@@ -4,6 +4,8 @@
 export const BACKGROUND_HEX = '#06080c';
 export const MIN_SIZE_PX = 5;
 export const MAX_SIZE_PX = 16;
+import { R_REF_M } from '../constants.js';
+
 export const FOOTPRINT_MIN_PX = 14; // au-delà, on dessine le cercle au rayon réel plutôt qu'un glyphe
 export const CLUSTER_CELL_PX = 28;
 
@@ -116,4 +118,30 @@ function luminance(hex) {
 export function contrastRatio(hexA, hexB) {
   const [hi, lo] = [luminance(hexA), luminance(hexB)].sort((a, b) => b - a);
   return (hi + 0.05) / (lo + 0.05);
+}
+
+const RAD = Math.PI / 180;
+
+/**
+ * Contour (lat, lon en degrés) du carré de demi-côté `halfKm` centré sur le site, aligné sur les axes du plan stéréographique polaire Sud (x = ρ sin λ, y = ρ cos λ,
+ * ρ = 2R tan((φ + 90°)/2), comme pipeline/projection.py) ; chaque côté est subdivisé en `perSide` segments pour suivre la déformation de la carte.
+ */
+export function footprintOutline(latDeg, lonDeg, halfKm, perSide = 8) {
+  const rho = 2 * R_REF_M * Math.tan((latDeg * RAD + Math.PI / 2) / 2);
+  const x0 = rho * Math.sin(lonDeg * RAD);
+  const y0 = rho * Math.cos(lonDeg * RAD);
+  const h = halfKm * 1000;
+  const corners = [[-h, -h], [h, -h], [h, h], [-h, h]];
+  const points = [];
+  for (let c = 0; c < 4; c += 1) {
+    const [ax, ay] = corners[c];
+    const [bx, by] = corners[(c + 1) % 4];
+    for (let i = 0; i < perSide; i += 1) {
+      const f = i / perSide;
+      const x = x0 + ax + (bx - ax) * f;
+      const y = y0 + ay + (by - ay) * f;
+      points.push({ latDeg: (2 * Math.atan(Math.hypot(x, y) / (2 * R_REF_M)) - Math.PI / 2) / RAD, lonDeg: Math.atan2(x, y) / RAD });
+    }
+  }
+  return points;
 }

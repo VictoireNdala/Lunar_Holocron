@@ -6,6 +6,8 @@ import json
 from pathlib import Path
 from typing import Any
 
+import rasterio
+
 from pipeline import geodesy
 from pipeline.dem import Dem, MultiResDem
 from pipeline.dem_geotiff import read_geotiff_window
@@ -17,6 +19,12 @@ REAL_FAR_HALF_KM_MARGIN = 5.0  # le MNT 80 m couvre far_max_km + marge
 RAW_DIR = Path("data/raw")
 LDEM_80M = RAW_DIR / "LDEM_80S_80MPP_ADJ.tiff"
 LDEM_80M_INFO = "LDEM_80S_80MPP_ADJ (PGDA 90, LOLA, 80 m ; Barker et al. 2023, Planet. Sci. J. 4, 183, https://doi.org/10.3847/PSJ/acf3e1)"
+
+
+def footprint_half_km(dem_path: Path) -> float:
+    """Demi-côté (km) du carré du MNT 5 m réellement utilisé : moitié de la plus petite dimension du GeoTIFF, plafonnée à la fenêtre de lecture (REAL_NEAR_HALF_KM)."""
+    with rasterio.open(dem_path) as ds:
+        return round(min(REAL_NEAR_HALF_KM, min(ds.width, ds.height) * abs(ds.transform.a) / 2000.0), 3)
 
 
 def real_specs(path: Path, cfg: PipelineConfig, only: set[str] | None = None) -> tuple[list[SiteSpec], list[str]]:
@@ -42,7 +50,7 @@ def real_specs(path: Path, cfg: PipelineConfig, only: set[str] | None = None) ->
             id=s["id"], name={"fr": s["label_fr"], "en": s["label_en"]}, lat_deg=lat, lon_deg=lon, dem=dem,
             dem_info=_real_dem_info(s), engine="spice", terrain_real=True, verified=bool(s["verified"]),
             index_extra={"tier": s["tier"], "pgda_id": s["pgda_id"], "lola_priority_site": s["lola_priority_site"],
-                         "nasa_2024_region": s["nasa_2024_region"]},
+                         "nasa_2024_region": s["nasa_2024_region"], "footprint_half_km": footprint_half_km(dem_path)},
             extra={"kind": "lola_site", "position_basis": "dem_center", "approximate": False, "terrain_tier": "5m", "status": "candidate",
                    "sources": [{"label": f"PGDA produit 78, {s['pgda_id']} (centre de l'emprise du GeoTIFF)", "url": s["dem"]["source"], "read_utc": "2026-11-14"}]}))
     return specs, skipped

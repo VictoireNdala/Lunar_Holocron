@@ -1,11 +1,11 @@
 // Dessin des marqueurs de l'Atlas sur une carte 2D (V2-03) : glyphes, empreintes réelles, groupes, étiquettes. Les décisions (forme, taille, regroupement,
 // collision) viennent de markers.js ; ici on ne fait que tracer et renvoyer les zones cliquables.
-import { CLUSTER_CELL_PX, clusterItems, footprintRadiusPx, glyphOf, markerSizePx, placeLabels, showsFootprint } from './markers.js';
+import { CLUSTER_CELL_PX, clusterItems, footprintOutline, footprintRadiusPx, glyphOf, markerSizePx, placeLabels, showsFootprint } from './markers.js';
 
 const KM_PER_DEG = (Math.PI / 180) * 1737.4; // kilomètres par degré de latitude sur la sphère de référence
 const OUTLINE = '#06080c';
 const LABEL_ZOOM = 6; // au-delà, toutes les étiquettes sont candidates (sinon : niveau 1, sélectionné, survolé)
-const FOOTPRINT_KM = { lola_site: 8 }; // demi-côté de l'emprise du MNT 5 m (carré de 16 km)
+const FOOTPRINT_KM = { lola_site: 8 }; // repli (index sans `footprint_half_km`) : carré de 16 km
 
 /** Trace un glyphe (centre x, y ; taille = rayon approximatif en px). `fill` : solid | hollow | cross. */
 export function drawGlyph(ctx, shape, color, fill, x, y, size) {
@@ -38,6 +38,16 @@ function drawFootprint(ctx, x, y, radiusPx, color, dashed) {
   ctx.restore();
 }
 
+/** Carré réel de l'emprise du MNT 5 m (contour projeté sur la carte) ; rien si un point sort de la carte. */
+function drawSquareFootprint(ctx, proj, it, color) {
+  const pts = footprintOutline(it.s.latDeg, it.s.lonDeg, it.s.footprint_half_km).map((p) => proj.toPixel(p.latDeg, p.lonDeg));
+  if (pts.some((q) => !q.ok)) return;
+  ctx.save();
+  ctx.lineWidth = 2; ctx.strokeStyle = color; ctx.globalAlpha = 0.9; ctx.lineJoin = 'round';
+  ctx.beginPath(); pts.forEach((q, i) => (i ? ctx.lineTo(q.x, q.y) : ctx.moveTo(q.x, q.y))); ctx.closePath(); ctx.stroke();
+  ctx.restore();
+}
+
 /** Pastille de groupe avec le nombre de sites. */
 function drawCluster(ctx, x, y, count, text, bg, font) {
   ctx.save();
@@ -57,14 +67,18 @@ export function drawSites(ctx, proj, sites, zoom, style, ids = {}, overlayOf = n
     const q = proj.toPixel(s.latDeg, s.lonDeg);
     if (!q.ok) continue;
     const glyph = glyphOf(s);
-    const radiusKm = s.position_uncertainty_km ?? FOOTPRINT_KM[s.kind] ?? 0;
+    const radiusKm = s.position_uncertainty_km ?? s.footprint_half_km ?? FOOTPRINT_KM[s.kind] ?? 0;
     const q2 = radiusKm ? proj.toPixel(s.latDeg + 1 / KM_PER_DEG, s.lonDeg) : q;
     const pxPerKm = radiusKm ? Math.hypot(q2.x - q.x, q2.y - q.y) : 0;
     items.push({ s, glyph, x: q.x, y: q.y, priority: glyph.priority, id: s.id, footprintPx: radiusKm ? footprintRadiusPx(radiusKm, pxPerKm) : 0 });
   }
   const zones = [];
   // Empreintes réelles d'abord (sous les glyphes) ; le glyphe reste tracé au centre.
-  for (const it of items) if (showsFootprint(it.footprintPx)) drawFootprint(ctx, it.x, it.y, it.footprintPx, it.glyph.color, Boolean(it.s.approximate));
+  for (const it of items) {
+    if (!showsFootprint(it.footprintPx)) continue;
+    if (it.s.footprint_half_km && it.s.position_uncertainty_km == null) drawSquareFootprint(ctx, proj, it, it.glyph.color); // site 5 m : carré réel
+    else drawFootprint(ctx, it.x, it.y, it.footprintPx, it.glyph.color, Boolean(it.s.approximate)); // entité : cercle au rayon de l'entité
+  }
   // Regroupement : seulement entre marqueurs dont l'empreinte n'est pas dessinée ; le sélectionné, le survolé et le focalisé sortent toujours du groupe.
   const pinned = new Set([ids.selected, ids.hovered, ids.focused]);
   const groupable = items.filter((it) => !pinned.has(it.id));
