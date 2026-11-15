@@ -142,6 +142,9 @@
 .compare .readings th, .compare .readings td { white-space: normal; overflow-wrap: anywhere; padding: 8px 4px; font-size: var(--fs-13); vertical-align: top; }
 .compare .readings thead th { font-size: 12px; }
 
+.fp-form { display: grid; grid-template-columns: 1fr 1fr auto; gap: var(--s-2); align-items: end; margin: var(--s-3) 0; }
+.fp-form input { width: 100%; }
+
 /* --- Page « Sources et méthode » (T-14) --- */
 .method { position: absolute; top: 128px; bottom: 76px; left: var(--s-3); right: var(--s-3); max-width: 880px; margin: 0 auto; overflow-y: auto; padding: var(--s-6); }
 .method h2 { margin-top: 0; }

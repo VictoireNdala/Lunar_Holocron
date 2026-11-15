@@ -47,7 +47,8 @@ export function createComparePanel(store) {
     $('compare-body').hidden = !siteB;
     $('compare-hint').hidden = Boolean(siteB);
     if (!siteB) return;
-    const nameA = nameOf(entries.find((e) => e.id === siteA.id));
+    const entryA = entries.find((e) => e.id === siteA.id);
+    const nameA = entryA ? nameOf(entryA) : (siteA.name[getLang()] ?? siteA.name.en); // point libre : absent de l'index
     const nameB = nameOf(entries.find((e) => e.id === siteB.id));
     $('compare-warning').hidden = sameWindow(siteA, siteB);
     $('compare-legend').textContent = t('compare.legend', { a: nameA, b: nameB });

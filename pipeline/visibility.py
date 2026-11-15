@@ -9,7 +9,7 @@ from __future__ import annotations
 import numpy as np
 from numpy.typing import ArrayLike, NDArray
 
-from pipeline.config import N_AZIMUTHS, STRICT_MIN_FRACTION, THRESHOLD_MODES
+from pipeline.config import N_AZIMUTHS, STRICT_MIN_FRACTION, THRESHOLD_MODES, VISIBILITY_TOLERANCE
 
 FloatArray = NDArray[np.float64]
 
@@ -36,8 +36,8 @@ def horizon_at(horizon_elev_deg: ArrayLike, az_deg: ArrayLike) -> FloatArray:
 
 
 def is_visible(fraction: ArrayLike, mode: str) -> NDArray[np.bool_]:
-    """Seuil binaire : 'strict' ⇒ f ≥ 0,5 (centre au-dessus) ; 'any' ⇒ f > 0 (une partie du disque)."""
+    """Seuil binaire : 'strict' ⇒ f ≥ 0,5 (centre au-dessus) ; 'any' ⇒ f > 0 (une partie du disque), à la tolérance numérique VISIBILITY_TOLERANCE près (D-031)."""
     if mode not in THRESHOLD_MODES:
         raise ValueError(f"mode inconnu {mode!r} ; attendu {THRESHOLD_MODES}")
     f = np.asarray(fraction, dtype=np.float64)
-    return f >= STRICT_MIN_FRACTION if mode == "strict" else f > 0.0
+    return f >= STRICT_MIN_FRACTION - VISIBILITY_TOLERANCE if mode == "strict" else f > VISIBILITY_TOLERANCE

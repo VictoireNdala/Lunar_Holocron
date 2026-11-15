@@ -35,6 +35,9 @@ DEFAULT_OBSERVER_HEIGHT_M: float = 2.0
 # --- Seuils de visibilité (ARCHITECTURE § 2, D-004) ---------------------------------------------
 # strict : f >= 0,5 (centre du disque au-dessus de l'horizon) ; any : f > 0 (une partie du disque visible).
 STRICT_MIN_FRACTION: float = 0.5
+# Tolérance numérique sur la fraction visible (D-031) : Python (numpy) et JavaScript (V8) peuvent différer d'un ulp sur acos/sqrt ; un cas EXACTEMENT à la limite
+# (f = 0,5 en strict, f = 0 en optimiste) ne doit pas dépendre de la bibliothèque mathématique. 1e-9 de fraction ≈ 3·10⁻¹⁰ ° : très en dessous de la précision des données (1 m°).
+VISIBILITY_TOLERANCE: float = 1e-9
 THRESHOLD_MODES: tuple[str, ...] = ("strict", "any")
 # Seuil par défaut : strict (D-004, à confirmer Q-006).
 DEFAULT_THRESHOLD: str = "strict"

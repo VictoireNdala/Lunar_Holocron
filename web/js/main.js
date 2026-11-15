@@ -1,5 +1,6 @@
 // Initialisation de la page : chargement des données, état, langue, coque (U-02), vue de site (T-09, T-11).
 import { createDataSource, DataError, siteTimeRange } from './data.js';
+import { buildFreePointSite, parseCoordinates } from './freepoint.js';
 import { formatNumber, formatUtc, getLang, setLang, t } from './i18n.js';
 import { createPanel3d } from './panel3d.js';
 import { createPlayback, snapNow } from './playback.js';
@@ -11,6 +12,7 @@ import { createMapPanel } from './ui/mappanel.js';
 import { createPanoramaPanel } from './ui/panoramapanel.js';
 import { createPanels } from './ui/panels.js';
 import { createComparePanel } from './ui/comparepanel.js';
+import { createFreePointPanel } from './ui/freepointpanel.js';
 import { createReadings } from './ui/readings.js';
 import { renderMethodPage } from './ui/methodpage.js';
 import { createSiteLinks } from './ui/sitelinks.js';
@@ -20,6 +22,7 @@ import { createShell } from './ui/shell.js';
 import { decode, encode } from './urlstate.js';
 
 const HOUR_MS = 3600 * 1000;
+const CUSTOM_ID = /^custom:(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)$/; // point libre (D-027) : jamais dans l'index
 // Données par défaut : sorties du pipeline (web/data/, `py -m pipeline.cli build`). `?data=chemin/relatif/` permet de pointer un autre dossier de données.
 const DEFAULT_DATA_ROOT = 'data/';
 const DATA_ROOT_PATTERN = /^(?:[a-z0-9_-]+\/)+$/;
@@ -50,6 +53,7 @@ const panels = createPanels();
 const siteLinks = createSiteLinks();
 const readings = createReadings();
 const compare = createComparePanel(store);
+const freePoint = createFreePointPanel(store);
 let siteB = null;
 const timeline = createTimelinePanel(store);
 const verdict = createVerdictPanel(store);
@@ -85,15 +89,28 @@ function showError(err) {
   $('loading').hidden = true;
 }
 
-/** Remplit le sélecteur de sites. */
+/** Nom d'un site affiché : celui de l'index, sinon celui du fichier (point libre, absent de l'index). */
+function displayName(shown) {
+  const entry = index?.sites.find((s) => s.id === shown.id);
+  return entry ? siteName(entry) : (shown.name[getLang()] ?? shown.name.en);
+}
+
+/** Remplit le sélecteur de sites (le point libre affiché y est ajouté en tête). */
 function renderSiteSelect() {
   const select = $('site-select');
-  select.replaceChildren(...index.sites.map((entry) => {
+  const options = index.sites.map((entry) => {
     const opt = document.createElement('option');
     opt.value = entry.id;
     opt.textContent = entry.synthetic ? t('site.option', { name: siteName(entry) }) : siteName(entry);
     return opt;
-  }));
+  });
+  if (site && CUSTOM_ID.test(site.id)) {
+    const opt = document.createElement('option');
+    opt.value = site.id;
+    opt.textContent = displayName(site);
+    options.unshift(opt);
+  }
+  select.replaceChildren(...options);
   select.value = store.get().siteIdA;
 }
 
@@ -110,10 +127,9 @@ function fillFacts(dl, pairs) {
 
 /** Fiche du site : nom, coordonnées, période, provenance. */
 function renderSiteInfo() {
-  const entry = index.sites.find((s) => s.id === site.id);
   const range = siteTimeRange(site);
   const deg = (v) => `${formatNumber(v, 3)}°`;
-  $('site-name').textContent = siteName(entry);
+  $('site-name').textContent = displayName(site);
   $('site-synthetic').hidden = !site.synthetic;
   fillFacts($('site-info'), [
     [t('site.lat'), deg(site.location.lat_deg)],
@@ -186,8 +202,7 @@ function showAtlasView() {
 function renderAll() {
   applyStaticTexts();
   renderHonesty();
-  const entry = index && site ? index.sites.find((s) => s.id === site.id) : null;
-  shell.render(store.get(), entry ? siteName(entry) : null, Boolean(site));
+  shell.render(store.get(), site && index ? displayName(site) : null, Boolean(site));
   panels.refresh();
   renderPlayback();
   showAtlasView();
@@ -199,22 +214,36 @@ function renderAll() {
   renderTime();
   readings.render(site, store.get());
   verdict.render(site, store.get());
+  freePoint.render(site, store.get());
   compare.render(site, siteB, store.get());
   if (store.get().view === 'site') timeline.render(site, store.get());
+}
+
+/** Point libre : Soleil et Terre depuis global.json (parallaxe), horizon depuis la grille polaire 480 m si le point est au sud de 80° S ; tout dans le navigateur. */
+async function loadCustom(match) {
+  const coords = parseCoordinates(match[1], match[2]);
+  if (!coords) throw new Error(t('freepoint.invalid'));
+  const globalDoc = await source.loadGlobal();
+  let grid = null;
+  if (coords.latDeg <= -80) grid = await source.loadPolarGrid().catch(() => null); // sans grille : horizon plat, dit à l'écran
+  const built = buildFreePointSite({ globalDoc, grid, ...coords });
+  return built;
 }
 
 /** Charge le site A puis rafraîchit l'affichage. */
 async function loadSiteA() {
   const id = store.get().siteIdA;
+  const custom = CUSTOM_ID.exec(id);
   $('loading').hidden = false;
   try {
-    const loaded = await source.loadSite(id);
+    const built = custom ? await loadCustom(custom) : null;
+    const loaded = built ? built.site : await source.loadSite(id);
     if (store.get().siteIdA !== id) return; // un autre site a été choisi entre-temps
     site = loaded;
     $('error').hidden = true;
     renderAll();
     panorama.show(site);
-    const terrain = await source.loadTerrain(id);
+    const terrain = built ? built.terrain : await source.loadTerrain(id);
     if (store.get().siteIdA === id) await panel3d.show(site, terrain);
   } catch (err) {
     showError(err);
@@ -227,7 +256,8 @@ async function loadSiteA() {
 async function loadSiteB() {
   const { compare: on, siteIdB, siteIdA } = store.get();
   const known = index?.sites.some((s) => s.id === siteIdB);
-  if (!on || !known || siteIdB === siteIdA) { siteB = null; if (site) renderAll(); return; }
+  if (on && siteIdB === siteIdA) { store.set({ siteIdB: null, compare: false }); return; } // B égal à A : on referme la comparaison (et l'URL)
+  if (!on || !known) { siteB = null; if (site) renderAll(); return; }
   try {
     const loaded = await source.loadSite(siteIdB);
     if (store.get().siteIdB !== siteIdB) return; // un autre site B a été choisi entre-temps
@@ -318,7 +348,7 @@ async function start() {
   atlasSites.setEntries(index.sites);
   compare.setIndex(index.sites);
   const requested = store.get().siteIdA;
-  const siteIdA = index.sites.some((s) => s.id === requested) ? requested : index.sites[0].id;
+  const siteIdA = index.sites.some((s) => s.id === requested) || CUSTOM_ID.test(requested) ? requested : index.sites[0].id;
   if (siteIdA !== requested) store.set({ siteIdA });
   else await loadSiteA();
   await loadSiteB();

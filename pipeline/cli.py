@@ -17,6 +17,7 @@ from pipeline import validate
 from pipeline.ephemeris_spice import kernels_available
 from pipeline.export import PipelineConfig, SiteSpec, build_site, write_index
 from pipeline.global_state import build_global, write_global
+from pipeline.polar_grid import build_polar_grid, DEFAULT_SOURCE
 from pipeline.catalog import catalog_specs
 from pipeline.sites import real_specs
 
@@ -79,6 +80,9 @@ def main(argv: list[str] | None = None) -> int:
     write_index(entries, args.out, cfg)
     write_global(build_global(cfg, "spice"), args.out)
     print("  global.json (Atlas) : moteur spice")
+    if DEFAULT_SOURCE.is_file() and only is None:
+        build_polar_grid(DEFAULT_SOURCE, args.out / "polar")
+        print("  polar/ldem_south_500m : grille 480 m (point libre, fond polaire)")
     print(f"terminé en {time.perf_counter() - t0:.0f} s ; validation :")
     return validate.main([str(args.out)])
 

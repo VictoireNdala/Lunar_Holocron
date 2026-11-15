@@ -39,3 +39,13 @@ test('alias proj= (ATLAS § 4) : désigne la vue d\'Atlas ; view= l\'emporte ; v
   assert.deepEqual(decode('#proj=toString'), {});
   assert.deepEqual(decode('#proj=mars'), {});
 });
+
+test('point libre (D-027) : a=custom:lat,lon fait l\'aller-retour ; formes invalides ignorées', () => {
+  const state = { siteIdA: 'custom:-85.3,53.3', tMs: T, threshold: 'strict', lang: 'fr', windowDays: 30 };
+  assert.equal(encode(state), '#a=custom:-85.3,53.3&t=2027-03-14T06:00Z&thr=strict&lang=fr&w=30');
+  assert.deepEqual(decode(encode(state)), state);
+  assert.equal(decode('#a=custom:-85.3,53.3').siteIdA, 'custom:-85.3,53.3');
+  for (const bad of ['custom:abc,1', 'custom:1', 'custom:1,2,3', 'custom:-85.3', 'custom:1234,5', 'custom:<script>,1']) {
+    assert.deepEqual(decode(`#a=${bad}`), {}, bad);
+  }
+});

@@ -81,7 +81,7 @@ export function createVerdictPanel(store) {
     $('kpi-earth-gap').textContent = hours(k.longestEarthGapH);
     $('threshold-note').textContent = t(`verdict.threshold.${state.threshold}`);
     for (const btn of document.querySelectorAll('.thr-btn')) btn.setAttribute('aria-pressed', String(btn.dataset.threshold === state.threshold));
-    $('verdict-position').textContent = t(site.synthetic ? 'verdict.positionSynthetic' : `verdict.position.${site.position_basis ?? 'dem_center'}`, { h: formatNumber(site.location.observer_height_m, 1) });
+    $('verdict-position').textContent = t(site.synthetic ? 'verdict.positionSynthetic' : (site.position_basis === 'user' ? `verdict.position.user.${site.terrain_tier}` : `verdict.position.${site.position_basis ?? 'dem_center'}`), { h: formatNumber(site.location.observer_height_m, 1) });
     for (const kpi of document.querySelectorAll('.kpi[data-tip]')) kpi.title = t(kpi.dataset.tip);
     $('verdict-table-toggle').textContent = t($('verdict-table').hidden ? 'verdict.showValues' : 'verdict.hideValues');
     if (builtFor !== key) { buildHeat(site); builtFor = key; }

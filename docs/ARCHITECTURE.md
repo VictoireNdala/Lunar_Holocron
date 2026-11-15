@@ -44,6 +44,7 @@ Le passage de l'un à l'autre ne doit **modifier ni le contrat, ni l'application
 | **Rayon angulaire** | Demi-diamètre apparent du disque du corps, en degrés (`radius_mdeg` en millidegrés dans les séries). |
 | **Fraction visible** `f` | Part de la surface du disque au-dessus du masque d'horizon, dans [0, 1] (formule en § 3). |
 | **Seuil strict** | Corps considéré visible si `f ≥ 0,5`, c'est-à-dire **le centre du disque est au-dessus de l'horizon**. |
+| **Tolérance numérique (D-031)** | `VISIBILITY_TOLERANCE = 1e-9` : strict ⇔ `f ≥ 0,5 − 1e-9`, optimiste ⇔ `f > 1e-9`, pour qu'un cas exactement sur la limite ne dépende pas de la bibliothèque mathématique (numpy ou V8). |
 | **Seuil optimiste** | Corps considéré visible si `f > 0`, c'est-à-dire **une partie quelconque du disque est visible** (définition proche de PGDA pour la Terre). |
 | **Repère lunaire** | `MOON_ME` (axe moyen / axe de rotation moyen), celui de LOLA. Pas `IAU_MOON`. |
 | **Rayon de référence** | `R_REF = 1 737 400 m`. Les hauteurs de terrain sont des mètres au-dessus de cette sphère. |

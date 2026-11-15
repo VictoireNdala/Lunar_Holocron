@@ -176,6 +176,14 @@ export function drawMap(ctx, proj, state, style, labels) {
     ctx.beginPath(); ctx.arc(q.x, q.y, 7, 0, 2 * Math.PI); ctx.fillStyle = color; ctx.fill();
     if (ring) { ctx.lineWidth = 2; ctx.strokeStyle = style.text; ctx.stroke(); }
   }
+  if (state.picked) {
+    const q = proj.toPixel(state.picked.latDeg, state.picked.lonDeg);
+    if (q.ok) {
+      ctx.lineWidth = 2; ctx.strokeStyle = style.text;
+      ctx.beginPath(); ctx.arc(q.x, q.y, 9, 0, 2 * Math.PI); ctx.moveTo(q.x - 14, q.y); ctx.lineTo(q.x - 5, q.y); ctx.moveTo(q.x + 5, q.y); ctx.lineTo(q.x + 14, q.y);
+      ctx.moveTo(q.x, q.y - 14); ctx.lineTo(q.x, q.y - 5); ctx.moveTo(q.x, q.y + 5); ctx.lineTo(q.x, q.y + 14); ctx.stroke();
+    }
+  }
   if (state.layers.sites) {
     for (const s of state.sites) {
       const q = proj.toPixel(s.latDeg, s.lonDeg);

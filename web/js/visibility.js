@@ -1,6 +1,6 @@
 // Formules de visibilité (docs/ARCHITECTURE.md § 3). Miroir exact de pipeline/visibility.py (mêmes valeurs d'or, tests/golden/).
 // d = el − h ; x = clamp(d / r, −1, 1) ; f = 1 − (acos x − x·√(1 − x²)) / π.
-import { N_AZIMUTHS, STRICT_MIN_FRACTION, THRESHOLD_MODES } from './constants.js';
+import { N_AZIMUTHS, STRICT_MIN_FRACTION, THRESHOLD_MODES, VISIBILITY_TOLERANCE } from './constants.js';
 
 /** Part du disque au-dessus de l'horizon, dans [0, 1] ; horizon lu au seul azimut du centre (approximation assumée). */
 export function visibleFraction(elDeg, radiusDeg, horizonDeg) {
@@ -18,8 +18,8 @@ export function horizonAt(horizonElevDeg, azDeg) {
   return horizonElevDeg[i0] * (1 - w) + horizonElevDeg[(i0 + 1) % N_AZIMUTHS] * w;
 }
 
-/** Seuil binaire : 'strict' ⇒ f ≥ 0,5 ; 'any' ⇒ f > 0. */
+/** Seuil binaire : 'strict' ⇒ f ≥ 0,5 ; 'any' ⇒ f > 0 ; à VISIBILITY_TOLERANCE près (D-031 : un cas exactement à la limite ne dépend pas de la bibliothèque mathématique). */
 export function isVisible(fraction, mode) {
   if (!THRESHOLD_MODES.includes(mode)) throw new RangeError(`mode inconnu : ${mode}`);
-  return mode === 'strict' ? fraction >= STRICT_MIN_FRACTION : fraction > 0;
+  return mode === 'strict' ? fraction >= STRICT_MIN_FRACTION - VISIBILITY_TOLERANCE : fraction > VISIBILITY_TOLERANCE;
 }

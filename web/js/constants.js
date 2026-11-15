@@ -33,6 +33,8 @@ export const SUPPORTED_SCHEMA_MAJOR = 1;
 // --- Seuils de visibilité (ARCHITECTURE § 2, D-004) ---
 // strict : f >= 0,5 (centre du disque au-dessus de l'horizon) ; any : f > 0 (une partie du disque visible).
 export const STRICT_MIN_FRACTION = 0.5;
+// Tolérance numérique sur la fraction visible (D-031), miroir de pipeline/config.py : un cas exactement à la limite ne dépend pas de la bibliothèque mathématique.
+export const VISIBILITY_TOLERANCE = 1e-9;
 export const THRESHOLD_MODES = Object.freeze(['strict', 'any']);
 // Seuil par défaut : strict (D-004, à confirmer Q-006).
 export const DEFAULT_THRESHOLD = 'strict';

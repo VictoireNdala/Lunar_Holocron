@@ -33,6 +33,7 @@ The application is **static and fully offline** (no server logic, no CDN, no rem
 | **Site: verdict** | Strict / optimistic threshold, the share of time with the Sun and the Earth visible, both together, the longest period without Sun and without Earth, a month-by-month heat map and its table. |
 | **Site: readings** | For each body: Hidden / Partial / Visible (independent of the threshold), azimuth, elevation, **horizon at the body’s azimuth**, **signed margin**, angular radius, and a geometric “direct link possible” sentence. |
 | **Site: views** | 360° panorama of the real horizon, a 3D terrain view, and a **timeline** with elevation curves, the terrain horizon at each body’s azimuth and visibility bands (7 days to the whole 2026–2030 period). |
+| **Free point** | Type any latitude/longitude (or click the map): Sun, Earth, horizon and indicators are computed **in your browser** (SPICE positions with parallax; horizon from a 480 m LOLA grid south of 80° S, flat horizon north of it). The approximation is measured and stated. |
 | **Compare** | Site B against site A at the same instant and threshold: indicators, difference B − A, no ranking. |
 | **Time** | One clock for every view: UTC field, ±1 h / ±1 day, play / pause at ×1, ×60, ×3600, ×86 400, “Now”. |
 | **Sources and method** | Provenance read from the data file, formulas, definitions of every indicator, limits, validation, credits, use of AI. |
@@ -83,7 +84,7 @@ Key methodological choices (details in [`docs/`](docs/) and in the application�
 | Browser smoke test (Playwright), mobile layout, accessibility audit, command palette | ❌ not done |
 | Level-2 sites (NASA 2024 regions without 5 m terrain), LOLA hillshade layer, polar-map zoom | ❌ not done |
 
-Test suites: **258 Python tests** and **157 JavaScript tests**, all passing at the last run (see [`STATUS.md`](STATUS.md) for the dated evidence).
+Test suites: **268 Python tests** and **179 JavaScript tests**, all passing at the last run (see [`STATUS.md`](STATUS.md) for the dated evidence).
 The detailed task plan is in [`PLAN.md`](PLAN.md); the live status is in [`STATUS.md`](STATUS.md); the exchange with the reviewing assistant is in [`LIAISON.md`](LIAISON.md).
 
 ## Getting started

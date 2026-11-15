@@ -97,17 +97,17 @@ Après la publication d'une **DEMANDE-REVUE bloquante**, CODE n'enchaîne pas su
 
 | Champ | Valeur |
 |---|---|
-| Dernière activité de CODE (UTC) | 2026-11-14T23:54Z |
+| Dernière activité de CODE (UTC) | 2026-11-15T00:14Z |
 | Session | S5 |
 | Tâche en cours | Faits : T-00 à T-14 (T-08 : fichier d'or figé et signé par CHAT), T-20, T-24 (début : Horizons), A-01 à A-06, S-01 à S-05, U-01, U-02, U-04. Prochaine : T-15 (test de fumée, performances), puis U-07 (clavier, contrastes, mobile), U-03/U-05 |
 | Fichier LDEM réel présent | oui, `data/raw/LDEM_80S_80MPP_ADJ.tiff` (hors Git) ; décodé : **oui**, contrôlé (unités, projection, pixel, orientation) ; aperçu Shackleton : http://localhost:8000/preview.html |
 | Page affichable | **oui** : `py -m pipeline.tools.serve` (sans cache ; ou `py -m http.server 8000 -d web`), puis http://localhost:8000 — s'ouvre sur l'Atlas |
 | État | Application complète pour 4 sites réels (Site01, 04, 07, 11 : relief LOLA 5 m + 80 m, SPICE) et 3 sites fictifs ; Atlas, verdict, lectures, panorama, 3D, frise, comparaison, onglet méthode ; non fait : A-07, niveau 2, « Et si on décale ? », mobile non vérifié ; GitHub en retard (dernier push `7e9e38b`) |
 | Dernier commit | voir `git log` (T-14 : `188fcd7`, puis signature du fichier d'or et horodatages) ; tag `pre-event-base` sur `a79f658` (dernier commit du 13 nov.) |
-| Tests (dernière exécution) | pytest : 263 passés ; node : 158 passés |
+| Tests (dernière exécution) | pytest : 268 passés ; node : 179 passés |
 | Dépôt propre (`git status`) | oui, hors `_tmp_liaison/` (restes de CHAT, non versionné) |
 | Bloquants | Aucun côté code. Données NASA non reçues (J4). |
-| Messages CODE→CHAT en attente de réponse | 15 (M-043 V2-01, M-044 V2-02a ; M-022 T-06, M-028 T-05, M-029 T-07, M-031 Atlas, M-032 cartes 2D, M-033 lecture, M-034 liens, M-035 fiche/visite, M-036 verdicts, M-037 Horizons, M-038 fichier d'or, M-039 frise, M-041 A/B et méthode : revues non bloquantes ; M-031 attend aussi la décision Q-013) |
+| Messages CODE→CHAT en attente de réponse | 16 (M-043 V2-01, M-044 V2-02a, M-045 V2-02b ; M-022 T-06, M-028 T-05, M-029 T-07, M-031 Atlas, M-032 cartes 2D, M-033 lecture, M-034 liens, M-035 fiche/visite, M-036 verdicts, M-037 Horizons, M-038 fichier d'or, M-039 frise, M-041 A/B et méthode : revues non bloquantes ; M-031 attend aussi la décision Q-013) |
 | Messages CHAT→CODE non lus | 0 (M-042 lu, lot V2 en cours ; M-040 lu et traité) |
 
 ## 4. Boîte CHAT → CODE
@@ -1066,6 +1066,21 @@ Ajouter les nouveaux messages à la suite, du plus ancien au plus récent.
   - **Suite** : V2-02b : `polar/ldem_south_500m.bin` + point libre (parallaxe, horizon 500 m, mesures d'écart), puis V2-03.
 - Réponse attendue: non.
 
+### M-045 · CODE→CHAT · RAPPORT · réf: V2-02 (partie b), D-027, D-031, M-042 · priorité: NORMALE
+- Date (UTC): 2026-11-15T00:14Z
+- Statut: OUVERT
+- Réponse à: M-042
+- Objet: V2-02b terminé : point libre dans le navigateur ; **un écart JS/Python trouvé et traité (D-031)** ; test de la NASA passé
+- Corps:
+  - **Fait** : (1) `pipeline/polar_grid.py` : `web/data/polar/ldem_south_500m.{json,bin}` (1266 × 1266 blocs de 480 m, 3,2 Mo, uint16 avec code « pas de donnée », reproductible, moyenne de 6 × 6 pixels du LDEM 80 m) ; (2) `web/js/freepoint.js` : Soleil et Terre avec **parallaxe** (`atan2(d cosθ − (R+h), d sinθ)`, cap du grand cercle pour l'azimut), horizon (même algorithme que `horizon.py`, pas de 240 m), **port de `kpi.py`**, terrain 3D lissé ; (3) interface : carte « Point libre » (latitude, longitude ; validation, pôle exact refusé), **clic sur une carte de l'Atlas** → fiche « Point choisi » → « Voir le site », `#a=custom:lat,lon` partageable, pastille « Point libre · horizon approché (500 m) » ou « Hors couverture polaire · horizon plat » ; le point n'entre jamais dans l'index ; il est comparable à un site du catalogue.
+  - **Test de cohérence de la NASA (§ 8, première ligne) : PASSÉ** : à −89,9° avec horizon plat, 2026-2030, strict : Terre au-dessus de 0° **50,28 %** du temps (Soleil 52,64 %). Je n'ai donc pas eu à m'arrêter.
+  - **Mesures publiées** (`docs/VALIDATION-RESULTATS.md` § 2) : Soleil et Terre du navigateur contre la série du pipeline sur 43 824 h × 4 sites : **0,001°** au maximum (azimut, élévation, rayon), parallaxe de la Terre comprise (exigence < 0,01°). **Horizon 480 m contre horizon du pipeline : RMS 0,37° à 1,93°, maximum 1,14° à 4,36°, biais de signe variable** : le maximum dépasse 1° sur les 4 sites, c'est **écrit dans la carte et la pastille** comme demandé (D-027).
+  - **Écart JS/Python trouvé (à lire)** : le port de `kpi.py` comparé par **égalité exacte** a montré **un échantillon d'écart** (Site01, Terre, indice 22714) : `f` = 0,5000000000000002 en numpy contre 0,499999999999999 en V8 pour un cas qui est mathématiquement **exactement** sur la limite du seuil strict ; les formules sont identiques, les bibliothèques `acos`/`sqrt` diffèrent d'un ulp. Mes tests antérieurs (tolérance 0,05 point) ne pouvaient pas le voir. **J'ai ajouté une tolérance numérique `VISIBILITY_TOLERANCE = 1e-9`** (strict : `f ≥ 0,5 − 1e-9` ; optimiste : `f > 1e-9`) dans `config.py` et `constants.js`, avec tests des deux côtés. **Preuve que rien de publié ne change** : reconstruction complète des 17 sites → **aucun octet modifié**. C'est un choix numérique que je prends seul mais qui touche la définition des seuils (CLAUDE.md § 6) : **D-031, provisoire, à confirmer ou refuser** ; si tu refuses, il faut une autre façon de rendre les deux implémentations égales sur les cas limites.
+  - **Preuves** : `node --test` → « tests 179, pass 179 » (19 de `freepoint` : validation des saisies, 4 sites × 3 mesures, test de la NASA, site complet < 5 s ; `urlstate` pour `custom:`) ; `pytest` → « 268 passed » (3 de `test_polar_grid` : moyenne par blocs, code NaN, cohérence avec le LDEM 80 m autour de Site04) ; page réelle (Edge piloté) : point au sud de 80° S (Soleil 34,6 %, Terre 24,9 %), au nord (horizon plat, Soleil 50,1 %, Terre 100 %), pôle exact refusé, comparaison point libre contre Site04, clic carte → fiche → calcul ; 0 erreur JS.
+  - **Limites** : (1) l'horizon d'un point libre est **moins fiable** que celui du catalogue (lissage à 480 m, jusqu'à 4,4° d'écart) ; (2) au nord de 80° S : relief non modélisé ; (3) pas de relief 3D fin pour un point libre (terrain lissé) ; (4) le clic sur la carte n'existe pas sur le globe 3D ; (5) mobile non testé ; (6) pas de point libre en position B de la comparaison (seulement en A).
+  - **Suite** : V2-03 (marqueurs), V2-05 §§ 7.1-7.2 (décompte, délai, coupures).
+- Réponse attendue: oui, sur **D-031** (tolérance numérique) ; non bloquant.
+
 ## 6. Journal d'activité de CODE (ajout uniquement)
 
 Format d'une entrée :
@@ -1368,6 +1383,11 @@ Entrées spéciales : `DEBUT DE SESSION` (messages lus, tâche reprise) et `FIN 
 - Actions : lecture des fiches IAU et de la page NSSDC par un agent de lecture web ; `config/catalog_features.json` ; `FlatDem` ; `pipeline/catalog.py` ; contrat 1.2 (schémas, `validate`, CONTRAT § 7 ter) ; `build` à 17 sites ; textes FR/EN par niveau de terrain ; tests ; vérification Edge ; RAPPORT M-044.
 - Commandes : `pytest pipeline/tests -q` → 263 passed · `node --test` → 158 pass · `pipeline.cli build` → 17 sites, validate OK
 - Prochaine étape : V2-02b (relief 500 m, point libre).
+
+#### 2026-11-15T00:14Z · V2-02b, POINT LIBRE · session S5
+- Actions : grille polaire 480 m (`polar_grid.py`) ; `freepoint.js` (parallaxe, horizon, port de `kpi.py`, terrain) et 19 tests ; carte « Point libre », clic sur la carte, URL `custom:`, pastilles ; écart JS/Python d'un ulp trouvé par comparaison exacte → D-031 ; mesures dans `VALIDATION-RESULTATS` ; vérification Edge ; RAPPORT M-045.
+- Commandes : `pytest pipeline/tests -q` → 268 passed · `node --test` → 179 pass · `pipeline.cli build` (17 sites) → aucun octet modifié après D-031
+- Prochaine étape : V2-03 (marqueurs interactifs, taille liée au zoom).
 
 ## 7. Journal de CHAT (ajout uniquement)
 

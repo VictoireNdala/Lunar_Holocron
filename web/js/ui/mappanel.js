@@ -56,7 +56,7 @@ export function createMapPanel(store, atlas, openSite) {
     const sp = atlas.subPoints(store.get().tMs);
     const image = sp ? shade(m.base, sp.sun) : new ImageData(m.base.rgb, w, h);
     const layers = atlas.layerState();
-    drawMap(m.ctx, m.proj, { image, sun: sp?.sun ?? { latDeg: 0, lonDeg: 0 }, earth: sp?.earth ?? { latDeg: 0, lonDeg: 0 }, sites: sitesNow(), selectedId: store.get().selectedSiteId, layers: sp ? layers : { ...layers, terminator: false, earthZone: false } }, style(), {});
+    drawMap(m.ctx, m.proj, { image, sun: sp?.sun ?? { latDeg: 0, lonDeg: 0 }, earth: sp?.earth ?? { latDeg: 0, lonDeg: 0 }, sites: sitesNow(), selectedId: store.get().selectedSiteId, picked: store.get().pickedPoint, layers: sp ? layers : { ...layers, terminator: false, earthZone: false } }, style(), {});
   }
 
   let sitesCache = [];
@@ -95,7 +95,9 @@ export function createMapPanel(store, atlas, openSite) {
       if (!m.proj) return;
       const p = toCanvas(e);
       const s = siteAtPixel(m.proj, sitesNow(), p.x, p.y);
-      if (s) openSite(s.id);
+      if (s) { store.set({ pickedPoint: null }); openSite(s.id); return; }
+      const ll = m.proj.fromPixel(p.x, p.y);
+      if (ll && Math.abs(ll.latDeg) <= 89.99) store.set({ pickedPoint: { latDeg: ll.latDeg, lonDeg: ll.lonDeg }, selectedSiteId: null });
     });
     new ResizeObserver(() => { if (current() === kind && tex !== undefined) render(kind); }).observe(m.scene);
   }
@@ -109,7 +111,7 @@ export function createMapPanel(store, atlas, openSite) {
     /** Réagit aux changements d'état : instant, langue. */
     update(changed) {
       const view = current();
-      if (MAP_KINDS.includes(view) && (changed.includes('tMs') || changed.includes('lang') || changed.includes('view') || changed.includes('selectedSiteId'))) render(view);
+      if (MAP_KINDS.includes(view) && (changed.includes('tMs') || changed.includes('lang') || changed.includes('view') || changed.includes('selectedSiteId') || changed.includes('pickedPoint'))) render(view);
     },
   };
 }

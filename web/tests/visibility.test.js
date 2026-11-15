@@ -54,3 +54,11 @@ test('entrées invalides refusées', () => {
   assert.throws(() => isVisible(0.5, 'maybe'), RangeError);
   assert.throws(() => horizonAt(new Array(359).fill(0), 10), RangeError);
 });
+
+test('tolérance numérique D-031 : bruit d\'un ulp à la limite sans effet, vrai écart pris en compte', () => {
+  assert.equal(isVisible(0.5 - 1e-12, 'strict'), true); // 0,5 écrit 0,4999999999990 : même cas
+  assert.equal(isVisible(0.5 - 1e-6, 'strict'), false);
+  assert.equal(isVisible(1e-12, 'any'), false); // bruit autour de 0 : le disque est tangent, pas visible
+  assert.equal(isVisible(1e-6, 'any'), true);
+  assert.equal(isVisible(0, 'any'), false);
+});

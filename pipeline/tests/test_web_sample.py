@@ -19,13 +19,13 @@ GOLDEN_FRACTION = ROOT / "tests" / "golden" / "visible_fraction.json"
 def _js_constants() -> dict[str, float]:
     """Lit les `export const NOM = nombre;` de constants.js."""
     text = CONSTANTS_JS.read_text(encoding="utf-8")
-    pairs = re.findall(r"^export const ([A-Z0-9_]+) = (-?[0-9_.]+);", text, flags=re.MULTILINE)
+    pairs = re.findall(r"^export const ([A-Z0-9_]+) = (-?[0-9_.]+(?:e-?[0-9]+)?);", text, flags=re.MULTILINE)
     return {name: float(value.replace("_", "")) for name, value in pairs}
 
 
 @pytest.mark.parametrize("name", ["R_REF_M", "R_SUN_KM", "R_EARTH_KM", "TIME_STEP_S", "AZ_STEP_DEG", "N_AZIMUTHS",
                                   "MDEG_PER_DEG", "LAT_MIN_DEG", "LAT_MAX_DEG", "DEFAULT_OBSERVER_HEIGHT_M",
-                                  "STRICT_MIN_FRACTION"])
+                                  "STRICT_MIN_FRACTION", "VISIBILITY_TOLERANCE"])
 def test_js_constants_match_python(name: str) -> None:
     """Une seule définition : chaque constante numérique a la même valeur en Python et en JavaScript."""
     js = _js_constants()

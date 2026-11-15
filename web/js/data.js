@@ -1,5 +1,6 @@
 // Chargement et lecture des fichiers de données (docs/CONTRAT-DONNEES.md). Aucun accès réseau externe :
 // les chemins sont relatifs à la page. `fetch` est injectable pour les tests (node --test).
+import { decodePolarGrid } from './freepoint.js';
 import { MDEG_PER_DEG, N_AZIMUTHS, SUPPORTED_SCHEMA_MAJOR } from './constants.js';
 import { lerpAzMdeg } from './geometry.js';
 
@@ -152,6 +153,7 @@ export function globalSeries(doc, body) {
 export function createDataSource(root, fetchFn = (url) => globalThis.fetch(url)) {
   let indexPromise = null;
   let globalPromise = null;
+  let polarPromise = null;
   const sites = new Map();
   const terrains = new Map();
 
@@ -172,6 +174,19 @@ export function createDataSource(root, fetchFn = (url) => globalThis.fetch(url))
       globalPromise.catch(() => { globalPromise = null; });
     }
     return globalPromise;
+  }
+
+  /** Grille polaire 480 m (point libre) : métadonnées + octets, décodées ; mise en cache. */
+  async function loadPolarGrid() {
+    if (!polarPromise) {
+      const url = `${root}polar/ldem_south_500m.json`;
+      polarPromise = request(fetchFn, url, 'json').then(async (meta) => {
+        const binUrl = `${root}polar/${meta.z.file}`;
+        return decodePolarGrid(meta, await request(fetchFn, binUrl, 'binary'));
+      });
+      polarPromise.catch(() => { polarPromise = null; });
+    }
+    return polarPromise;
   }
 
   async function entryOf(id) {
@@ -203,5 +218,5 @@ export function createDataSource(root, fetchFn = (url) => globalThis.fetch(url))
     return terrains.get(id);
   }
 
-  return { root, loadIndex, loadSite, loadTerrain, loadGlobal };
+  return { root, loadIndex, loadSite, loadTerrain, loadGlobal, loadPolarGrid };
 }

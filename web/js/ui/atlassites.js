@@ -10,7 +10,7 @@ export function createAtlasSites(store, atlas, openSite) {
   let entries = [];
   let touring = false;
 
-  const select = (id) => store.set({ selectedSiteId: id });
+  const select = (id) => store.set({ selectedSiteId: id, pickedPoint: null });
 
   function chip(text, kind) {
     const li = document.createElement('li');
@@ -33,7 +33,22 @@ export function createAtlasSites(store, atlas, openSite) {
     if (entry) atlas.flyTo(entry.lat_deg, entry.lon_deg);
   }
 
+  /** Fiche d'un point choisi sur la carte : un point libre en puissance (calculé à la demande, jamais enregistré). */
+  function renderPicked(picked) {
+    $('site-sheet').hidden = false;
+    $('sheet-name').textContent = t('freepoint.heading');
+    $('sheet-chips').replaceChildren(chip(t('freepoint.pickedChip')));
+    const facts = $('sheet-facts');
+    facts.replaceChildren();
+    fact(facts, t('sheet.coords'), `${formatNumber(picked.latDeg, 3)}° ; ${formatNumber(picked.lonDeg, 3)}°`);
+    fact(facts, t('sheet.coordsStatus'), t(picked.latDeg <= -80 ? 'freepoint.pickedCovered' : 'freepoint.pickedFlat'));
+    for (const bid of ['tour-status', 'tour-prev', 'tour-next', 'tour-stop']) $(bid).hidden = true;
+    $('tour-start').hidden = false;
+  }
+
   function render() {
+    const picked = store.get().pickedPoint;
+    if (picked && !store.get().selectedSiteId) { renderPicked(picked); return; }
     const id = store.get().selectedSiteId;
     const entry = entries.find((e) => e.id === id);
     const order = tourOrder(entries);
@@ -83,8 +98,17 @@ export function createAtlasSites(store, atlas, openSite) {
   $('tour-prev').addEventListener('click', () => step(-1));
   $('tour-next').addEventListener('click', () => step(1));
   $('tour-stop').addEventListener('click', () => { touring = false; render(); });
-  $('sheet-close').addEventListener('click', () => { touring = false; select(null); });
-  $('sheet-open').addEventListener('click', () => { const id = store.get().selectedSiteId; if (id) openSite(id); });
+  $('sheet-close').addEventListener('click', () => { touring = false; store.set({ pickedPoint: null, selectedSiteId: null }); });
+  $('sheet-open').addEventListener('click', () => {
+    const picked = store.get().pickedPoint;
+    if (picked && !store.get().selectedSiteId) {
+      store.set({ pickedPoint: null });
+      openSite(`custom:${Number(picked.latDeg.toFixed(4))},${Number(picked.lonDeg.toFixed(4))}`);
+      return;
+    }
+    const id = store.get().selectedSiteId;
+    if (id) openSite(id);
+  });
 
   return {
     /** Fournit les entrées de l'index (sites) ; affiche la fiche si un site est déjà sélectionné. */

@@ -215,6 +215,18 @@
             </div>
           </section>
 
+          <section class="card glass" aria-labelledby="fp-heading" data-panel="freepoint" data-panel-view="site" data-panel-title="freepoint.heading">
+            <h2 id="fp-heading" data-i18n="freepoint.heading"></h2>
+            <p class="hint" data-i18n="freepoint.intro"></p>
+            <form id="fp-form" class="fp-form" novalidate>
+              <label class="field"><span data-i18n="freepoint.lat"></span><input id="fp-lat" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" placeholder="-85.3"></label>
+              <label class="field"><span data-i18n="freepoint.lon"></span><input id="fp-lon" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" placeholder="53.3"></label>
+              <button type="submit" class="btn primary" data-i18n="freepoint.go"></button>
+            </form>
+            <p id="fp-status" class="warning" role="status" hidden></p>
+            <p class="hint" data-i18n="freepoint.limits"></p>
+          </section>
+
           <section class="card glass" aria-labelledby="site-heading" data-panel="site" data-panel-view="site" data-panel-title="site.heading">
             <h2 id="site-heading" data-i18n="site.heading"></h2>
             <p id="site-name" class="site-name"></p>
@@ -400,6 +412,9 @@
             <li data-i18n="method.limits.5"></li>
             <li data-i18n="method.limits.6"></li>
             <li data-i18n="method.limits.7"></li>
+            <li data-i18n="method.limits.free"></li>
+            <li data-i18n="method.limits.tiers"></li>
+            <li data-i18n="method.limits.tol"></li>
           </ul>
             <p data-i18n="method.limits.8"></p>
             <p data-i18n="method.limits.9"></p>

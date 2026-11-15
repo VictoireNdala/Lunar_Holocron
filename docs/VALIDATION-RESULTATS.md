@@ -33,7 +33,22 @@ Les tolérances valent environ **deux fois l'écart maximal mesuré** de chaque 
 - Hauteur de l'observateur 0 : la hauteur de 2 m des sites n'est pas comparée (effet négligeable pour la direction du Soleil et de la Terre).
 - Jours choisis pour couvrir la période, pas pour des cas extrêmes (éclipses, plus petites élongations).
 
-## 2. Pas encore validé (reste de T-24)
+## 2. Point libre calculé dans le navigateur (V2-02b, D-027)
+
+**Ce qui est comparé.** Pour chacun des 4 sites réels, on traite sa position comme un point saisi par l'utilisateur et on recalcule **dans le navigateur** (module `web/js/freepoint.js`, exécuté ici sous Node avec les mêmes fichiers que l'application : `global.json` et `polar/ldem_south_500m.*`), puis on compare au pipeline. Tests : `web/tests/freepoint.test.js` (mesures du 2026-11-15).
+
+| Mesure | Résultat | Exigence | Commentaire |
+|---|---|---|---|
+| Soleil et Terre (azimut, élévation, rayon angulaire) contre la série du pipeline, **43 824 heures × 4 sites × 2 corps**, avec **parallaxe** | écart maximal **0,001 °** (arrondi au millidegré) sur les trois grandeurs, que l'on prenne la hauteur du sol du pipeline (5 m) ou celle de la grille 480 m | < 0,01 ° | y compris l'élévation de la Terre (parallaxe ≈ 0,26 °) |
+| Indicateurs (port de `kpi.py`) alimentés par les séries et l'horizon du pipeline | **égalité exacte** (`deepEqual`) des `kpis` et du `monthly`, strict et optimiste, 4 sites | égalité | une première version a montré **1 échantillon d'écart** (Site01, Terre) : voir D-031 |
+| Horizon approché (grille 480 m) contre l'horizon du pipeline (5 m + 80 m) | Site01 : **RMS 1,93 °, maximum 4,36 °**, biais −1,41 ° · Site04 : RMS 0,37 °, max 1,14 °, biais −0,28 ° · Site07 : RMS 0,81 °, max 2,47 °, biais +0,32 ° · Site11 : RMS 1,01 °, max 2,66 °, biais +0,40 ° | RMS et maximum publiés ; si max > 1 °, le dire dans la fiche | **le maximum dépasse 1 ° sur les 4 sites** (la moyenne par blocs lisse les crêtes et les cuvettes) : c'est écrit dans la carte « Point libre » et dans la pastille |
+| Hauteur du sol : grille 480 m contre MNT 5 m | Site01 1937,0 m / 1944,8 m · Site04 769,3 / 769,7 · Site07 1622,3 / 1645,3 · Site11 1777,0 / 1793,7 | — | écart ≤ 23 m ; effet négligeable sur le Soleil et la Terre (< 10⁻⁶ °) |
+| **Test de cohérence de la NASA** : point à −89,9 ° avec horizon plat, 2026-2030, seuil strict | Terre au-dessus de 0 ° **50,28 %** du temps (Soleil 52,64 % ; Terre en optimiste 54,82 %) | ≈ 50 % ± 5 points | la NASA écrit que la Terre n'est visible qu'environ la moitié de chaque mois sidéral au pôle : cohérent |
+| Temps de calcul d'un point (horizon 360 azimuts + 2 × 43 824 heures + indicateurs + terrain 3D), Node | ≈ 0,4 s (horizon seul : 0,1 s) | rapide | mesuré sans interface graphique |
+
+**Ce que la mesure n'établit pas.** Le biais de l'horizon est de signe variable : la grille 480 m peut **sous-estimer ou surestimer** l'horizon réel d'un à quelques degrés. Les indicateurs d'un point libre sont donc **moins fiables** que ceux des sites du catalogue, surtout près des crêtes ; l'application le dit. Aucune comparaison n'a été faite avec un outil officiel.
+
+## 3. Pas encore validé (reste de T-24)
 
 | Contrôle | État |
 |---|---|

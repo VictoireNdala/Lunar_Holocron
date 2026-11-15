@@ -70,3 +70,12 @@ def test_vectorized_shapes() -> None:
     el = np.linspace(-1, 1, 43824)
     f = visible_fraction(el, np.full_like(el, 0.27), horizon_at(np.zeros(360), np.linspace(0, 720, 43824)))
     assert f.shape == (43824,)
+
+
+def test_numeric_tolerance_d031() -> None:
+    """D-031 : le bruit d'un ulp à la limite est sans effet (mêmes cas qu'en JavaScript), un vrai écart est pris en compte."""
+    assert bool(is_visible(0.5 - 1e-12, "strict")) is True
+    assert bool(is_visible(0.5 - 1e-6, "strict")) is False
+    assert bool(is_visible(1e-12, "any")) is False
+    assert bool(is_visible(1e-6, "any")) is True
+    assert bool(is_visible(0.0, "any")) is False

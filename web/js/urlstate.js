@@ -3,7 +3,7 @@
 import { THRESHOLD_MODES } from './constants.js';
 import { VIEWS } from './ui/nav.js';
 
-const SITE_ID = /^[a-z0-9]+(-[a-z0-9]+)*$/;
+const SITE_ID = /^(?:[a-z0-9]+(?:-[a-z0-9]+)*|custom:-?\d{1,3}(?:\.\d{1,6})?,-?\d{1,3}(?:\.\d{1,6})?)$/; // identifiant du catalogue, ou point libre `custom:lat,lon` (D-027)
 const TIME = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})Z$/;
 const LANGS = Object.freeze(['fr', 'en', 'sw']);
 const WINDOWS = Object.freeze(['7', '30', '365', 'all']);
