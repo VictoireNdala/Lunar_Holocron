@@ -17,6 +17,8 @@
 
 **Team lead:** Victoire Ndala Mwenze · **Teammate:** Lionel Kisimba Kipoka · NASA Space Apps Challenge Lubumbashi 2026, challenge *Lunar Landing Site Navigator*. Independent project, not endorsed by NASA. The resource list for the submission form (data, libraries and versions, use of AI) is in [`SOURCES.md`](SOURCES.md) § 5.
 
+**Live application:** *to be added once GitHub Pages is on* · **Demo video:** *to be added*
+
 ## Why
 
 Near the lunar South Pole the Sun skims the horizon and the Earth rises and sets with the Moon’s libration.
@@ -58,7 +60,7 @@ pipeline/  (Python, offline, run once per site)
    shared visibility formulas ─► indicators ─► export
         │
         ▼
-web/data/  (static JSON + compact binary terrain grids — the data contract, version 1.1)
+web/data/  (static JSON + compact binary terrain grids — the data contract, version 1.2)
         │
         ▼
 web/  (static app, native ES modules, three.js vendored locally, no build step)
@@ -79,17 +81,20 @@ Key methodological choices (details in [`docs/`](docs/) and in the application�
 
 | Area | State |
 |---|---|
-| Data contract, schemas, validator | ✅ version 1.1, validated on every build |
-| Pipeline: terrain, horizon, visibility, indicators, SPICE ephemerides, export | ✅ 4 real sites (fictional test sets isolated in `fixtures`) |
-| Atlas: globe, three 2D maps, site sheet, guided tour, playback | ✅ |
-| Site view: verdict, readings, panorama, 3D, timeline, compare, method tab, deep links | ✅ |
+| Data contract, schemas, validator | ✅ version 1.2 (optional fields added to 1.0; see `docs/CONTRAT-DONNEES.md` § 7 ter), validated on every build |
+| Pipeline: terrain, horizon, visibility, indicators, SPICE ephemerides, export | ✅ **55 sites**: 27 at 5 m, 21 at 80 m, 7 without modelled relief (6 Apollo sites and Chandrayaan-3); fictional test sets isolated in `pipeline/fixtures` |
+| Atlas: globe, three 2D maps, site sheet, guided tour, playback | ✅ hillshade basemap with zoom and a tile pyramid (480 m to 80 m around the sites), interactive markers with real footprints |
+| Site view: verdict, readings, panorama, 3D, timeline, compare, method tab, deep links | ✅ plus a free point computed in the browser, a direct-to-Earth link view and a landing-window planner (**geometry only**), and a 2D fallback when WebGL is missing |
 | Validation: SPICE against JPL Horizons (5 sites × 3 dates × Sun and Earth, 1,440 values) | ✅ see [`docs/VALIDATION-RESULTATS.md`](docs/VALIDATION-RESULTATS.md) |
-| Python / JavaScript agreement file for body positions (`body_state_cases.json`) | ⏳ generated, **awaiting human review** ([`docs/REVUE-FICHIER-OR.md`](docs/REVUE-FICHIER-OR.md)) |
-| Horizon mask against an official tool, LOLA average illumination, sensitivity analysis | ❌ not done |
-| Browser smoke test (Playwright), mobile layout, accessibility audit, command palette | ❌ not done |
-| Level-2 sites (NASA 2024 regions without 5 m terrain), LOLA hillshade layer, polar-map zoom | ❌ not done |
+| Python / JavaScript agreement file for body positions (`body_state_cases.json`) | ⚠️ **reviewed and signed by the Claude chat assistant on the team lead's delegation (2026-11-15), independent recomputation of the 20 cases, maximum difference 4.9e-10. No independent human review.** The values are synthetic: the file checks Python/JavaScript agreement, not astronomy ([`docs/REVUE-FICHIER-OR.md`](docs/REVUE-FICHIER-OR.md)) |
+| Horizon mask against an official tool (Quickmap, Moon Trek) | ⚠️ not done; independent recomputation by the review assistant for Site01 (LDEM 80 m only): RMS 0.41°, maximum 0.98° |
+| LOLA average illumination | ⚠️ computed (Site01 and Site04 sweeps), internally consistent, but it does **NOT reproduce the two published abstracts we could read** (Barker 2021, Mazarico 2011): **not validated against the literature** |
+| Sensitivity analysis | ✅ for Site01 only: horizon ±0.25° ≈ ±4-5 points of Sun visibility; eye height 1 / 2 / 5 m: 42.0 / 46.55 / 66.14 % |
+| Browser smoke test | ✅ 16 checks, plus an 11-check test without WebGL, run through the Edge/Chrome DevTools protocol (`tests/e2e/`), **not Playwright** |
+| Mobile layout, accessibility audit | ⚠️ mobile: only a horizontal-overflow check at 390 px (emulated); ❌ accessibility audit not done |
+| NASA 2024 candidate regions | ⚠️ 2 placed approximately, 4 matched by product name, **3 not placed** (no position source read) |
 
-Test suites: **296 Python tests** and **255 JavaScript tests**, all passing at the last run (see [`STATUS.md`](STATUS.md) for the dated evidence).
+Test suites, counted on a clean clone of the repository (2026-11-15): **252 Python tests passed + 44 skipped** (they need the raw NASA files, see *Raw data* below; 296 pass with those files present) and **257 JavaScript tests passed**; see [`STATUS.md`](STATUS.md) for the dated evidence.
 The detailed task plan is in [`PLAN.md`](PLAN.md); the live status is in [`STATUS.md`](STATUS.md); the exchange with the reviewing assistant is in [`LIAISON.md`](LIAISON.md).
 
 ## Getting started
@@ -193,7 +198,7 @@ The tests read the committed results and need no network.
 | [`docs/INTERFACE.md`](docs/INTERFACE.md), [`docs/UI-DESIGN.md`](docs/UI-DESIGN.md), [`docs/ATLAS.md`](docs/ATLAS.md) | Application design: views, state, accessibility, design system, Atlas |
 | [`docs/SITES-REELS.md`](docs/SITES-REELS.md), [`docs/INVENTAIRE-DONNEES.md`](docs/INVENTAIRE-DONNEES.md) | Real sites and data inventory |
 | [`docs/TESTS-VALIDATION.md`](docs/TESTS-VALIDATION.md), [`docs/VALIDATION-RESULTATS.md`](docs/VALIDATION-RESULTATS.md) | Reference values, tests, validation plan and **measured results** |
-| [`docs/REVUE-FICHIER-OR.md`](docs/REVUE-FICHIER-OR.md) | The Python/JavaScript agreement file awaiting human review |
+| [`docs/REVUE-FICHIER-OR.md`](docs/REVUE-FICHIER-OR.md) | The Python/JavaScript agreement file, reviewed by an AI assistant (not by a human) |
 | [`DECISIONS.md`](DECISIONS.md) | Decision log and open questions |
 
 Some internal working documents (`PLAN.md`, `STATUS.md`, `DECISIONS.md`, `LIAISON.md`, most of `docs/`) and code comments are still written in French; code identifiers, data fields, the application and this README are in English.
@@ -205,7 +210,7 @@ Some internal working documents (`PLAN.md`, `STATUS.md`, `DECISIONS.md`, `LIAISO
 | LRO / LOLA digital elevation models, NASA Goddard PGDA (products 78 and 90) | Terrain, horizon masks |
 | NAIF SPICE generic kernels (DE440, lunar orientation) | Sun and Earth positions in `MOON_ME` |
 | NASA/JPL Horizons System | **Validation only** (never used by the pipeline, the application or the tests) |
-| NASA Scientific Visualization Studio, CGI Moon Kit | Illustrative Atlas textures, kept local and uncommitted; used in no calculation |
+| NASA Scientific Visualization Studio, CGI Moon Kit | Illustrative Atlas textures, **committed** in `web/assets/moon/` (decision D-035, credit shown in the interface); used in no calculation |
 
 Licences, citations and checksums are recorded in [`SOURCES.md`](SOURCES.md). Several source pages state **no explicit licence**; the rule followed is to cite them and to commit only derived results.
 
@@ -223,10 +228,8 @@ Licences, citations and checksums are recorded in [`SOURCES.md`](SOURCES.md). Se
 
 ## Use of AI
 
-This project is built with the help of AI tools, used transparently:
-**Claude** (Anthropic) for the preliminary study, architecture, and review, and **Claude Code** for implementation, tests, and technical documentation.
-Reference values are recomputed independently where possible, and the points that still need a human check (the Python/JavaScript agreement file, the site positions, the scientific choices)
-are listed in [`STATUS.md`](STATUS.md) and in [`SOURCES.md`](SOURCES.md#4-usage-de-lia-transparence).
+The application code, the data pipeline, the tests and the technical documentation were written by **Claude Code** (Anthropic). **Claude** (chat) reviewed the work, recomputed some values independently and wrote project-management messages. The two team members set the goals and priorities, ran the application and decided what to publish. **No line-by-line human code review is recorded.** Code and data in this repository are AI-generated, as the Space Apps guide asks projects to state.
+The points that still need a human check (the site positions, the scientific choices, the interface texts) are listed in [`STATUS.md`](STATUS.md) and in [`SOURCES.md`](SOURCES.md#4-usage-de-lia-transparence); the full resource list for the submission form is in [`SOURCES.md`](SOURCES.md) § 5 and in [`AI-DISCLOSURE.md`](AI-DISCLOSURE.md).
 
 ## License
 
@@ -237,8 +240,4 @@ This project is not endorsed by NASA. NASA data remain subject to their own term
 
 ### Résumé en français
 
-**Lunar Holocron** est un navigateur des sites d’alunissage du pôle Sud lunaire. Pour un site et une date, il montre où se trouvent le Soleil et la Terre par rapport à
-**l’horizon réel du terrain**, afin de juger l’énergie solaire disponible et la liaison directe avec la Terre ; il permet de comparer deux sites.
-Projet réalisé pour le NASA Space Apps Challenge 2026. **Quatre sites utilisent des données réelles (relief LOLA, éphémérides SPICE) ; aucune donnée fictive n’est livrée avec le produit (les jeux fictifs ne servent qu’aux tests).**
-Les indicateurs des sites réels sont calculés au centre du modèle de terrain, pas à un point d’alunissage choisi. Le projet n’est pas approuvé par la NASA.
-La documentation de conception est dans [`docs/`](docs/) ; l’état d’avancement dans [`STATUS.md`](STATUS.md) ; les résultats de validation mesurés dans [`docs/VALIDATION-RESULTATS.md`](docs/VALIDATION-RESULTATS.md).
+**Lunar Holocron** montre, pour 55 sites du pôle Sud lunaire et une date, où se trouvent le Soleil et la Terre par rapport à l'horizon réel du terrain (relief LOLA, éphémérides SPICE). Projet indépendant, non approuvé par la NASA ; l'application et la documentation de soumission sont en anglais.

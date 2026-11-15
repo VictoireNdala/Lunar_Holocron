@@ -87,7 +87,9 @@ https://github.com/VictoireNdala/Lunar_Holocron (conditions + annexe facultative
 
 ## 4. Usage de l'IA (transparence)
 
-Règle du hackathon sur l'IA : non confirmée à ce jour (`Q-002`). Ce paragraphe est tenu à jour dans tous les cas.
+Règle du hackathon sur l'IA (`Q-002`, tranchée par CHAT le 2026-11-15) : d'après le guide de soumission lu par CHAT le 2026-11-15 (https://www.spaceappschallenge.org/resources/project-submission-guide/), l'IA est **permise** à condition d'indiquer où et comment elle a servi ; le **code et les données générés par IA** doivent être mentionnés dans le texte descriptif et les métadonnées. **La page lue porte des dates de 2025 : le guide 2026 est à relire par l'humain.** Ce paragraphe est tenu à jour dans tous les cas.
+
+Chronologie (`Q-001`, reste à l'humain) : *Work on this project started on 2026-11-12, before the hackathon (tag `pre-event-base`); the commit history shows what was built when.*
 
 - **Claude (Anthropic), conversation de projet** : étude préalable, comparaison des outils, choix d'architecture, rédaction des fichiers de pilotage de ce dépôt (2026-11-12), revue critique des résultats.
 - **Claude Code** : construction du code, des tests et de la documentation technique selon `PLAN.md`.
@@ -95,6 +97,8 @@ Règle du hackathon sur l'IA : non confirmée à ce jour (`Q-002`). Ce paragraph
 - **Relu par une IA, pas par un humain** : le fichier de référence `tests/golden/body_state_cases.json` (relu et signé par Claude « CHAT » sur délégation de l'humain, 2026-11-15, `docs/REVUE-FICHIER-OR.md` ; valeurs fictives, la signature ne valide pas la physique) ; la revue du code et des chiffres par Claude « CHAT » (`LIAISON.md`).
 - **Non vérifié par un humain** : toutes les coordonnées de sites (`verified: false` partout : centres d'emprise de MNT, centres d'entités IAU lus dans le fichier du Gazetteer, positions de missions lues sur des pages LROC) ; les résultats de `docs/VALIDATION-RESULTATS.md` (comparaison à JPL Horizons, couture 5 m / 80 m, balayage d'illumination, mesures dans Edge) ; les textes de l'interface, de la page méthode et des fiches ; les traductions françaises des libellés de produits PGDA ; la comparaison avec la littérature (non faite au-delà de la phrase de l'abstract de Barker et al. 2021 lue sur la page PGDA 78).
 - 2026-11-15 — Claude Code — pyramide de tuiles du fond polaire, anneau de contexte 3D, sonde et mesure des disques en 3D, catalogue étendu (Gazetteer, LROC), 23 produits PGDA 5 m, planificateur, liaison, Soleil et Terre en disques, test de fumée — relu par : personne à ce jour ; vérifié par commandes lancées (`pytest`, `node --test`, `pipeline.cli validate`, contrôles dans Edge) citées dans `STATUS.md` et `LIAISON.md`.
+
+- 2026-11-15 (après-midi) — Claude Code — globe et WebGL (cause réelle : erreur de syntaxe), repli sans WebGL, textures, interface en anglais, sensibilité, raccords, GitHub Pages, vidéo, documentation — relu par : personne ; vérifié par commandes lancées (`node --test`, `pytest`, tests de fumée) citées dans `STATUS.md` et `LIAISON.md`.
 
 Format d'une ligne à ajouter : `AAAA-MM-JJ — outil — tâche — ce qui a été relu et par qui`.
 

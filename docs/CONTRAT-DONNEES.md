@@ -1,4 +1,4 @@
-# Contrat de données (version 1.1)
+# Contrat de données (version 1.1 ; **version courante 1.2, voir § 7 ter**)
 
 C'est la **seule interface** entre le pipeline et l'application. Toute modification passe par le processus décrit à la fin.
 Le schéma exécutable est `pipeline/schema/site.schema.json` (à écrire en T-01 d'après ce document). Ce document fait foi en cas de doute.
