@@ -59,7 +59,7 @@ export function gridHeight(grid, latDeg, lonDeg) {
 export const flatHeight = () => 0;
 
 /** Point atteint depuis (lat, lon) en suivant l'azimut sur la distance au sol (mêmes formules que pipeline/geodesy.py). */
-function destination(latDeg, lonDeg, azRad, deltaRad) {
+export function destination(latDeg, lonDeg, azRad, deltaRad) {
   const lat = latDeg * DEG;
   const sinLat2 = Math.min(Math.max(Math.sin(lat) * Math.cos(deltaRad) + Math.cos(lat) * Math.sin(deltaRad) * Math.cos(azRad), -1), 1);
   const lon2 = lonDeg * DEG + Math.atan2(Math.sin(azRad) * Math.sin(deltaRad) * Math.cos(lat), Math.cos(deltaRad) - Math.sin(lat) * sinLat2);

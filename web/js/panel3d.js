@@ -16,6 +16,7 @@ export function createPanel3d(store) {
   let terrain = null;
   let mode = 'overview';
   let qualityKey = null;
+  let hasRing = false;
 
   async function ensureView() {
     if (view || viewError) return view;
@@ -39,6 +40,7 @@ export function createPanel3d(store) {
       const sun = bodyStateAt(site, 'sun', store.get().tMs);
       if (sun.elDeg < 0) parts.push(t('view3d.sunBelow'));
     }
+    if (hasRing) parts.push(t('view3d.ringNote'));
     if (qualityKey) parts.push(t(qualityKey));
     $('view3d-status').textContent = parts.join(' ');
     $('view3d-status').hidden = parts.length === 0;
@@ -85,6 +87,7 @@ export function createPanel3d(store) {
     async show(newSite, newTerrain) {
       site = newSite;
       terrain = newTerrain;
+      hasRing = false;
       renderLegend();
       renderControls();
       if (await ensureView()) {
@@ -96,6 +99,8 @@ export function createPanel3d(store) {
       }
       renderStatus();
     },
+    /** Anneau de contexte (voir ringsource.js) pour le site affiché ; ignoré si la vue n'existe pas ou a changé de site. */
+    setRing(arrays, forSite) { if (view && site === forSite) { view.setRing(arrays); hasRing = Boolean(arrays); renderStatus(); } },
     /** Réagit aux changements d'état (instant, langue, azimut du regard). */
     update(changed) {
       if (changed.includes('tMs')) pushBodies();

@@ -59,6 +59,7 @@ export function createTerrainView(container, { onQualityChange = () => {} } = {}
   scene.add(marker);
 
   let mesh = null;
+  let ringMesh = null; // anneau de contexte (terrainring.js), exagération par mesh.scale.y
   let meta = null;
   let heights = null;
   let exaggeration = 1;
@@ -208,8 +209,27 @@ export function createTerrainView(container, { onQualityChange = () => {} } = {}
   resize();
 
   return {
-    /** Grille de terrain décodée (data.js → loadTerrain). */
-    setTerrain(terrainMeta, heightsM) { meta = terrainMeta; heights = heightsM; rebuildMesh(); applyCamera(true); },
+    /** Grille de terrain décodée (data.js → loadTerrain). L'anneau de contexte du site précédent est retiré. */
+    setTerrain(terrainMeta, heightsM) { meta = terrainMeta; heights = heightsM; this.setRing(null); rebuildMesh(); applyCamera(true); },
+    /** Anneau de contexte { positions, colors, indices } (exagération 1) autour du terrain central ; null pour l'enlever. */
+    setRing(arrays) {
+      if (ringMesh) { scene.remove(ringMesh); ringMesh.geometry.dispose(); ringMesh.material.dispose(); ringMesh = null; }
+      if (arrays) {
+        const geometry = new THREE.BufferGeometry();
+        geometry.setAttribute('position', new THREE.BufferAttribute(arrays.positions, 3));
+        geometry.setAttribute('color', new THREE.BufferAttribute(arrays.colors, 3));
+        // Normales calculées sur la seule surface ; les sommets de jupe pointent vers le haut : une fente éventuelle a l'éclairage de la surface voisine (pas de trait sombre).
+        geometry.setIndex(new THREE.BufferAttribute(arrays.indices.subarray(0, arrays.surfaceIndexCount), 1));
+        geometry.computeVertexNormals();
+        const normals = geometry.getAttribute('normal');
+        for (let v = arrays.surfaceVertexCount; v < normals.count; v += 1) normals.setXYZ(v, 0, 1, 0);
+        geometry.setIndex(new THREE.BufferAttribute(arrays.indices, 1));
+        ringMesh = new THREE.Mesh(geometry, new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 1, metalness: 0, side: THREE.DoubleSide }));
+        ringMesh.scale.y = exaggeration;
+        scene.add(ringMesh);
+      }
+      requestRender();
+    },
     /** États {azDeg, elDeg, radiusDeg} du Soleil et de la Terre (ou null). */
     setBodies(sun, earth) { bodies = { sun, earth }; placeBodies(); requestRender(); },
     /** Agrandissement illustratif des disques (1 = taille réelle, avec plancher de lisibilité). */
@@ -227,7 +247,7 @@ export function createTerrainView(container, { onQualityChange = () => {} } = {}
       if (meta) applyCamera(reset);
     },
     /** Exagération verticale (×1 à ×5). */
-    setExaggeration(f) { exaggeration = f; rebuildMesh(); if (meta) applyCamera(false); },
+    setExaggeration(f) { exaggeration = f; if (ringMesh) ringMesh.scale.y = f; rebuildMesh(); if (meta) applyCamera(false); },
     /** Rendu immédiat (sans attendre l'image suivante), utile aux contrôles et aux captures. */
     renderNow() { render(); },
     /** Mémoire GPU suivie par three.js (contrôle des fuites). */
@@ -239,6 +259,8 @@ export function createTerrainView(container, { onQualityChange = () => {} } = {}
       controls.dispose();
       mesh?.geometry.dispose();
       mesh?.material.dispose();
+      ringMesh?.geometry.dispose();
+      ringMesh?.material.dispose();
       marker.geometry.dispose();
       marker.material.dispose();
       sprites.forEach((s) => s.material.dispose());

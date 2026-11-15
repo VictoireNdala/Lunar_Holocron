@@ -1,4 +1,5 @@
 // Initialisation de la page : chargement des données, état, langue, coque (U-02), vue de site (T-09, T-11).
+import { loadRing } from './ringsource.js';
 import { createDataSource, DataError, siteTimeRange } from './data.js';
 import { buildFreePointSite, parseCoordinates } from './freepoint.js';
 import { formatNumber, formatUtc, getLang, setLang, t } from './i18n.js';
@@ -256,6 +257,7 @@ async function loadSiteA() {
     panorama.show(site);
     const terrain = built ? built.terrain : await source.loadTerrain(id);
     if (store.get().siteIdA === id) await panel3d.show(site, terrain);
+    if (store.get().siteIdA === id) loadRing(source, site, terrain).then((ring) => panel3d.setRing(ring, loaded)).catch(() => {}); // contexte 3D : facultatif, jamais bloquant
   } catch (err) {
     showError(err);
   } finally {

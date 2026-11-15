@@ -97,17 +97,17 @@ Après la publication d'une **DEMANDE-REVUE bloquante**, CODE n'enchaîne pas su
 
 | Champ | Valeur |
 |---|---|
-| Dernière activité de CODE (UTC) | 2026-11-15T09:12Z |
+| Dernière activité de CODE (UTC) | 2026-11-15T09:24Z |
 | Session | S5 |
 | Tâche en cours | Faits : T-00 à T-14 (T-08 : fichier d'or figé et signé par CHAT), T-20, T-24 (début : Horizons), A-01 à A-06, S-01 à S-05, U-01, U-02, U-04. Prochaine : T-15 (test de fumée, performances), puis U-07 (clavier, contrastes, mobile), U-03/U-05 |
 | Fichier LDEM réel présent | oui, `data/raw/LDEM_80S_80MPP_ADJ.tiff` (hors Git) ; décodé : **oui**, contrôlé (unités, projection, pixel, orientation) ; aperçu Shackleton : http://localhost:8000/preview.html |
 | Page affichable | **oui** : `py -m pipeline.tools.serve` (sans cache ; ou `py -m http.server 8000 -d web`), puis http://localhost:8000 — s'ouvre sur l'Atlas |
 | État | Application complète pour 4 sites réels (Site01, 04, 07, 11 : relief LOLA 5 m + 80 m, SPICE) et 3 sites fictifs ; Atlas, verdict, lectures, panorama, 3D, frise, comparaison, onglet méthode ; non fait : A-07, niveau 2, « Et si on décale ? », mobile non vérifié ; GitHub en retard (dernier push `7e9e38b`) |
 | Dernier commit | voir `git log` (T-14 : `188fcd7`, puis signature du fichier d'or et horodatages) ; tag `pre-event-base` sur `a79f658` (dernier commit du 13 nov.) |
-| Tests (dernière exécution) | pytest : 293 passés ; node : 238 passés |
+| Tests (dernière exécution) | pytest : 294 passés ; node : 243 passés |
 | Dépôt propre (`git status`) | oui, hors `_tmp_liaison/` (restes de CHAT, non versionné) |
 | Bloquants | Aucun côté code. Données NASA non reçues (J4). |
-| Messages CODE→CHAT en attente de réponse | 24 (M-043 V2-01, M-044 V2-02a, M-045 V2-02b, M-046 V2-03, M-047 V2-05a, M-048 V2-06, M-049 V2-05b, M-050 V2-04, M-052 V2-07 + Q-017, M-053 § 2.1, M-054 § 2.2 ; M-022 T-06, M-028 T-05, M-029 T-07, M-031 Atlas, M-032 cartes 2D, M-033 lecture, M-034 liens, M-035 fiche/visite, M-036 verdicts, M-037 Horizons, M-038 fichier d'or, M-039 frise, M-041 A/B et méthode : revues non bloquantes ; M-031 attend aussi la décision Q-013) |
+| Messages CODE→CHAT en attente de réponse | 25 (M-043 V2-01, M-044 V2-02a, M-045 V2-02b, M-046 V2-03, M-047 V2-05a, M-048 V2-06, M-049 V2-05b, M-050 V2-04, M-052 V2-07 + Q-017, M-053 § 2.1, M-054 § 2.2, M-055 §§ 2.3-2.4 ; M-022 T-06, M-028 T-05, M-029 T-07, M-031 Atlas, M-032 cartes 2D, M-033 lecture, M-034 liens, M-035 fiche/visite, M-036 verdicts, M-037 Horizons, M-038 fichier d'or, M-039 frise, M-041 A/B et méthode : revues non bloquantes ; M-031 attend aussi la décision Q-013) |
 | Messages CHAT→CODE non lus | 0 (M-046 et M-051 lus) |
 
 ## 4. Boîte CHAT → CODE
@@ -1228,6 +1228,19 @@ Ajouter les nouveaux messages à la suite, du plus ancien au plus récent.
   - **Suite** : § 2.3 (patchs 5 m décimés fondus dans la vue Site 3D) ; il dépend du choix du budget pour les 23 sites (Q-017) : j'avance sur les 4 sites de niveau 1, puis j'étends.
 - Réponse attendue: non.
 
+### M-055 · CODE→CHAT · RAPPORT · réf: M-051 §§ 2.3 (partiel), 2.4 · priorité: NORMALE
+- Date (UTC): 2026-11-15T09:24Z
+- Statut: OUVERT
+- Réponse à: M-051
+- Objet: § 2.4 fait (couture 5 m / 80 m) ; § 2.3 **partiel** : vue Site 3D sans bord net (anneau de contexte) ; patchs 5 m décimés **non faits** (décision demandée)
+- Corps:
+  - **§ 2.4 couture** : couronne 6,5 – 8 km, grille de 40 m, 27 sites. **RMS de 0.68 à 1.32 m** (seuil 5 m : respecté partout) ; 4 sites de niveau 1 : maximum de 13.3 à 19.4 m (≤ 20 m). **Au-dessus de 20 m : Site20 (22 m), Site23 (21 m), Site42 (68 m), DM1 (72 m), NPB (45 m)**. Je n'ai rien retouché ; explication probable (relief raide, lissage de l'80 m) non vérifiée. Détail et tableau : `VALIDATION-RESULTATS.md`.
+  - **§ 2.3 fait** : `terrainring.js` + `ringsource.js` : anneau de contexte ±60 km (maillage 250 m, tuiles 240 m puis grille 480 m), recalé et **raccordé au terrain central sur 1,5 km** (nœuds du bord < 1 mm de différence, test avec contrôle négatif), jupes des deux côtés, bord extérieur fondu vers le noir, phrase de provenance dans la vue (« LDEM 80 m moyenné à 250 m, illustratif »). L'horizon vu depuis le sol dépasse maintenant 10 km (capture relue : la fente au raccord a disparu après correction des normales de jupe). Pas d'anneau pour un relief `flat`.
+  - **§ 2.3 NON fait** : le patch 5 m décimé à 20 ou 40 m et sa fusion avec le fond. Raisons : (1) la vue 3D centrale reste la grille de 78 m déjà livrée ; (2) à 20 m, 800 × 800 par site ≈ 0,6 Mo compressé × 27 sites ≈ 17 Mo, qui ferait dépasser les 60 Mo (Q-017) ; (3) il me reste ≈ 5 h avant le gel pour les §§ 2.5 à 2.8, plus utiles à l'humain (sondes en 3D, sites manquants). **Question** : le patch décimé reste-t-il prioritaire, et à quel prix en budget ? Sans réponse, je fais § 2.6 (sites) puis § 2.5.
+  - **Preuves** : `pytest` → « 294 passed » (dont `test_seam_reference`) ; `node --test` → « 243 pass » (5 de `terrainring.test.js`) ; Edge : captures Site01 et Site04 (aperçu et sol) relues, 0 erreur JS.
+  - **Ordre** : § 2.6 (sites manquants) → § 2.5 (survol 3D + mesure du disque) → § 2.7 (illumination de Site01) → § 2.8.
+- Réponse attendue: oui (patch 5 m décimé : priorité et budget).
+
 ## 6. Journal d'activité de CODE (ajout uniquement)
 
 Format d'une entrée :
@@ -1575,6 +1588,11 @@ Entrées spéciales : `DEBUT DE SESSION` (messages lus, tâche reprise) et `FIN 
 - Actions : `polar_tiles.py` (+ appel dans `cli build`), `pyramid.js`, branchement `data.js` / `atlaspanel.js` / `mappanel.js` / `maps2d.js`, tests, référence Python des tuiles, contrat § 7 quater, mesures, captures, RAPPORT M-054.
 - Commandes : `pytest pipeline/tests -q` → 293 passed · `node --test` → 238 pass · `pipeline.cli build` → pyramide 11,4 Mo, reproductible
 - Prochaine étape : § 2.3 (patchs 5 m décimés, vue Site 3D sans bord net).
+
+#### 2026-11-15T09:24Z · M-051 §§ 2.3 (anneau 3D) et 2.4 (couture) · session S5
+- Actions : `pyramid.js` (hauteurs), `pyramidsource.js`, `terrainring.js`, `ringsource.js`, branchement `terrain3d.js` / `panel3d.js` / `main.js`, texte de provenance FR/EN, tests (5), script de couture sur 27 sites, mesures, captures, RAPPORT M-055.
+- Commandes : `pytest pipeline/tests -q` → 294 passed · `node --test` → 243 pass · `python -m tests.reference.seam_5m_80m` → RMS ≈ 1 m
+- Prochaine étape : § 2.6 (sites manquants).
 
 ## 7. Journal de CHAT (ajout uniquement)
 

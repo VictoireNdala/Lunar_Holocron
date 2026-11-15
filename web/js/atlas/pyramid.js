@@ -80,7 +80,8 @@ export function createPyramid(manifest, loadBytes, base = null) {
     if (cache.has(key)) return Promise.resolve();
     if (!pending.has(key)) {
       pending.set(key, loadBytes(lv.spacing_m, tx, ty).then(inflateRaw).then((raw) => {
-        cache.set(key, tileGradients(unpackTile(raw, stored, manifest.z), stored, lv.spacing_m));
+        const heights = unpackTile(raw, stored, manifest.z);
+        cache.set(key, { heights, ...tileGradients(heights, stored, lv.spacing_m) });
       }).catch(() => { cache.set(key, null); }).finally(() => pending.delete(key)));
     }
     return pending.get(key);
@@ -94,8 +95,8 @@ export function createPyramid(manifest, loadBytes, base = null) {
     return lv;
   }
 
-  /** Gradient bilinéaire au point du plan (x, y) en m, depuis le niveau `lv` puis les niveaux plus grossiers déjà chargés, puis le repli 480 m. */
-  function gradientXY(x, y, lv) {
+  /** Valeur bilinéaire du champ `field` ('gx' | 'gy' | 'heights') au point du plan (x, y) depuis le niveau `lv` puis les plus grossiers déjà chargés ; null si aucun ne couvre. */
+  function locate(x, y, lv, field) {
     for (let k = lv ? levels.indexOf(lv) : levels.length; k < levels.length; k += 1) {
       const level = levels[k];
       const col = (x - level.x0_m) / level.spacing_m;
@@ -108,18 +109,35 @@ export function createPyramid(manifest, loadBytes, base = null) {
       if (c0 < 0 || r0 < 0 || c0 + 1 >= stored || r0 + 1 >= stored) continue;
       const wc = c - c0; const wr = r - r0; const i = r0 * stored + c0;
       const mix = (a) => (1 - wr) * ((1 - wc) * a[i] + wc * a[i + 1]) + wr * ((1 - wc) * a[i + stored] + wc * a[i + stored + 1]);
-      const gx = mix(t.gx);
-      if (Number.isFinite(gx)) return { gx, gy: mix(t.gy), spacingM: level.spacing_m };
+      const v = mix(t[field]);
+      if (Number.isFinite(v)) return { value: v, level, mix, t };
     }
+    return null;
+  }
+
+  /** Gradient bilinéaire au point du plan (x, y) en m, depuis le niveau `lv` puis les niveaux plus grossiers déjà chargés, puis le repli 480 m. */
+  function gradientXY(x, y, lv) {
+    const hit = locate(x, y, lv, 'gx');
+    if (hit) return { gx: hit.value, gy: hit.mix(hit.t.gy), spacingM: hit.level.spacing_m };
     return base ? { ...base.gradientXY(x, y), spacingM: 480 } : { gx: NaN, gy: NaN, spacingM: NaN };
   }
 
-  return { chooseLevel, prepare, gradientXY, levels, stats: () => ({ tiles: cache.size }) };
+  /** Hauteur (m au-dessus de R_REF) au point du plan (x, y) : même repli que gradientXY ; NaN si rien ne couvre. */
+  function heightXY(x, y, lv) {
+    const hit = locate(x, y, lv, 'heights');
+    if (hit) return hit.value;
+    return base?.heightXY ? base.heightXY(x, y) : NaN;
+  }
+
+  return { chooseLevel, prepare, gradientXY, heightXY, levels, stats: () => ({ tiles: cache.size }) };
 }
 
 /** Adaptateur de la grille 480 m (repli) : gradient bilinéaire au point du plan. */
-export function baseFromGrid(grid, grads, gradientAtLatLon, inverse) {
-  return { gradientXY: (x, y) => { const ll = inverse(x, y, R_REF_M); return gradientAtLatLon(grid, grads, ll.latDeg, ll.lonDeg); } };
+export function baseFromGrid(grid, grads, gradientAtLatLon, inverse, heightAtLatLon = null) {
+  return {
+    gradientXY: (x, y) => { const ll = inverse(x, y, R_REF_M); return gradientAtLatLon(grid, grads, ll.latDeg, ll.lonDeg); },
+    heightXY: heightAtLatLon ? (x, y) => { const ll = inverse(x, y, R_REF_M); return heightAtLatLon(grid, ll.latDeg, ll.lonDeg); } : null,
+  };
 }
 
 /** Pixels d'écran par mètre de plan et rectangle de plan visible d'une projection polaire Sud (`fromPixel`) ; null si la carte n'est pas mesurable. */

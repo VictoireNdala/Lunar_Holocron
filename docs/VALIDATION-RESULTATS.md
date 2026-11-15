@@ -59,6 +59,19 @@ Géométrie seulement (relais, stations au sol, bilan de liaison et trajectoire 
 | Délai de propagation aller simple (distance ÷ c) contre la portée Horizons (`QUANTITIES='20'`), 4 sites × 3 dates × 24 h = 288 valeurs | écart maximal **0,738 ms**, moyen 0,342 ms | < 1 ms | borné par l'**arrondi au millidegré du rayon angulaire** de la Terre dans le fichier de site (± 5·10⁻⁴ de la distance) : on ne peut pas faire mieux avec ce format |
 | Délais calculés sur 5 ans (Site01) | entre 1,18 s et 1,37 s (aller simple) | plausible | distance Terre–Lune 356 000 – 407 000 km |
 
+**Couture 5 m / 80 m (M-051 § 2.4).** Différence de hauteur MNT 5 m (PGDA 78) − LDEM 80 m (PGDA 90) sur la couronne de recouvrement (distance de Tchebychev de 6,5 à 8 km du centre, grille de 40 m, interpolation bilinéaire dans les deux produits) ; script `tests/reference/seam_5m_80m.py`, résultats `tests/reference/seam_5m_80m.json`, test `pipeline/tests/test_seam_reference.py`.
+
+| Site (niveau 1) | Points | Biais (m) | RMS (m) | Maximum (m) |
+|---|---|---|---|---|
+| Site01 | 53576 | -0.14 | 1.10 | 13.3 |
+| Site04 | 53576 | -0.21 | 1.04 | 13.3 |
+| Site07 | 53576 | -0.22 | 0.95 | 19.4 |
+| Site11 | 53576 | +0.17 | 0.95 | 14.4 |
+
+Sur les **27** sites 5 m : biais de −0,3 à +0,5 m, **RMS de 0.68 à 1.32 m** (seuil de CHAT : 5 m, respecté partout). **Maximum au-dessus de 20 m (seuil de CHAT) pour 5 sites** : Site20 (22 m), Site23 (21 m), Site42 (68 m), DM1 (72 m), NPB (45 m) ; les 4 sites de niveau 1 restent ≤ 20 m. Je n'ai pas retouché les données. Explication **probable, non vérifiée** : les écarts maximaux sont locaux, là où le relief est raide (le LDEM 80 m lisse ce que le 5 m résout). À lire comme : le raccord est bon en moyenne (RMS ≈ 1 m) mais peut présenter des marches locales de plusieurs dizaines de mètres au bord de l'emprise 5 m sur ces 5 sites.
+
+**Vue Site 3D : anneau de contexte (M-051 § 2.3, partie « sans bord net »).** `web/js/terrainring.js` : autour du terrain central (20 × 20 km) un maillage de 250 m jusqu'à ±60 km (hauteurs de la pyramide de tuiles, niveau 240 m, puis grille 480 m), recalé verticalement sur le bord du terrain central, **raccordé** (le résidu centre − anneau du bord est reporté puis s'éteint sur 1,5 km), jupes sous les deux bords, bord extérieur fondu vers le noir. Écart RMS anneau / centre au bord avant raccord : Site01 2,3 m (profil mesuré : la pente réelle du flanc atteint 200 m par km). Tests : recalage exact, aucun triangle dans le carré central, nœuds du bord à moins de 1 mm du terrain central après raccord (contrôle négatif : sans raccord, le test échoue), bord extérieur noir, hauteurs inconnues, anneau refusé si plus de la moitié des hauteurs manque. Captures Edge : `atlas-v206-site3d-anneau.png`, `atlas-v206-site3d-sol.png` (non versionnées, texture NASA). Limites : le contexte est du LDEM 80 m **moyenné à 250 m**, pas du 5 m ; le terrain central reste la grille de 78 m du site (le patch 5 m décimé à 20 / 40 m **n'est pas fait**) ; relief `flat` : pas d'anneau (relief non modélisé) ; rendu illustratif.
+
 **Fond polaire : pyramide de tuiles (M-051 § 2.2).**
 
 | Mesure | Résultat |

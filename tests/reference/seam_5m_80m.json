@@ -1,0 +1,279 @@
+{
+ "band_m": [
+  6500.0,
+  8000.0
+ ],
+ "step_m": 40.0,
+ "sites": [
+  {
+   "id": "site01-connecting-ridge",
+   "pgda_id": "Site01",
+   "n_points": 53576,
+   "n_total": 55176,
+   "bias_m": -0.135,
+   "rms_m": 1.1,
+   "std_m": 1.091,
+   "max_abs_m": 13.336
+  },
+  {
+   "id": "site04-shackleton-rim",
+   "pgda_id": "Site04",
+   "n_points": 53576,
+   "n_total": 55176,
+   "bias_m": -0.207,
+   "rms_m": 1.045,
+   "std_m": 1.025,
+   "max_abs_m": 13.272
+  },
+  {
+   "id": "site07-peak-near-shackleton",
+   "pgda_id": "Site07",
+   "n_points": 53576,
+   "n_total": 55176,
+   "bias_m": -0.218,
+   "rms_m": 0.947,
+   "std_m": 0.922,
+   "max_abs_m": 19.352
+  },
+  {
+   "id": "site11-de-gerlache-rim",
+   "pgda_id": "Site11",
+   "n_points": 53576,
+   "n_total": 55176,
+   "bias_m": 0.174,
+   "rms_m": 0.954,
+   "std_m": 0.938,
+   "max_abs_m": 14.404
+  },
+  {
+   "id": "site06-nobile-rim-1",
+   "pgda_id": "Site06",
+   "n_points": 55176,
+   "n_total": 55176,
+   "bias_m": -0.195,
+   "rms_m": 0.916,
+   "std_m": 0.895,
+   "max_abs_m": 13.074
+  },
+  {
+   "id": "site20-leibnitz-beta-plateau",
+   "pgda_id": "Site20",
+   "n_points": 53576,
+   "n_total": 55176,
+   "bias_m": -0.034,
+   "rms_m": 0.812,
+   "std_m": 0.811,
+   "max_abs_m": 22.216
+  },
+  {
+   "id": "site20v2-leibnitz-beta-plateau-extended-boundaries",
+   "pgda_id": "Site20v2",
+   "n_points": 55176,
+   "n_total": 55176,
+   "bias_m": -0.061,
+   "rms_m": 0.791,
+   "std_m": 0.788,
+   "max_abs_m": 13.173
+  },
+  {
+   "id": "site23-malapert-massif",
+   "pgda_id": "Site23",
+   "n_points": 55176,
+   "n_total": 55176,
+   "bias_m": -0.009,
+   "rms_m": 1.058,
+   "std_m": 1.058,
+   "max_abs_m": 21.366
+  },
+  {
+   "id": "site42-de-gerlache-kocher-massif",
+   "pgda_id": "Site42",
+   "n_points": 55176,
+   "n_total": 55176,
+   "bias_m": -0.139,
+   "rms_m": 0.819,
+   "std_m": 0.807,
+   "max_abs_m": 68.082
+  },
+  {
+   "id": "haworth",
+   "pgda_id": "Haworth",
+   "n_points": 55176,
+   "n_total": 55176,
+   "bias_m": 0.053,
+   "rms_m": 1.057,
+   "std_m": 1.056,
+   "max_abs_m": 16.007
+  },
+  {
+   "id": "shoemaker",
+   "pgda_id": "Shoemaker",
+   "n_points": 55176,
+   "n_total": 55176,
+   "bias_m": 0.091,
+   "rms_m": 0.852,
+   "std_m": 0.847,
+   "max_abs_m": 11.288
+  },
+  {
+   "id": "dm1-amundsen-rim",
+   "pgda_id": "DM1",
+   "n_points": 55176,
+   "n_total": 55176,
+   "bias_m": 0.082,
+   "rms_m": 0.97,
+   "std_m": 0.966,
+   "max_abs_m": 71.573
+  },
+  {
+   "id": "dm2-nobile-rim-2",
+   "pgda_id": "DM2",
+   "n_points": 55176,
+   "n_total": 55176,
+   "bias_m": -0.035,
+   "rms_m": 0.675,
+   "std_m": 0.674,
+   "max_abs_m": 14.844
+  },
+  {
+   "id": "sl2-de-gerlache-rim",
+   "pgda_id": "SL2",
+   "n_points": 55176,
+   "n_total": 55176,
+   "bias_m": 0.072,
+   "rms_m": 0.914,
+   "std_m": 0.911,
+   "max_abs_m": 17.738
+  },
+  {
+   "id": "sl3-connecting-ridge-extension",
+   "pgda_id": "SL3",
+   "n_points": 55176,
+   "n_total": 55176,
+   "bias_m": -0.11,
+   "rms_m": 1.119,
+   "std_m": 1.114,
+   "max_abs_m": 15.061
+  },
+  {
+   "id": "npa-cabeus-exterior-wall-1",
+   "pgda_id": "NPA",
+   "n_points": 55176,
+   "n_total": 55176,
+   "bias_m": -0.001,
+   "rms_m": 1.323,
+   "std_m": 1.323,
+   "max_abs_m": 17.196
+  },
+  {
+   "id": "npb-amundsen-1",
+   "pgda_id": "NPB",
+   "n_points": 55176,
+   "n_total": 55176,
+   "bias_m": 0.168,
+   "rms_m": 0.967,
+   "std_m": 0.953,
+   "max_abs_m": 44.741
+  },
+  {
+   "id": "npc-idelson-l-crater-1",
+   "pgda_id": "NPC",
+   "n_points": 55176,
+   "n_total": 55176,
+   "bias_m": 0.028,
+   "rms_m": 0.81,
+   "std_m": 0.81,
+   "max_abs_m": 13.611
+  },
+  {
+   "id": "npd-malapert-crater-1",
+   "pgda_id": "NPD",
+   "n_points": 55176,
+   "n_total": 55176,
+   "bias_m": 0.007,
+   "rms_m": 0.951,
+   "std_m": 0.951,
+   "max_abs_m": 13.111
+  },
+  {
+   "id": "lm1-shackleton-rim-b",
+   "pgda_id": "LM1",
+   "n_points": 55176,
+   "n_total": 55176,
+   "bias_m": -0.144,
+   "rms_m": 1.097,
+   "std_m": 1.088,
+   "max_abs_m": 12.608
+  },
+  {
+   "id": "lm2-shoemaker-rim-a",
+   "pgda_id": "LM2",
+   "n_points": 55176,
+   "n_total": 55176,
+   "bias_m": -0.097,
+   "rms_m": 0.87,
+   "std_m": 0.864,
+   "max_abs_m": 11.742
+  },
+  {
+   "id": "lm3-shoemaker-rim-b",
+   "pgda_id": "LM3",
+   "n_points": 55176,
+   "n_total": 55176,
+   "bias_m": -0.184,
+   "rms_m": 0.933,
+   "std_m": 0.915,
+   "max_abs_m": 13.92
+  },
+  {
+   "id": "lm4-shoemaker-rim-c",
+   "pgda_id": "LM4",
+   "n_points": 55176,
+   "n_total": 55176,
+   "bias_m": -0.291,
+   "rms_m": 0.986,
+   "std_m": 0.943,
+   "max_abs_m": 18.284
+  },
+  {
+   "id": "lm5-shoemaker-rim-d",
+   "pgda_id": "LM5",
+   "n_points": 55176,
+   "n_total": 55176,
+   "bias_m": -0.185,
+   "rms_m": 0.886,
+   "std_m": 0.866,
+   "max_abs_m": 12.125
+  },
+  {
+   "id": "lm6-shoemaker-rim-e",
+   "pgda_id": "LM6",
+   "n_points": 55176,
+   "n_total": 55176,
+   "bias_m": 0.38,
+   "rms_m": 1.237,
+   "std_m": 1.177,
+   "max_abs_m": 12.17
+  },
+  {
+   "id": "lm7-faustini-rim-a",
+   "pgda_id": "LM7",
+   "n_points": 55176,
+   "n_total": 55176,
+   "bias_m": -0.101,
+   "rms_m": 0.975,
+   "std_m": 0.969,
+   "max_abs_m": 9.955
+  },
+  {
+   "id": "lm8-shoemaker-rim-f",
+   "pgda_id": "LM8",
+   "n_points": 55176,
+   "n_total": 55176,
+   "bias_m": 0.464,
+   "rms_m": 1.138,
+   "std_m": 1.039,
+   "max_abs_m": 16.967
+  }
+ ]
+}
