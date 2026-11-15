@@ -1,5 +1,7 @@
 # Tests et validation
 
+> **Avis de mise à jour (V2, 2026-11-15, D-029).** Ce document a été écrit pendant la phase « démonstration » : les passages sur le mode démonstration (`demo-a/b/c`, `data/sample`, `ephemeris_demo`, `dem_synthetic`, `cli demo`) sont **historiques**. Ces générateurs ne sont plus que des **fixtures de tests** (`pipeline/fixtures/`), jamais servies ni importées par le produit. Le produit n'a que des **données réelles** (SPICE, LOLA) : commande `py -m pipeline.cli build` (puis `validate`). L'état à jour est dans `STATUS.md`, `README.md`, `docs/CONTRAT-DONNEES.md` (1.2) et `docs/VALIDATION-RESULTATS.md`.
+
 Principe : on distingue **tests** (le code fait ce qu'on a spécifié) et **validation** (ce qu'on a spécifié correspond à la réalité physique).
 Les tests tournent sans réseau et sans données NASA. La validation exige les données réelles (§ 6).
 

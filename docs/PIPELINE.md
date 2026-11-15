@@ -1,5 +1,7 @@
 # Pipeline de calcul (Python)
 
+> **Avis de mise à jour (V2, 2026-11-15, D-029).** Ce document a été écrit pendant la phase « démonstration » : les passages sur le mode démonstration (`demo-a/b/c`, `data/sample`, `ephemeris_demo`, `dem_synthetic`, `cli demo`) sont **historiques**. Ces générateurs ne sont plus que des **fixtures de tests** (`pipeline/fixtures/`), jamais servies ni importées par le produit. Le produit n'a que des **données réelles** (SPICE, LOLA) : commande `py -m pipeline.cli build` (puis `validate`). L'état à jour est dans `STATUS.md`, `README.md`, `docs/CONTRAT-DONNEES.md` (1.2) et `docs/VALIDATION-RESULTATS.md`.
+
 Rappels : conventions et formules dans `docs/ARCHITECTURE.md` §§ 2-3 ; format de sortie dans `docs/CONTRAT-DONNEES.md`.
 Aucun accès réseau dans les calculs. Le téléchargement est isolé dans `pipeline/cli.py fetch` (mode réel uniquement).
 
