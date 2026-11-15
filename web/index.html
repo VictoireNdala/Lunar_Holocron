@@ -63,14 +63,32 @@
     </div>
     <div class="scene scene-map" data-scene="world" hidden>
       <canvas class="map-canvas" role="img" data-i18n-aria="map.aria.world"></canvas>
+      <div class="map-zoom glass" role="group" data-i18n-aria="map.zoom.group">
+        <button type="button" class="btn" data-map-zoom="in" data-i18n-aria="map.zoom.in">+</button>
+        <button type="button" class="btn" data-map-zoom="out" data-i18n-aria="map.zoom.out">−</button>
+        <button type="button" class="btn" data-map-zoom="reset" data-i18n-aria="map.zoom.reset">⟲</button>
+        <span class="map-zoom-level num" aria-hidden="true">×1,0</span>
+      </div>
       <div class="globe-tip" role="tooltip" hidden></div>
     </div>
     <div class="scene scene-map" data-scene="south" hidden>
       <canvas class="map-canvas" role="img" data-i18n-aria="map.aria.south"></canvas>
+      <div class="map-zoom glass" role="group" data-i18n-aria="map.zoom.group">
+        <button type="button" class="btn" data-map-zoom="in" data-i18n-aria="map.zoom.in">+</button>
+        <button type="button" class="btn" data-map-zoom="out" data-i18n-aria="map.zoom.out">−</button>
+        <button type="button" class="btn" data-map-zoom="reset" data-i18n-aria="map.zoom.reset">⟲</button>
+        <span class="map-zoom-level num" aria-hidden="true">×1,0</span>
+      </div>
       <div class="globe-tip" role="tooltip" hidden></div>
     </div>
     <div class="scene scene-map" data-scene="north" hidden>
       <canvas class="map-canvas" role="img" data-i18n-aria="map.aria.north"></canvas>
+      <div class="map-zoom glass" role="group" data-i18n-aria="map.zoom.group">
+        <button type="button" class="btn" data-map-zoom="in" data-i18n-aria="map.zoom.in">+</button>
+        <button type="button" class="btn" data-map-zoom="out" data-i18n-aria="map.zoom.out">−</button>
+        <button type="button" class="btn" data-map-zoom="reset" data-i18n-aria="map.zoom.reset">⟲</button>
+        <span class="map-zoom-level num" aria-hidden="true">×1,0</span>
+      </div>
       <div class="globe-tip" role="tooltip" hidden></div>
     </div>
 
@@ -358,6 +376,9 @@
           <dl class="facts" id="atlas-facts"></dl>
           <p id="atlas-texture-note" class="warning" role="status" hidden></p>
           <p id="atlas-kind-note" class="hint"></p>
+          <h3 data-i18n="marker.legend"></h3>
+          <ul id="marker-legend" class="marker-legend"></ul>
+          <p class="hint" data-i18n="marker.legendNote"></p>
           <p class="hint" data-i18n="atlas.note"></p>
           <p class="hint" id="atlas-credit"></p>
         </section>

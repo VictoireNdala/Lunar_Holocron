@@ -130,6 +130,14 @@
 .atlas-actions { margin: var(--s-3) 0; }
 [data-scene="atlas"] .view3d canvas { cursor: grab; }
 
+/* --- Zoom des cartes et légende des marqueurs (V2-03) --- */
+.map-zoom { position: absolute; z-index: 6; left: var(--s-4); top: 140px; display: flex; flex-direction: column; gap: var(--s-1); padding: var(--s-2); align-items: center; }
+.map-zoom .btn { min-width: 44px; min-height: 44px; padding: 0; font-size: 20px; line-height: 1; }
+.map-zoom-level { font-size: var(--fs-12); color: var(--text-2); }
+.scene-map canvas:focus-visible { outline: 2px solid var(--text); outline-offset: -3px; }
+.marker-legend { list-style: none; margin: var(--s-1) 0; padding: 0; display: grid; gap: 2px; font-size: var(--fs-13); }
+.marker-legend span { display: inline-block; width: 1.4em; text-align: center; }
+
 /* --- Lecture animée et sélecteur de projection (A-06) --- */
 .playback { display: flex; flex-wrap: wrap; gap: var(--s-2) var(--s-3); align-items: center; }
 .speed-btn[aria-pressed="true"], .proj-btn[aria-pressed="true"], .thr-btn[aria-pressed="true"] { background: var(--text); color: var(--bg-0); font-weight: 600; }

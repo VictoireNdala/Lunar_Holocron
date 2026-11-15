@@ -5,6 +5,7 @@ import {
   angularDistanceDeg, equirectLatLon, equirectPixel, latLonToVector, northPolar, northPolarInverse, southPolar, southPolarInverse,
   terminatorCircle,
 } from './sphere.js';
+import { drawSites } from './markerdraw.js';
 
 const DEG = Math.PI / 180;
 const R_UNIT = 1; // rayon de la sphère unité : les stéréographiques sont mises à l'échelle en pixels
@@ -15,24 +16,36 @@ const DEFAULT_LIMIT_DEG = 60; // la carte polaire va de 60° de latitude au pôl
 export const MAP_KINDS = Object.freeze(['world', 'south', 'north']);
 
 /** Projection d'une carte de w × h pixels : `toPixel(lat, lon)` → {x, y, ok}, `fromPixel(x, y)` → {latDeg, lonDeg} | null. */
-export function makeProjection(kind, w, h, limitDeg = DEFAULT_LIMIT_DEG) {
+export function makeProjection(kind, w, h, limitDeg = DEFAULT_LIMIT_DEG, view = { zoom: 1, panX: 0, panY: 0 }) {
+  const { zoom, panX, panY } = view; // vue : zoom autour du centre du canvas puis décalage en pixels
   if (kind === 'world') {
+    const cx0 = w / 2;
+    const cy0 = h / 2;
     return {
-      kind, w, h,
-      toPixel: (lat, lon) => ({ ...equirectPixel(lat, lon, w, h), ok: true }),
-      fromPixel: (x, y) => (x >= 0 && x <= w && y >= 0 && y <= h ? equirectLatLon(x, y, w, h) : null),
+      kind, w, h, zoom,
+      toPixel: (lat, lon) => {
+        const b = equirectPixel(lat, lon, w, h);
+        const x = (b.x - cx0) * zoom + cx0 + panX;
+        const y = (b.y - cy0) * zoom + cy0 + panY;
+        return { x, y, ok: x >= -20 && x <= w + 20 && y >= -20 && y <= h + 20 };
+      },
+      fromPixel: (x, y) => {
+        const bx = (x - panX - cx0) / zoom + cx0;
+        const by = (y - panY - cy0) / zoom + cy0;
+        return bx >= 0 && bx <= w && by >= 0 && by <= h ? equirectLatLon(bx, by, w, h) : null;
+      },
     };
   }
   const south = kind === 'south';
   const polar = south ? southPolar : northPolar;
   const inverse = south ? southPolarInverse : northPolarInverse;
-  const cx = w / 2;
-  const cy = h / 2;
-  const radiusPx = Math.min(w, h) / 2 - MARGIN_PX;
+  const cx = w / 2 + panX;
+  const cy = h / 2 + panY;
+  const radiusPx = (Math.min(w, h) / 2 - MARGIN_PX) * zoom;
   const edge = polar(south ? -limitDeg : limitDeg, 0, R_UNIT); // la carte s'étend du pôle jusqu'à la latitude ±limitDeg
   const scale = radiusPx / Math.hypot(edge.x, edge.y);
   return {
-    kind, w, h, cx, cy, radiusPx, limitDeg,
+    kind, w, h, cx, cy, radiusPx, limitDeg, zoom,
     toPixel(lat, lon) {
       const p = polar(lat, lon, R_UNIT);
       const x = cx + p.x * scale;
@@ -161,7 +174,10 @@ function graticule(ctx, proj, style, labels) {
 export function drawMap(ctx, proj, state, style, labels) {
   ctx.clearRect(0, 0, proj.w, proj.h);
   ctx.fillStyle = style.bg; ctx.fillRect(0, 0, proj.w, proj.h);
-  ctx.putImageData(state.image, 0, 0);
+  if (state.backdrop) {
+    const { canvas, k, e, f } = state.backdrop; // fond mis à l'échelle : permet de zoomer sans attendre le rééchantillonnage
+    ctx.save(); ctx.setTransform(k, 0, 0, k, e, f); ctx.drawImage(canvas, 0, 0); ctx.restore();
+  } else if (state.image) ctx.putImageData(state.image, 0, 0);
   if (proj.kind !== 'world') {
     ctx.strokeStyle = style.edge; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(proj.cx, proj.cy, proj.radiusPx, 0, 2 * Math.PI); ctx.stroke();
   }
@@ -184,17 +200,8 @@ export function drawMap(ctx, proj, state, style, labels) {
       ctx.moveTo(q.x, q.y - 14); ctx.lineTo(q.x, q.y - 5); ctx.moveTo(q.x, q.y + 5); ctx.lineTo(q.x, q.y + 14); ctx.stroke();
     }
   }
-  if (state.layers.sites) {
-    for (const s of state.sites) {
-      const q = proj.toPixel(s.latDeg, s.lonDeg);
-      if (!q.ok) continue;
-      const big = s.tier === 1;
-      ctx.beginPath(); ctx.arc(q.x, q.y, big ? 6 : 4, 0, 2 * Math.PI);
-      ctx.fillStyle = s.synthetic ? style.synthetic : (big ? style.real : style.realSoft); ctx.fill();
-      ctx.lineWidth = 1.5; ctx.strokeStyle = '#06080c'; ctx.stroke();
-      if (s.id === state.selectedId) { ctx.beginPath(); ctx.arc(q.x, q.y, 11, 0, 2 * Math.PI); ctx.lineWidth = 2.5; ctx.strokeStyle = style.text; ctx.stroke(); }
-    }
-  }
+  if (state.layers.sites) return drawSites(ctx, proj, state.sites, proj.zoom ?? 1, style, { selected: state.selectedId, hovered: state.hoveredId, focused: state.focusedId });
+  return { zones: [] };
 }
 
 /** Site le plus proche d'un pixel (rayon de sélection en pixels), pour le clic et l'info-bulle ; priorité au niveau 1. */

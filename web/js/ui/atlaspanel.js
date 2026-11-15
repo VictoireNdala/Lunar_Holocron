@@ -75,7 +75,8 @@ export function createAtlasPanel(store, source, selectSite) {
   /** Sites de l'index au format de l'Atlas ; mis en cache. */
   function ensureSites() {
     sitesPromise ??= source.loadIndex().then((index) => {
-      sites = index.sites.map((s) => ({ id: s.id, name: s.name, latDeg: s.lat_deg, lonDeg: s.lon_deg, tier: s.tier ?? 99, synthetic: s.synthetic }));
+      sites = index.sites.map((s) => ({ id: s.id, name: s.name, latDeg: s.lat_deg, lonDeg: s.lon_deg, tier: s.tier ?? 99, synthetic: s.synthetic,
+      kind: s.kind, status: s.status, approximate: s.approximate, position_uncertainty_km: s.position_uncertainty_km, terrain_tier: s.terrain_tier })); // champs 1.2 : famille, statut, empreinte
       return sites;
     }).catch(() => sites);
     return sitesPromise;

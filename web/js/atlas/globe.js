@@ -1,6 +1,7 @@
 // Globe 3D de l'Atlas (A-04, docs/ATLAS.md § 5.1) : sphère LISSE texturée (D-002/D-015 : pas de relief global, pas de LOD),
 // éclairée vers le point sub-solaire. Aucun verdict de visibilité : horizon plat seulement. Hors ligne : texture locale ;
 // si elle manque, sphère grise avec graticule (le dit via `onTextureError`).
+import { glyphOf } from './markers.js';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { latLonToVector, terminatorCircle, vectorToLatLon } from './sphere.js';
@@ -198,7 +199,7 @@ export function createGlobe(container, { textureUrl, onTextureError = () => {}, 
       siteGroup.clear();
       for (const s of sites) {
         const big = s.tier === 1;
-        const m = new THREE.Mesh(new THREE.SphereGeometry(big ? 0.022 : 0.014, 12, 8), new THREE.MeshBasicMaterial({ color: s.synthetic ? 0xff9f43 : big ? 0x3ddc97 : 0x9fe8c9 }));
+        const m = new THREE.Mesh(new THREE.SphereGeometry(big ? 0.022 : 0.014, 12, 8), new THREE.MeshBasicMaterial({ color: new THREE.Color(glyphOf(s).color) }) // couleur de la famille (même palette que les cartes 2D));
         const p = latLonToVector(s.latDeg, s.lonDeg);
         m.position.set(p.x * MARKER_RADIUS, p.y * MARKER_RADIUS, p.z * MARKER_RADIUS);
         m.userData = s; siteGroup.add(m);

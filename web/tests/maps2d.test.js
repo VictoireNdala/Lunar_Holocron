@@ -92,3 +92,24 @@ test('siteAtPixel : site le plus proche dans le rayon, niveau 1 prioritaire à d
   assert.equal(siteAtPixel(p, sites, 5, 5), null);
   assert.equal(siteAtPixel(p, sites, p.toPixel(50, 90).x, p.toPixel(50, 90).y).id, 'c');
 });
+
+test('vue (zoom, panoramique) : toPixel et fromPixel restent inverses ; le point sous le zoom reste fixe ; le disque polaire grandit avec le zoom', () => {
+  const base = makeProjection('south', 800, 600);
+  for (const view of [{ zoom: 1, panX: 0, panY: 0 }, { zoom: 4, panX: 30, panY: -50 }, { zoom: 16, panX: -200, panY: 120 }]) {
+    const p = makeProjection('south', 800, 600, 60, view);
+    const q = p.toPixel(-86, 40);
+    const back = p.fromPixel(q.x, q.y);
+    assert.ok(back && Math.abs(back.latDeg + 86) < 1e-6 && Math.abs(back.lonDeg - 40) < 1e-6, JSON.stringify(view));
+  }
+  const z = makeProjection('south', 800, 600, 60, { zoom: 4, panX: 0, panY: 0 });
+  assert.ok(Math.abs(z.radiusPx - base.radiusPx * 4) < 1e-9);
+  const qb = base.toPixel(-89, 10);
+  const qz = z.toPixel(-89, 10);
+  assert.ok(Math.abs((qz.x - 400) - (qb.x - 400) * 4) < 1e-9, 'positions relatives au centre multipliées par le zoom');
+  const world = makeProjection('world', 1000, 500, 60, { zoom: 2, panX: 0, panY: 0 });
+  const w = world.toPixel(0, 0);
+  assert.ok(Math.abs(w.x - 500) < 1e-9 && Math.abs(w.y - 250) < 1e-9);
+  const edge = world.toPixel(0, 120);
+  assert.equal(edge.ok, false); // hors cadre à ×2
+  assert.deepEqual(world.fromPixel(0, 250) && Math.round(world.fromPixel(0, 250).lonDeg), -90);
+});
