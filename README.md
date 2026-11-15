@@ -85,7 +85,7 @@ Key methodological choices (details in [`docs/`](docs/) and in the application�
 | Browser smoke test (Playwright), mobile layout, accessibility audit, command palette | ❌ not done |
 | Level-2 sites (NASA 2024 regions without 5 m terrain), LOLA hillshade layer, polar-map zoom | ❌ not done |
 
-Test suites: **283 Python tests** and **229 JavaScript tests**, all passing at the last run (see [`STATUS.md`](STATUS.md) for the dated evidence).
+Test suites: **286 Python tests** and **229 JavaScript tests**, all passing at the last run (see [`STATUS.md`](STATUS.md) for the dated evidence).
 The detailed task plan is in [`PLAN.md`](PLAN.md); the live status is in [`STATUS.md`](STATUS.md); the exchange with the reviewing assistant is in [`LIAISON.md`](LIAISON.md).
 
 ## Getting started

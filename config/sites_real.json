@@ -103,6 +103,627 @@
       "terrain_real": true,
       "tier": 1,
       "verified": false
+    },
+    {
+      "center": {
+        "lat_deg": -85.4381,
+        "lon_deg": 37.3667,
+        "source": "centre de l'emprise du GeoTIFF Site06_final_adj_5mpp_surf.tif (4000 px × 4000 px × 5 m), lu le 2026-11-15"
+      },
+      "dem": {
+        "citation": "Barker et al. 2021, Planet. Space Sci. 203, 105119, https://doi.org/10.1016/j.pss.2020.105119",
+        "file": "Site06_final_adj_5mpp_surf.tif",
+        "license_note": "aucune licence indiquée sur les pages PGDA (lues le 2026-11-14) ; citation demandée, voir SOURCES.md",
+        "pixel_registration": "Area",
+        "product": "Site06 5 m (PGDA 78, LOLA)",
+        "resolution_m": 5.0,
+        "sha256": "CCA17E8067601DD659B583F889204DB6BCE685BC30C60A9E62427A8BCE36B03D",
+        "source": "https://pgda.gsfc.nasa.gov/data/LOLA_5mpp/Site06/"
+      },
+      "id": "site06-nobile-rim-1",
+      "label_en": "Nobile rim 1 (Site06)",
+      "label_fr": "Bord de Nobile 1 (Site06)",
+      "lola_priority_site": false,
+      "nasa_2024_region": null,
+      "pgda_description": "Nobile rim 1",
+      "pgda_id": "Site06",
+      "terrain_real": true,
+      "tier": 2,
+      "verified": false
+    },
+    {
+      "center": {
+        "lat_deg": -85.4266,
+        "lon_deg": 31.7428,
+        "source": "centre de l'emprise du GeoTIFF Site20_final_adj_5mpp_surf.tif (3200 px × 3200 px × 5 m), lu le 2026-11-15"
+      },
+      "dem": {
+        "citation": "Barker et al. 2021, Planet. Space Sci. 203, 105119, https://doi.org/10.1016/j.pss.2020.105119",
+        "file": "Site20_final_adj_5mpp_surf.tif",
+        "license_note": "aucune licence indiquée sur les pages PGDA (lues le 2026-11-14) ; citation demandée, voir SOURCES.md",
+        "pixel_registration": "Area",
+        "product": "Site20 5 m (PGDA 78, LOLA)",
+        "resolution_m": 5.0,
+        "sha256": "E51451F3629BA7CD5CFC1B32C8C0EE3C5C454607488B00EA00CD06A9E301A892",
+        "source": "https://pgda.gsfc.nasa.gov/data/LOLA_5mpp/Site20/"
+      },
+      "id": "site20-leibnitz-beta-plateau",
+      "label_en": "Leibnitz beta plateau (Site20)",
+      "label_fr": "Plateau Leibnitz bêta (Site20)",
+      "lola_priority_site": false,
+      "nasa_2024_region": null,
+      "pgda_description": "Leibnitz beta plateau",
+      "pgda_id": "Site20",
+      "terrain_real": true,
+      "tier": 2,
+      "verified": false
+    },
+    {
+      "center": {
+        "lat_deg": -85.4266,
+        "lon_deg": 31.7428,
+        "source": "centre de l'emprise du GeoTIFF Site20v2_final_adj_5mpp_surf.tif (5200 px × 5200 px × 5 m), lu le 2026-11-15"
+      },
+      "dem": {
+        "citation": "Barker et al. 2021, Planet. Space Sci. 203, 105119, https://doi.org/10.1016/j.pss.2020.105119",
+        "file": "Site20v2_final_adj_5mpp_surf.tif",
+        "license_note": "aucune licence indiquée sur les pages PGDA (lues le 2026-11-14) ; citation demandée, voir SOURCES.md",
+        "pixel_registration": "Area",
+        "product": "Site20v2 5 m (PGDA 78, LOLA)",
+        "resolution_m": 5.0,
+        "sha256": "0E96C40987C0814EADD4F94F85DACBB33BCAB5388DD0B1DC99DC59BF987F072F",
+        "source": "https://pgda.gsfc.nasa.gov/data/LOLA_5mpp/Site20v2/"
+      },
+      "id": "site20v2-leibnitz-beta-plateau-extended-boundaries",
+      "label_en": "Leibnitz beta plateau, extended boundaries (Site20v2)",
+      "label_fr": "Plateau Leibnitz bêta, limites étendues (Site20v2)",
+      "lola_priority_site": false,
+      "nasa_2024_region": null,
+      "pgda_description": "Leibnitz beta plateau, extended boundaries",
+      "pgda_id": "Site20v2",
+      "terrain_real": true,
+      "tier": 2,
+      "verified": false
+    },
+    {
+      "center": {
+        "lat_deg": -85.9948,
+        "lon_deg": -0.2358,
+        "source": "centre de l'emprise du GeoTIFF Site23_final_adj_5mpp_surf.tif (4200 px × 4200 px × 5 m), lu le 2026-11-15"
+      },
+      "dem": {
+        "citation": "Barker et al. 2021, Planet. Space Sci. 203, 105119, https://doi.org/10.1016/j.pss.2020.105119",
+        "file": "Site23_final_adj_5mpp_surf.tif",
+        "license_note": "aucune licence indiquée sur les pages PGDA (lues le 2026-11-14) ; citation demandée, voir SOURCES.md",
+        "pixel_registration": "Area",
+        "product": "Site23 5 m (PGDA 78, LOLA)",
+        "resolution_m": 5.0,
+        "sha256": "12D280A59CD7580415F6BADA638D0ABE025CE6727541FDDF68D5DC371A6C94CF",
+        "source": "https://pgda.gsfc.nasa.gov/data/LOLA_5mpp/Site23/"
+      },
+      "id": "site23-malapert-massif",
+      "label_en": "Malapert massif (Site23)",
+      "label_fr": "Massif Malapert (Site23)",
+      "lola_priority_site": false,
+      "nasa_2024_region": null,
+      "pgda_description": "Malapert massif",
+      "pgda_id": "Site23",
+      "terrain_real": true,
+      "tier": 2,
+      "verified": false
+    },
+    {
+      "center": {
+        "lat_deg": -85.8296,
+        "lon_deg": -116.322,
+        "source": "centre de l'emprise du GeoTIFF Site42_final_adj_5mpp_surf.tif (4000 px × 4000 px × 5 m), lu le 2026-11-15"
+      },
+      "dem": {
+        "citation": "Barker et al. 2021, Planet. Space Sci. 203, 105119, https://doi.org/10.1016/j.pss.2020.105119",
+        "file": "Site42_final_adj_5mpp_surf.tif",
+        "license_note": "aucune licence indiquée sur les pages PGDA (lues le 2026-11-14) ; citation demandée, voir SOURCES.md",
+        "pixel_registration": "Area",
+        "product": "Site42 5 m (PGDA 78, LOLA)",
+        "resolution_m": 5.0,
+        "sha256": "5AF35DDCA6EE9D7B10348610CB6714FD6D04DCCE08D4E8CB6FB1113F4C1839CF",
+        "source": "https://pgda.gsfc.nasa.gov/data/LOLA_5mpp/Site42/"
+      },
+      "id": "site42-de-gerlache-kocher-massif",
+      "label_en": "de Gerlache-Kocher massif (Site42)",
+      "label_fr": "Massif de Gerlache-Kocher (Site42)",
+      "lola_priority_site": false,
+      "nasa_2024_region": null,
+      "pgda_description": "de Gerlache-Kocher massif",
+      "pgda_id": "Site42",
+      "terrain_real": true,
+      "tier": 2,
+      "verified": false
+    },
+    {
+      "center": {
+        "lat_deg": -86.7639,
+        "lon_deg": -22.777,
+        "source": "centre de l'emprise du GeoTIFF Haworth_final_adj_5mpp_surf.tif (5960 px × 5960 px × 5 m), lu le 2026-11-15"
+      },
+      "dem": {
+        "citation": "Barker et al. 2021, Planet. Space Sci. 203, 105119, https://doi.org/10.1016/j.pss.2020.105119",
+        "file": "Haworth_final_adj_5mpp_surf.tif",
+        "license_note": "aucune licence indiquée sur les pages PGDA (lues le 2026-11-14) ; citation demandée, voir SOURCES.md",
+        "pixel_registration": "Area",
+        "product": "Haworth 5 m (PGDA 78, LOLA)",
+        "resolution_m": 5.0,
+        "sha256": "387FD6E99BCA266F4982F7256C4C185921105313882B4C2EEE5B5FF1EF75016B",
+        "source": "https://pgda.gsfc.nasa.gov/data/LOLA_5mpp/Haworth/"
+      },
+      "id": "haworth",
+      "label_en": "Haworth",
+      "label_fr": "Haworth",
+      "lola_priority_site": false,
+      "nasa_2024_region": null,
+      "pgda_description": "Haworth",
+      "pgda_id": "Haworth",
+      "terrain_real": true,
+      "tier": 2,
+      "verified": false
+    },
+    {
+      "center": {
+        "lat_deg": -87.1835,
+        "lon_deg": 62.835,
+        "source": "centre de l'emprise du GeoTIFF Shoemaker_final_adj_5mpp_surf.tif (4000 px × 4000 px × 5 m), lu le 2026-11-15"
+      },
+      "dem": {
+        "citation": "Barker et al. 2021, Planet. Space Sci. 203, 105119, https://doi.org/10.1016/j.pss.2020.105119",
+        "file": "Shoemaker_final_adj_5mpp_surf.tif",
+        "license_note": "aucune licence indiquée sur les pages PGDA (lues le 2026-11-14) ; citation demandée, voir SOURCES.md",
+        "pixel_registration": "Area",
+        "product": "Shoemaker 5 m (PGDA 78, LOLA)",
+        "resolution_m": 5.0,
+        "sha256": "75329262A6DBE37E4370ADCF23EC3854396C9D3E911A682D76C170178A0B8290",
+        "source": "https://pgda.gsfc.nasa.gov/data/LOLA_5mpp/Shoemaker/"
+      },
+      "id": "shoemaker",
+      "label_en": "Shoemaker",
+      "label_fr": "Shoemaker",
+      "lola_priority_site": false,
+      "nasa_2024_region": null,
+      "pgda_description": "Shoemaker",
+      "pgda_id": "Shoemaker",
+      "terrain_real": true,
+      "tier": 2,
+      "verified": false
+    },
+    {
+      "center": {
+        "lat_deg": -84.2287,
+        "lon_deg": 69.444,
+        "source": "centre de l'emprise du GeoTIFF DM1_final_adj_5mpp_surf.tif (4000 px × 4000 px × 5 m), lu le 2026-11-15"
+      },
+      "dem": {
+        "citation": "Barker et al. 2021, Planet. Space Sci. 203, 105119, https://doi.org/10.1016/j.pss.2020.105119",
+        "file": "DM1_final_adj_5mpp_surf.tif",
+        "license_note": "aucune licence indiquée sur les pages PGDA (lues le 2026-11-14) ; citation demandée, voir SOURCES.md",
+        "pixel_registration": "Area",
+        "product": "DM1 5 m (PGDA 78, LOLA)",
+        "resolution_m": 5.0,
+        "sha256": "CEB7E786D05EF6A604C80B78BE885E641AD7BD2B5C3AAC944201A4F2008D8CA4",
+        "source": "https://pgda.gsfc.nasa.gov/data/LOLA_5mpp/DM1/"
+      },
+      "id": "dm1-amundsen-rim",
+      "label_en": "Amundsen rim (DM1)",
+      "label_fr": "Bord d'Amundsen (DM1)",
+      "lola_priority_site": false,
+      "nasa_2024_region": null,
+      "pgda_description": "Amundsen rim",
+      "pgda_id": "DM1",
+      "terrain_real": true,
+      "tier": 2,
+      "verified": false
+    },
+    {
+      "center": {
+        "lat_deg": -83.954,
+        "lon_deg": 58.8221,
+        "source": "centre de l'emprise du GeoTIFF DM2_final_adj_5mpp_surf.tif (4000 px × 4000 px × 5 m), lu le 2026-11-15"
+      },
+      "dem": {
+        "citation": "Barker et al. 2021, Planet. Space Sci. 203, 105119, https://doi.org/10.1016/j.pss.2020.105119",
+        "file": "DM2_final_adj_5mpp_surf.tif",
+        "license_note": "aucune licence indiquée sur les pages PGDA (lues le 2026-11-14) ; citation demandée, voir SOURCES.md",
+        "pixel_registration": "Area",
+        "product": "DM2 5 m (PGDA 78, LOLA)",
+        "resolution_m": 5.0,
+        "sha256": "D88677C21633683061117DB0A577F0510E0948FE9DB315D13BE28782407FF604",
+        "source": "https://pgda.gsfc.nasa.gov/data/LOLA_5mpp/DM2/"
+      },
+      "id": "dm2-nobile-rim-2",
+      "label_en": "Nobile rim 2 (DM2)",
+      "label_fr": "Bord de Nobile 2 (DM2)",
+      "lola_priority_site": false,
+      "nasa_2024_region": null,
+      "pgda_description": "Nobile rim 2",
+      "pgda_id": "DM2",
+      "terrain_real": true,
+      "tier": 2,
+      "verified": false
+    },
+    {
+      "center": {
+        "lat_deg": -88.23,
+        "lon_deg": -64.6284,
+        "source": "centre de l'emprise du GeoTIFF SL2_final_adj_5mpp_surf.tif (4000 px × 4000 px × 5 m), lu le 2026-11-15"
+      },
+      "dem": {
+        "citation": "Barker et al. 2021, Planet. Space Sci. 203, 105119, https://doi.org/10.1016/j.pss.2020.105119",
+        "file": "SL2_final_adj_5mpp_surf.tif",
+        "license_note": "aucune licence indiquée sur les pages PGDA (lues le 2026-11-14) ; citation demandée, voir SOURCES.md",
+        "pixel_registration": "Area",
+        "product": "SL2 5 m (PGDA 78, LOLA)",
+        "resolution_m": 5.0,
+        "sha256": "16737CB5FDAA47F243715E003450DEADEABC6FB1B947A5ED245D5A3FD78A2208",
+        "source": "https://pgda.gsfc.nasa.gov/data/LOLA_5mpp/SL2/"
+      },
+      "id": "sl2-de-gerlache-rim",
+      "label_en": "de Gerlache rim (SL2)",
+      "label_fr": "Bord de Gerlache (SL2)",
+      "lola_priority_site": false,
+      "nasa_2024_region": null,
+      "pgda_description": "de Gerlache rim",
+      "pgda_id": "SL2",
+      "terrain_real": true,
+      "tier": 2,
+      "verified": false
+    },
+    {
+      "center": {
+        "lat_deg": -89.0324,
+        "lon_deg": -101.9993,
+        "source": "centre de l'emprise du GeoTIFF SL3_final_adj_5mpp_surf.tif (4000 px × 4000 px × 5 m), lu le 2026-11-15"
+      },
+      "dem": {
+        "citation": "Barker et al. 2021, Planet. Space Sci. 203, 105119, https://doi.org/10.1016/j.pss.2020.105119",
+        "file": "SL3_final_adj_5mpp_surf.tif",
+        "license_note": "aucune licence indiquée sur les pages PGDA (lues le 2026-11-14) ; citation demandée, voir SOURCES.md",
+        "pixel_registration": "Area",
+        "product": "SL3 5 m (PGDA 78, LOLA)",
+        "resolution_m": 5.0,
+        "sha256": "A18C153DAB5C9E7E0B4D8A5F1547BD7EF5E31FBA7DD1C3252D84060AEBF0283B",
+        "source": "https://pgda.gsfc.nasa.gov/data/LOLA_5mpp/SL3/"
+      },
+      "id": "sl3-connecting-ridge-extension",
+      "label_en": "Connecting ridge extension (SL3)",
+      "label_fr": "Extension de la crête de liaison (SL3)",
+      "lola_priority_site": false,
+      "nasa_2024_region": null,
+      "pgda_description": "Connecting ridge extension",
+      "pgda_id": "SL3",
+      "terrain_real": true,
+      "tier": 2,
+      "verified": false
+    },
+    {
+      "center": {
+        "lat_deg": -86.9243,
+        "lon_deg": -71.5651,
+        "source": "centre de l'emprise du GeoTIFF NPA_final_adj_5mpp_surf.tif (4000 px × 4000 px × 5 m), lu le 2026-11-15"
+      },
+      "dem": {
+        "citation": "Barker et al. 2021, Planet. Space Sci. 203, 105119, https://doi.org/10.1016/j.pss.2020.105119",
+        "file": "NPA_final_adj_5mpp_surf.tif",
+        "license_note": "aucune licence indiquée sur les pages PGDA (lues le 2026-11-14) ; citation demandée, voir SOURCES.md",
+        "pixel_registration": "Area",
+        "product": "NPA 5 m (PGDA 78, LOLA)",
+        "resolution_m": 5.0,
+        "sha256": "1D13A8BEFCAEFBE168589D525AEE05A14AFF222068221D93406CE951600D2B32",
+        "source": "https://pgda.gsfc.nasa.gov/data/LOLA_5mpp/NPA/"
+      },
+      "id": "npa-cabeus-exterior-wall-1",
+      "label_en": "Cabeus exterior wall 1 (NPA)",
+      "label_fr": "Paroi extérieure de Cabeus 1 (NPA)",
+      "lola_priority_site": false,
+      "nasa_2024_region": null,
+      "pgda_description": "Cabeus exterior wall 1",
+      "pgda_id": "NPA",
+      "terrain_real": true,
+      "tier": 2,
+      "verified": false
+    },
+    {
+      "center": {
+        "lat_deg": -83.9046,
+        "lon_deg": 89.5354,
+        "source": "centre de l'emprise du GeoTIFF NPB_final_adj_5mpp_surf.tif (4000 px × 4000 px × 5 m), lu le 2026-11-15"
+      },
+      "dem": {
+        "citation": "Barker et al. 2021, Planet. Space Sci. 203, 105119, https://doi.org/10.1016/j.pss.2020.105119",
+        "file": "NPB_final_adj_5mpp_surf.tif",
+        "license_note": "aucune licence indiquée sur les pages PGDA (lues le 2026-11-14) ; citation demandée, voir SOURCES.md",
+        "pixel_registration": "Area",
+        "product": "NPB 5 m (PGDA 78, LOLA)",
+        "resolution_m": 5.0,
+        "sha256": "43E250222A3DD0AEEE24B3A8A3FCB2303F5C51AD5655CC41590C95B929B342B8",
+        "source": "https://pgda.gsfc.nasa.gov/data/LOLA_5mpp/NPB/"
+      },
+      "id": "npb-amundsen-1",
+      "label_en": "Amundsen 1 (NPB)",
+      "label_fr": "Amundsen 1 (NPB)",
+      "lola_priority_site": false,
+      "nasa_2024_region": null,
+      "pgda_description": "Amundsen 1",
+      "pgda_id": "NPB",
+      "terrain_real": true,
+      "tier": 2,
+      "verified": false
+    },
+    {
+      "center": {
+        "lat_deg": -84.5397,
+        "lon_deg": 126.9045,
+        "source": "centre de l'emprise du GeoTIFF NPC_final_adj_5mpp_surf.tif (4000 px × 4000 px × 5 m), lu le 2026-11-15"
+      },
+      "dem": {
+        "citation": "Barker et al. 2021, Planet. Space Sci. 203, 105119, https://doi.org/10.1016/j.pss.2020.105119",
+        "file": "NPC_final_adj_5mpp_surf.tif",
+        "license_note": "aucune licence indiquée sur les pages PGDA (lues le 2026-11-14) ; citation demandée, voir SOURCES.md",
+        "pixel_registration": "Area",
+        "product": "NPC 5 m (PGDA 78, LOLA)",
+        "resolution_m": 5.0,
+        "sha256": "AF952C0D255D815C87E4F5521BFF98EF22F3570853A1995008E70C7A3FEC738A",
+        "source": "https://pgda.gsfc.nasa.gov/data/LOLA_5mpp/NPC/"
+      },
+      "id": "npc-idelson-l-crater-1",
+      "label_en": "Idel'son L crater 1 (NPC)",
+      "label_fr": "Cratère Idel'son L 1 (NPC)",
+      "lola_priority_site": false,
+      "nasa_2024_region": null,
+      "pgda_description": "Idel'son L crater 1",
+      "pgda_id": "NPC",
+      "terrain_real": true,
+      "tier": 2,
+      "verified": false
+    },
+    {
+      "center": {
+        "lat_deg": -84.8034,
+        "lon_deg": 8.387,
+        "source": "centre de l'emprise du GeoTIFF NPD_final_adj_5mpp_surf.tif (4000 px × 4000 px × 5 m), lu le 2026-11-15"
+      },
+      "dem": {
+        "citation": "Barker et al. 2021, Planet. Space Sci. 203, 105119, https://doi.org/10.1016/j.pss.2020.105119",
+        "file": "NPD_final_adj_5mpp_surf.tif",
+        "license_note": "aucune licence indiquée sur les pages PGDA (lues le 2026-11-14) ; citation demandée, voir SOURCES.md",
+        "pixel_registration": "Area",
+        "product": "NPD 5 m (PGDA 78, LOLA)",
+        "resolution_m": 5.0,
+        "sha256": "C60BE0A03F38DEA0D250791373D8F13445C5BDBAD7C49690E004F238EF309C78",
+        "source": "https://pgda.gsfc.nasa.gov/data/LOLA_5mpp/NPD/"
+      },
+      "id": "npd-malapert-crater-1",
+      "label_en": "Malapert crater 1 (NPD)",
+      "label_fr": "Cratère Malapert 1 (NPD)",
+      "lola_priority_site": false,
+      "nasa_2024_region": null,
+      "pgda_description": "Malapert crater 1",
+      "pgda_id": "NPD",
+      "terrain_real": true,
+      "tier": 2,
+      "verified": false
+    },
+    {
+      "center": {
+        "lat_deg": -89.5244,
+        "lon_deg": 56.3099,
+        "source": "centre de l'emprise du GeoTIFF LM1_final_adj_5mpp_surf.tif (4000 px × 4000 px × 5 m), lu le 2026-11-15"
+      },
+      "dem": {
+        "citation": "Barker et al. 2021, Planet. Space Sci. 203, 105119, https://doi.org/10.1016/j.pss.2020.105119",
+        "file": "LM1_final_adj_5mpp_surf.tif",
+        "license_note": "aucune licence indiquée sur les pages PGDA (lues le 2026-11-14) ; citation demandée, voir SOURCES.md",
+        "pixel_registration": "Area",
+        "product": "LM1 5 m (PGDA 78, LOLA)",
+        "resolution_m": 5.0,
+        "sha256": "ACDB5999FBBF1D3720CEE1A5E3955DB9C4575A4F3665AD8443199C0F7A1D4C0C",
+        "source": "https://pgda.gsfc.nasa.gov/data/LOLA_5mpp/LM1/"
+      },
+      "id": "lm1-shackleton-rim-b",
+      "label_en": "Shackleton Rim B (LM1)",
+      "label_fr": "Bord de Shackleton B (LM1)",
+      "lola_priority_site": false,
+      "nasa_2024_region": null,
+      "pgda_description": "Shackleton Rim B",
+      "pgda_id": "LM1",
+      "terrain_real": true,
+      "tier": 2,
+      "verified": false
+    },
+    {
+      "center": {
+        "lat_deg": -88.0792,
+        "lon_deg": 11.8887,
+        "source": "centre de l'emprise du GeoTIFF LM2_final_adj_5mpp_surf.tif (4000 px × 4000 px × 5 m), lu le 2026-11-15"
+      },
+      "dem": {
+        "citation": "Barker et al. 2021, Planet. Space Sci. 203, 105119, https://doi.org/10.1016/j.pss.2020.105119",
+        "file": "LM2_final_adj_5mpp_surf.tif",
+        "license_note": "aucune licence indiquée sur les pages PGDA (lues le 2026-11-14) ; citation demandée, voir SOURCES.md",
+        "pixel_registration": "Area",
+        "product": "LM2 5 m (PGDA 78, LOLA)",
+        "resolution_m": 5.0,
+        "sha256": "2AE42C1DA672A1273754BF04E4598695B75A7833A6948B7D2893E2DD58152716",
+        "source": "https://pgda.gsfc.nasa.gov/data/LOLA_5mpp/LM2/"
+      },
+      "id": "lm2-shoemaker-rim-a",
+      "label_en": "Shoemaker Rim A (LM2)",
+      "label_fr": "Bord de Shoemaker A (LM2)",
+      "lola_priority_site": false,
+      "nasa_2024_region": null,
+      "pgda_description": "Shoemaker Rim A",
+      "pgda_id": "LM2",
+      "terrain_real": true,
+      "tier": 2,
+      "verified": false
+    },
+    {
+      "center": {
+        "lat_deg": -88.3828,
+        "lon_deg": 16.5873,
+        "source": "centre de l'emprise du GeoTIFF LM3_final_adj_5mpp_surf.tif (4000 px × 4000 px × 5 m), lu le 2026-11-15"
+      },
+      "dem": {
+        "citation": "Barker et al. 2021, Planet. Space Sci. 203, 105119, https://doi.org/10.1016/j.pss.2020.105119",
+        "file": "LM3_final_adj_5mpp_surf.tif",
+        "license_note": "aucune licence indiquée sur les pages PGDA (lues le 2026-11-14) ; citation demandée, voir SOURCES.md",
+        "pixel_registration": "Area",
+        "product": "LM3 5 m (PGDA 78, LOLA)",
+        "resolution_m": 5.0,
+        "sha256": "DF159A1C7947394FD08217E9654651B020A3816FEFBC143053C10D6EE386A548",
+        "source": "https://pgda.gsfc.nasa.gov/data/LOLA_5mpp/LM3/"
+      },
+      "id": "lm3-shoemaker-rim-b",
+      "label_en": "Shoemaker Rim B (LM3)",
+      "label_fr": "Bord de Shoemaker B (LM3)",
+      "lola_priority_site": false,
+      "nasa_2024_region": null,
+      "pgda_description": "Shoemaker Rim B",
+      "pgda_id": "LM3",
+      "terrain_real": true,
+      "tier": 2,
+      "verified": false
+    },
+    {
+      "center": {
+        "lat_deg": -88.9645,
+        "lon_deg": 37.2348,
+        "source": "centre de l'emprise du GeoTIFF LM4_final_adj_5mpp_surf.tif (4000 px × 4000 px × 5 m), lu le 2026-11-15"
+      },
+      "dem": {
+        "citation": "Barker et al. 2021, Planet. Space Sci. 203, 105119, https://doi.org/10.1016/j.pss.2020.105119",
+        "file": "LM4_final_adj_5mpp_surf.tif",
+        "license_note": "aucune licence indiquée sur les pages PGDA (lues le 2026-11-14) ; citation demandée, voir SOURCES.md",
+        "pixel_registration": "Area",
+        "product": "LM4 5 m (PGDA 78, LOLA)",
+        "resolution_m": 5.0,
+        "sha256": "838EEF455D71C86AA5FE1390DF87772B82C9E6A812F68DA027B554B521CE259D",
+        "source": "https://pgda.gsfc.nasa.gov/data/LOLA_5mpp/LM4/"
+      },
+      "id": "lm4-shoemaker-rim-c",
+      "label_en": "Shoemaker Rim C (LM4)",
+      "label_fr": "Bord de Shoemaker C (LM4)",
+      "lola_priority_site": false,
+      "nasa_2024_region": null,
+      "pgda_description": "Shoemaker Rim C",
+      "pgda_id": "LM4",
+      "terrain_real": true,
+      "tier": 2,
+      "verified": false
+    },
+    {
+      "center": {
+        "lat_deg": -88.632,
+        "lon_deg": 74.6237,
+        "source": "centre de l'emprise du GeoTIFF LM5_final_adj_5mpp_surf.tif (4000 px × 4000 px × 5 m), lu le 2026-11-15"
+      },
+      "dem": {
+        "citation": "Barker et al. 2021, Planet. Space Sci. 203, 105119, https://doi.org/10.1016/j.pss.2020.105119",
+        "file": "LM5_final_adj_5mpp_surf.tif",
+        "license_note": "aucune licence indiquée sur les pages PGDA (lues le 2026-11-14) ; citation demandée, voir SOURCES.md",
+        "pixel_registration": "Area",
+        "product": "LM5 5 m (PGDA 78, LOLA)",
+        "resolution_m": 5.0,
+        "sha256": "611EB3B0D59570FBAFD25FFAE4BDBF40603E958A740654233834848D7FB14AD5",
+        "source": "https://pgda.gsfc.nasa.gov/data/LOLA_5mpp/LM5/"
+      },
+      "id": "lm5-shoemaker-rim-d",
+      "label_en": "Shoemaker Rim D (LM5)",
+      "label_fr": "Bord de Shoemaker D (LM5)",
+      "lola_priority_site": false,
+      "nasa_2024_region": null,
+      "pgda_description": "Shoemaker Rim D",
+      "pgda_id": "LM5",
+      "terrain_real": true,
+      "tier": 2,
+      "verified": false
+    },
+    {
+      "center": {
+        "lat_deg": -87.9458,
+        "lon_deg": 71.2742,
+        "source": "centre de l'emprise du GeoTIFF LM6_final_adj_5mpp_surf.tif (4000 px × 4000 px × 5 m), lu le 2026-11-15"
+      },
+      "dem": {
+        "citation": "Barker et al. 2021, Planet. Space Sci. 203, 105119, https://doi.org/10.1016/j.pss.2020.105119",
+        "file": "LM6_final_adj_5mpp_surf.tif",
+        "license_note": "aucune licence indiquée sur les pages PGDA (lues le 2026-11-14) ; citation demandée, voir SOURCES.md",
+        "pixel_registration": "Area",
+        "product": "LM6 5 m (PGDA 78, LOLA)",
+        "resolution_m": 5.0,
+        "sha256": "452D0137122A787EDFF4E0AE7BAEAAC2B795D14CB48B3B8C0308BE1AA6C44778",
+        "source": "https://pgda.gsfc.nasa.gov/data/LOLA_5mpp/LM6/"
+      },
+      "id": "lm6-shoemaker-rim-e",
+      "label_en": "Shoemaker Rim E (LM6)",
+      "label_fr": "Bord de Shoemaker E (LM6)",
+      "lola_priority_site": false,
+      "nasa_2024_region": null,
+      "pgda_description": "Shoemaker Rim E",
+      "pgda_id": "LM6",
+      "terrain_real": true,
+      "tier": 2,
+      "verified": false
+    },
+    {
+      "center": {
+        "lat_deg": -87.8897,
+        "lon_deg": 90.0,
+        "source": "centre de l'emprise du GeoTIFF LM7_final_adj_5mpp_surf.tif (4000 px × 4000 px × 5 m), lu le 2026-11-15"
+      },
+      "dem": {
+        "citation": "Barker et al. 2021, Planet. Space Sci. 203, 105119, https://doi.org/10.1016/j.pss.2020.105119",
+        "file": "LM7_final_adj_5mpp_surf.tif",
+        "license_note": "aucune licence indiquée sur les pages PGDA (lues le 2026-11-14) ; citation demandée, voir SOURCES.md",
+        "pixel_registration": "Area",
+        "product": "LM7 5 m (PGDA 78, LOLA)",
+        "resolution_m": 5.0,
+        "sha256": "00930F9D110D5477B6D38349EB544EC35D0BB802035113A0894479C317D29023",
+        "source": "https://pgda.gsfc.nasa.gov/data/LOLA_5mpp/LM7/"
+      },
+      "id": "lm7-faustini-rim-a",
+      "label_en": "Faustini Rim A (LM7)",
+      "label_fr": "Bord de Faustini A (LM7)",
+      "lola_priority_site": false,
+      "nasa_2024_region": null,
+      "pgda_description": "Faustini Rim A",
+      "pgda_id": "LM7",
+      "terrain_real": true,
+      "tier": 2,
+      "verified": false
+    },
+    {
+      "center": {
+        "lat_deg": -87.3417,
+        "lon_deg": 60.2551,
+        "source": "centre de l'emprise du GeoTIFF LM8_final_adj_5mpp_surf.tif (4000 px × 4000 px × 5 m), lu le 2026-11-15"
+      },
+      "dem": {
+        "citation": "Barker et al. 2021, Planet. Space Sci. 203, 105119, https://doi.org/10.1016/j.pss.2020.105119",
+        "file": "LM8_final_adj_5mpp_surf.tif",
+        "license_note": "aucune licence indiquée sur les pages PGDA (lues le 2026-11-14) ; citation demandée, voir SOURCES.md",
+        "pixel_registration": "Area",
+        "product": "LM8 5 m (PGDA 78, LOLA)",
+        "resolution_m": 5.0,
+        "sha256": "53A4EC1C2513F3BCD59D81B9AFA04174F6283CB2CD29A3BBA9A33E4B9A40C979",
+        "source": "https://pgda.gsfc.nasa.gov/data/LOLA_5mpp/LM8/"
+      },
+      "id": "lm8-shoemaker-rim-f",
+      "label_en": "Shoemaker Rim F (LM8)",
+      "label_fr": "Bord de Shoemaker F (LM8)",
+      "lola_priority_site": false,
+      "nasa_2024_region": null,
+      "pgda_description": "Shoemaker Rim F",
+      "pgda_id": "LM8",
+      "terrain_real": true,
+      "tier": 2,
+      "verified": false
     }
   ]
 }

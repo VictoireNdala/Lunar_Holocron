@@ -57,7 +57,7 @@ PRODUCTS: list[tuple[str, str, str]] = [
 
 def _slug(pgda_id: str, description: str) -> str:
     """Identifiant de site : `<pgda-id>-<description>` en minuscules ASCII, séparé par des tirets."""
-    text = f"{pgda_id} {description}".lower().replace("'", "")
+    text = (pgda_id if description == pgda_id else f"{pgda_id} {description}").lower().replace("'", "")
     return "".join(c if c.isalnum() else "-" for c in text).strip("-").replace("--", "-").replace("--", "-")
 
 
@@ -125,7 +125,7 @@ def main(argv: list[str] | None = None) -> int:
                        "source": f"centre de l'emprise du GeoTIFF {name} ({w} px × {h} px × 5 m), lu le {READ_DATE}"},
             "dem": {"citation": CITATION, "file": name, "license_note": LICENSE_NOTE, "pixel_registration": "Area",
                     "product": f"{pgda_id} 5 m (PGDA 78, LOLA)", "resolution_m": 5.0, "sha256": digest, "source": f"{BASE_URL}{pgda_id}/"},
-            "id": _slug(pgda_id, desc), "label_en": f"{desc} ({pgda_id})", "label_fr": f"{label_fr} ({pgda_id})",
+            "id": _slug(pgda_id, desc), "label_en": desc if desc == pgda_id else f"{desc} ({pgda_id})", "label_fr": label_fr if desc == pgda_id else f"{label_fr} ({pgda_id})",
             "lola_priority_site": False, "nasa_2024_region": None, "pgda_id": pgda_id, "terrain_real": True, "tier": 2, "verified": False,
             "pgda_description": desc,
         })
