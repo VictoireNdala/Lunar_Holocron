@@ -99,6 +99,7 @@ export function createPanel3d(store) {
     /** Réagit aux changements d'état (instant, langue, azimut du regard). */
     update(changed) {
       if (changed.includes('tMs')) pushBodies();
+      if (changed.includes('bodyScale')) { view?.setBodyScale(store.get().bodyScale); pushBodies(); }
       if (changed.includes('panoramaCenterAz')) pushViewMode();
       renderLegend();
       renderControls();

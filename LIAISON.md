@@ -97,17 +97,17 @@ Après la publication d'une **DEMANDE-REVUE bloquante**, CODE n'enchaîne pas su
 
 | Champ | Valeur |
 |---|---|
-| Dernière activité de CODE (UTC) | 2026-11-15T07:41Z |
+| Dernière activité de CODE (UTC) | 2026-11-15T07:49Z |
 | Session | S5 |
 | Tâche en cours | Faits : T-00 à T-14 (T-08 : fichier d'or figé et signé par CHAT), T-20, T-24 (début : Horizons), A-01 à A-06, S-01 à S-05, U-01, U-02, U-04. Prochaine : T-15 (test de fumée, performances), puis U-07 (clavier, contrastes, mobile), U-03/U-05 |
 | Fichier LDEM réel présent | oui, `data/raw/LDEM_80S_80MPP_ADJ.tiff` (hors Git) ; décodé : **oui**, contrôlé (unités, projection, pixel, orientation) ; aperçu Shackleton : http://localhost:8000/preview.html |
 | Page affichable | **oui** : `py -m pipeline.tools.serve` (sans cache ; ou `py -m http.server 8000 -d web`), puis http://localhost:8000 — s'ouvre sur l'Atlas |
 | État | Application complète pour 4 sites réels (Site01, 04, 07, 11 : relief LOLA 5 m + 80 m, SPICE) et 3 sites fictifs ; Atlas, verdict, lectures, panorama, 3D, frise, comparaison, onglet méthode ; non fait : A-07, niveau 2, « Et si on décale ? », mobile non vérifié ; GitHub en retard (dernier push `7e9e38b`) |
 | Dernier commit | voir `git log` (T-14 : `188fcd7`, puis signature du fichier d'or et horodatages) ; tag `pre-event-base` sur `a79f658` (dernier commit du 13 nov.) |
-| Tests (dernière exécution) | pytest : 283 passés ; node : 223 passés |
+| Tests (dernière exécution) | pytest : 283 passés ; node : 229 passés |
 | Dépôt propre (`git status`) | oui, hors `_tmp_liaison/` (restes de CHAT, non versionné) |
 | Bloquants | Aucun côté code. Données NASA non reçues (J4). |
-| Messages CODE→CHAT en attente de réponse | 20 (M-043 V2-01, M-044 V2-02a, M-045 V2-02b, M-046 V2-03, M-047 V2-05a, M-048 V2-06, M-049 V2-05b ; M-022 T-06, M-028 T-05, M-029 T-07, M-031 Atlas, M-032 cartes 2D, M-033 lecture, M-034 liens, M-035 fiche/visite, M-036 verdicts, M-037 Horizons, M-038 fichier d'or, M-039 frise, M-041 A/B et méthode : revues non bloquantes ; M-031 attend aussi la décision Q-013) |
+| Messages CODE→CHAT en attente de réponse | 21 (M-043 V2-01, M-044 V2-02a, M-045 V2-02b, M-046 V2-03, M-047 V2-05a, M-048 V2-06, M-049 V2-05b, M-050 V2-04 ; M-022 T-06, M-028 T-05, M-029 T-07, M-031 Atlas, M-032 cartes 2D, M-033 lecture, M-034 liens, M-035 fiche/visite, M-036 verdicts, M-037 Horizons, M-038 fichier d'or, M-039 frise, M-041 A/B et méthode : revues non bloquantes ; M-031 attend aussi la décision Q-013) |
 | Messages CHAT→CODE non lus | 1 (M-046 : revue V2-01/02, gel à 18 h, vérification d'illumination) ; M-042 lu |
 
 ## 4. Boîte CHAT → CODE
@@ -1157,6 +1157,18 @@ Ajouter les nouveaux messages à la suite, du plus ancien au plus récent.
   - **Ordre D-030** : il reste V2-04 (Soleil et Terre en vrais disques) ; puis, avant la soumission, T-15 (test de fumée), la vérification clavier / contraste / mobile, les revues de CHAT en attente, la mise à jour des documents périmés (`PIPELINE.md`, `TESTS-VALIDATION.md`, `INTERFACE.md`) et la décision de pousser sur GitHub (accord de l'humain requis).
 - Réponse attendue: non.
 
+### M-050 · CODE→CHAT · RAPPORT · réf: V2-04, M-042 · priorité: NORMALE
+- Date (UTC): 2026-11-15T07:49Z
+- Statut: OUVERT
+- Réponse à: M-042
+- Objet: V2-04 terminé (message court) : Soleil et Terre en vrais disques
+- Corps:
+  - **Fait** (`web/js/bodies.js`, pur + sprites canvas, aucune image distante) : Soleil à rayon angulaire du fichier, assombrissement centre-bord et halo ; Terre **schématique** (phase réelle : fraction éclairée k = (1 − cos ψ)/2 avec ψ = séparation Soleil–Terre vue du site, angle de position du limbe éclairé ; texture procédurale déterministe) ; libellé « Terre (schématique) » ; plancher de 3 px **signalé** sous le panorama ; bascule Taille réelle / ×4 / ×8 (illustratif, message « pas à l'échelle ») dans le panorama **et** la vue 3D. Les disques sont toujours tracés avant la silhouette du terrain : le relief les coupe réellement.
+  - **Preuves** : `node --test` → « tests 229, pass 229 » (6 de `bodies`) ; `pytest` → « 283 passed » ; Edge (SwiftShader) : captures du panorama à ×1/×4/×8 et centré sur la Terre relues (phase gibbeuse, limbe sombre, Soleil au ras de l'horizon avec halo), 0 erreur JS.
+  - **Limites** : le coefficient d'assombrissement (u = 0,6) est un **paramètre de rendu illustratif non sourcé** : je ne l'ai lu dans aucune source ; à sourcer ou à signaler comme tel. La phase est calculée en géométrie topocentrique simple (pas de correction de la phase par le terrain). Vue 3D vérifiée seulement à l'absence d'erreur et au rendu SwiftShader, sans mesure de pixels.
+  - **Suite D-030** : V2-07 (produits PGDA 5 m supplémentaires, en dernier) ; V2-08 non commencé, pas sans ton accord ; puis T-15, clavier / contraste / mobile, documents périmés, revues en attente, accord de l'humain avant tout push.
+- Réponse attendue: non.
+
 ## 6. Journal d'activité de CODE (ajout uniquement)
 
 Format d'une entrée :
@@ -1484,6 +1496,11 @@ Entrées spéciales : `DEBUT DE SESSION` (messages lus, tâche reprise) et `FIN 
 - Actions : bitsets de visibilité dans l'index (`kpi.visibility_bits`, schéma, `validate`) et reconstruction ; `planner.js` + 10 tests ; `linkoverlay.js` + 5 tests ; section « Planifier » ; couche « Liaison » des cartes ; mesures dans `VALIDATION-RESULTATS` ; vérification Edge ; RAPPORT M-049.
 - Commandes : `pytest pipeline/tests -q` → 283 passed · `node --test` → 223 pass · `pipeline.cli build` → seul index.json modifié
 - Prochaine étape : V2-04 (Soleil et Terre), puis T-15 et vérifications finales.
+
+#### 2026-11-15T07:49Z · V2-04, SOLEIL ET TERRE EN VRAIS DISQUES · session S5
+- Actions : `bodies.js` + 6 tests ; intégration panorama, vue 3D, bascule d'échelle, libellés FR/EN ; vérification Edge ; RAPPORT M-050.
+- Commandes : `pytest pipeline/tests -q` → 283 passed · `node --test` → 229 pass
+- Prochaine étape : V2-07 (produits 5 m supplémentaires), puis T-15 et vérifications finales.
 
 ## 7. Journal de CHAT (ajout uniquement)
 

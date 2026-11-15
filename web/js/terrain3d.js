@@ -1,5 +1,6 @@
 // Vue 3D du terrain (INTERFACE § 6). Rendu ILLUSTRATIF : les ombres ne servent jamais aux verdicts,
 // qui viennent du masque d'horizon (CLAUDE.md, principe 3). Aucune ressource externe : sprites dessinés par Canvas.
+import { drawEarthSprite, drawSunSprite, earthPhase, quantizePhase } from './bodies.js';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { bodyDirection, buildTerrainArrays, gridCenterHeight } from './terrainmesh.js';
@@ -12,7 +13,7 @@ const OVERVIEW_FOV_DEG = 45;
 // Soleil et Terre placés juste au-delà du bord de la grille (demi-diagonale ≈ 0,71 × côté), dans leur direction vue du site :
 // la direction est exacte pour la caméra au sol ; en vue d'ensemble, ils apparaissent au-dessus du bord de terrain correspondant.
 const SKY_DISTANCE_FACTOR = 0.9;
-const MIN_SPRITE_RADIUS_DEG = 2.0; // rayon apparent minimal des sprites (agrandis, signalé dans l'interface)
+const MIN_SPRITE_RADIUS_DEG = 1.0; // rayon apparent minimal des sprites (agrandis, signalé dans l'interface)
 const BELOW_HORIZON_OPACITY = 0.35; // corps sous l'horizon géométrique : sprite atténué
 const SUN_INTENSITY = 2.5;
 const STUDY_INTENSITY = 1.3; // éclairage d'étude (relief lisible même quand le Soleil est sous l'horizon)
@@ -22,30 +23,6 @@ const AMBIENT_DARK = 0.12; // Soleil sous l'horizon : sombre
 const SHADOW_SIZES = Object.freeze([2048, 1024, 0]); // 0 = ombres désactivées (qualité adaptative)
 const SLOW_FRAME_MS = 25;
 const FRAMES_PER_CHECK = 30;
-
-/** Disque dessiné sur un canvas, pour un sprite (aucune image distante). */
-function discTexture(fill, ring) {
-  const size = 128;
-  const canvas = document.createElement('canvas');
-  canvas.width = canvas.height = size;
-  const ctx = canvas.getContext('2d');
-  const r = size / 2;
-  if (!ring) {
-    const glow = ctx.createRadialGradient(r, r, r * 0.4, r, r, r);
-    glow.addColorStop(0, fill);
-    glow.addColorStop(1, 'rgba(0,0,0,0)');
-    ctx.fillStyle = glow;
-    ctx.fillRect(0, 0, size, size);
-  }
-  ctx.beginPath();
-  ctx.arc(r, r, r * (ring ? 0.85 : 0.5), 0, 2 * Math.PI);
-  ctx.fillStyle = fill;
-  ctx.fill();
-  if (ring) { ctx.lineWidth = size * 0.08; ctx.strokeStyle = ring; ctx.stroke(); }
-  const texture = new THREE.CanvasTexture(canvas);
-  texture.colorSpace = THREE.SRGBColorSpace;
-  return texture;
-}
 
 /** Crée la vue dans `container`. Renvoie l'API documentée dans INTERFACE § 2. */
 export function createTerrainView(container, { onQualityChange = () => {} } = {}) {
@@ -69,7 +46,12 @@ export function createTerrainView(container, { onQualityChange = () => {} } = {}
   studyLight.position.set(-1, 0.5, -1).multiplyScalar(1000);
   scene.add(ambient, sunLight, sunLight.target, studyLight);
 
-  const textures = [discTexture('#f5a623', null), discTexture('#3b82f6', '#ffffff')];
+  // Soleil : disque à assombrissement centre-bord + halo ; Terre : disque schématique avec sa phase (bodies.js) ; textures sur canvas, mises à jour quand la phase change.
+  const sunCanvas = drawSunSprite(document.createElement('canvas'), 128);
+  const earthCanvas = drawEarthSprite(document.createElement('canvas'), 128, 1, 0);
+  const textures = [sunCanvas, earthCanvas].map((canvas) => { const t = new THREE.CanvasTexture(canvas); t.colorSpace = THREE.SRGBColorSpace; return t; });
+  let earthKey = '';
+  let bodyScale = 1;
   const sprites = textures.map((map) => new THREE.Sprite(new THREE.SpriteMaterial({ map, depthWrite: false })));
   sprites.forEach((s) => scene.add(s));
 
@@ -170,8 +152,13 @@ export function createTerrainView(container, { onQualityChange = () => {} } = {}
       if (!b) return;
       const d = bodyDirection(b.azDeg, b.elDeg);
       sprites[k].position.set(d.x * dist, d.y * dist, d.z * dist);
-      const r = dist * Math.tan(Math.max(b.radiusDeg, MIN_SPRITE_RADIUS_DEG) * Math.PI / 180) * 2;
+      const r = dist * Math.tan(Math.max(b.radiusDeg * bodyScale, MIN_SPRITE_RADIUS_DEG) * Math.PI / 180) * 2 * (name === 'sun' ? 2.4 : 1 / 0.9);
       sprites[k].scale.set(r, r, 1);
+      if (name === 'earth' && bodies.sun) {
+        const q = quantizePhase(earthPhase(bodies.sun, b));
+        const key = `${q.k}|${q.paDeg}`;
+        if (key !== earthKey) { drawEarthSprite(earthCanvas, 128, q.k, q.paDeg); textures[1].needsUpdate = true; earthKey = key; }
+      }
       sprites[k].material.opacity = b.elDeg < 0 ? BELOW_HORIZON_OPACITY : 1;
       sprites[k].material.transparent = true;
     });
@@ -225,6 +212,8 @@ export function createTerrainView(container, { onQualityChange = () => {} } = {}
     setTerrain(terrainMeta, heightsM) { meta = terrainMeta; heights = heightsM; rebuildMesh(); applyCamera(true); },
     /** États {azDeg, elDeg, radiusDeg} du Soleil et de la Terre (ou null). */
     setBodies(sun, earth) { bodies = { sun, earth }; placeBodies(); requestRender(); },
+    /** Agrandissement illustratif des disques (1 = taille réelle, avec plancher de lisibilité). */
+    setBodyScale(n) { bodyScale = n; placeBodies(); requestRender(); },
     /** Active ou coupe l'éclairage d'étude (illustratif, fixe) qui rend le relief lisible. */
     setStudyLight(on) { studyLight.visible = Boolean(on); requestRender(); },
     /** Éclairage d'aperçu illustratif (aucun sprite) quand aucun Soleil n'est fourni ; null pour l'enlever. */

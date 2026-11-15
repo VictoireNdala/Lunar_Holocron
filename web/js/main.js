@@ -315,6 +315,7 @@ function bindControls() {
   $('play-toggle').addEventListener('click', () => { showTimeNote(null); playback.toggle(); });
   for (const btn of document.querySelectorAll('.speed-btn')) btn.addEventListener('click', () => playback.setSpeed(Number(btn.dataset.speed)));
   for (const btn of document.querySelectorAll('.proj-btn')) btn.addEventListener('click', () => store.set({ view: btn.dataset.projView }));
+  for (const btn of document.querySelectorAll('.bscale-btn')) btn.addEventListener('click', () => store.set({ bodyScale: Number(btn.dataset.scale) }));
   $('time-now').addEventListener('click', () => {
     const range = coveredRange();
     const snap = snapNow(Date.now(), range);

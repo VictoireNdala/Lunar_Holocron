@@ -1,6 +1,7 @@
 // Panorama 360° (T-10, docs/INTERFACE.md § 5) : silhouette du masque d'horizon, boussole, Soleil et Terre, traces ±24 h.
 // Fonctions de projection pures (testées) + rendu Canvas 2D. Le calcul fait foi : le masque vient du fichier de site,
 // les positions de bodyStateAt ; le dessin ne décide d'aucun verdict.
+import { bodySprite, discRadiusPx, earthPhase } from './bodies.js';
 import { bodyStateAt, siteTimeRange } from './data.js';
 import { wrapDeg } from './geometry.js';
 import { horizonAt } from './visibility.js';
@@ -103,7 +104,7 @@ export function renderPanorama(ctx, view, site, tMs, style, labels) {
   ctx.setLineDash([]);
 
   // Traces ±24 h puis corps (dessinés AVANT le relief : le relief passe devant, INTERFACE § 5).
-  const drawn = { enlarged: [], offscreen: [] };
+  const drawn = { enlarged: [], offscreen: [], scales: {} };
   for (const body of ['sun', 'earth']) {
     const color = style[body];
     ctx.strokeStyle = color;
@@ -121,19 +122,18 @@ export function renderPanorama(ctx, view, site, tMs, style, labels) {
     ctx.globalAlpha = 1;
     const s = bodyStateAt(site, body, tMs);
     const p = toScreen(view, s.azDeg, s.elDeg);
-    const { radiusPx, enlarged } = bodyRadiusPx(view, s.radiusDeg);
+    const { radiusPx, enlarged, scale } = discRadiusPx(s.radiusDeg, view.pxPerDegX, style.bodyScale ?? 1);
     if (enlarged) drawn.enlarged.push(body);
+    drawn.scales[body] = scale;
     if (!p.inView) { drawn.offscreen.push({ body, side: p.x < W / 2 ? 'left' : 'right', azDeg: s.azDeg, y: p.y }); continue; }
     if (body === 'sun') {
-      const halo = ctx.createRadialGradient(p.x, p.y, radiusPx * 0.5, p.x, p.y, radiusPx * 3);
-      halo.addColorStop(0, style.sunHalo);
-      halo.addColorStop(1, 'rgba(0,0,0,0)');
-      ctx.fillStyle = halo;
-      ctx.beginPath(); ctx.arc(p.x, p.y, radiusPx * 3, 0, 2 * Math.PI); ctx.fill();
+      const size = radiusPx * 2 * 2.4; // le sprite : disque (assombrissement centre-bord) + halo additif
+      ctx.drawImage(bodySprite('sun', radiusPx), p.x - size / 2, p.y - size / 2, size, size);
+    } else {
+      const phase = earthPhase(bodyStateAt(site, 'sun', tMs), s); // Terre SCHÉMATIQUE : phase réelle, texture procédurale
+      const size = (radiusPx * 2) / 0.9;
+      ctx.drawImage(bodySprite('earth', radiusPx, phase), p.x - size / 2, p.y - size / 2, size, size);
     }
-    ctx.fillStyle = color;
-    ctx.beginPath(); ctx.arc(p.x, p.y, radiusPx, 0, 2 * Math.PI); ctx.fill();
-    if (body === 'earth') { ctx.lineWidth = 2; ctx.strokeStyle = style.text; ctx.stroke(); ctx.lineWidth = 1; }
     ctx.fillStyle = style.text;
     ctx.font = style.labelFont;
     ctx.fillText(labels[body], p.x + radiusPx + 6, p.y - radiusPx - 2);

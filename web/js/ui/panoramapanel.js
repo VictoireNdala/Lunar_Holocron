@@ -58,10 +58,12 @@ export function createPanoramaPanel(store) {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     view = makeView({ centerAzDeg: full ? 180 : store.get().panoramaCenterAz, widthDeg: full ? 360 : WINDOW_DEG,
       elMinDeg: EL_MIN_DEG, elMaxDeg: elMaxDeg, widthPx: w, heightPx: h });
-    const labels = { sun: t('body.sun'), earth: t('body.earth'), cardinals: CARDINALS[getLang()] ?? CARDINALS.en };
-    const drawn = renderPanorama(ctx, view, site, store.get().tMs, style(), labels);
+    const labels = { sun: t('body.sun'), earth: `${t('body.earth')} (${t('bodies.schematic')})`, cardinals: CARDINALS[getLang()] ?? CARDINALS.en };
+    const drawn = renderPanorama(ctx, view, site, store.get().tMs, { ...style(), bodyScale: store.get().bodyScale }, labels);
     $('pano-scale').textContent = t('pano.scale', { value: formatNumber(verticalExaggeration(view), 1) });
-    $('pano-enlarged').textContent = drawn.enlarged.length ? t('pano.enlarged', { bodies: drawn.enlarged.map((b) => t(`body.${b}`)).join(', ') }) : '';
+    const scaled = store.get().bodyScale !== 1;
+    $('pano-enlarged').textContent = scaled ? t('pano.scaled', { n: store.get().bodyScale }) : (drawn.enlarged.length ? t('pano.enlarged', { bodies: drawn.enlarged.map((b) => t(`body.${b}`)).join(', ') }) : t('pano.realSize'));
+    for (const btn of document.querySelectorAll('.bscale-btn')) btn.setAttribute('aria-pressed', String(Number(btn.dataset.scale) === store.get().bodyScale));
     $('pano-full').setAttribute('aria-pressed', String(full));
     canvas.setAttribute('aria-label', t('pano.aria', {
       center: formatNumber(view.centerAzDeg, 0),
